@@ -188,7 +188,7 @@ def open_outage_schedule_edit(request):
         outage.description = form.description.data or None
         outage.outage_duration = form.outage_duration.data or None
         outage.updated_by = current_user.get_id()
-        outage.updated_at = datetime.now()
+        outage.updated_at = datetime.datetime.now()
         db.session.add(outage)
         db.session.commit()
         target_url = url_for("outage_schedule_detail",
