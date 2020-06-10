@@ -26,8 +26,8 @@ class RowObj:
         return (date2.year - date1.year) * 12 + (date2.month - date1.month)
 
     # 色をつける処理
-    def colour_cells(self, outage_start, outage_end, color_number, delete_flg=0):
-        if color_number != "999" and outage_start and outage_end and delete_flg == 0:
+    def colour_cells(self, outage_start, outage_end, color_number):
+        if color_number != "999" and outage_start and outage_end:
             if outage_start.__class__ == datetime.datetime: outage_start = outage_start.date()
             if outage_end.__class__ == datetime.datetime: outage_end = outage_end.date()
             # print(outage_start, outage_end, color_number)
@@ -61,11 +61,11 @@ class RowObj:
 
     def __init__(self, plant_cd, plant_name, country_nm, turbine_id, data_type, min_year, max_year, outage_start=None,
                  outage_end=None, color_number=None, teiken_id=None, delete_flg=0, **dict):
+        self.cnt = 0
         self.plant_cd = plant_cd
         self.plant_name = plant_name
         self.country_nm = country_nm
         self.turbine_id = turbine_id
-        self.teiken_id = teiken_id
         self.data_type = data_type
         self.min_year = min_year
         self.max_year = max_year
@@ -73,8 +73,10 @@ class RowObj:
         self.cell_indexes = []
         self.cells = ["gray"] * (self.max_year - self.min_year + 1) * 12
         self.set_cell_indexes()
-        self.colour_cells(outage_start, outage_end, color_number, delete_flg)
-        self.cnt = 1
+        if delete_flg == 0:
+            self.teiken_id = teiken_id
+            self.cnt += 1
+            self.colour_cells(outage_start, outage_end, color_number)
 
 
 # ボータンを押すと
@@ -106,10 +108,10 @@ def searching(form, menu_param):
             rows_dict[row.turbine_id] = RowObj(**{k: v for k, v in row.items()},
                                                min_year=menu_param["min_year"],
                                                max_year=menu_param["max_year"])
-        else:
-            # rows_dict[row.turbine_id].set_cell_indexes()
-            rows_dict[row.turbine_id].colour_cells(row.outage_start, row.outage_end, row.color_number, row.delete_flg)
-            rows_dict[row.turbine_id].cnt += 1
+        elif row.delete_flg == 0:
+                rows_dict[row.turbine_id].teiken_id = row.teiken_id
+                rows_dict[row.turbine_id].cnt += 1
+                rows_dict[row.turbine_id].colour_cells(row.outage_start, row.outage_end, row.color_number)
     menu_param["outage_schedule_list"] = rows_dict.values()
 
 
