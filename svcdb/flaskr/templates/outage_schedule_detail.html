@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% block js_content %}
+    <script src="/static/js/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
+{% endblock %}
+{% block header_name %} {{ header_name }} {% endblock %}
+{% block container_content %}
+    <style type="text/css">
+        body {
+            overflow: hidden;
+        }
+
+        .search-result {
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .search-result-div {
+            height: 100%;
+            overflow: auto;
+            padding-top: 0px;
+        }
+
+        thead th {
+            text-align: center;
+            background-color: #DAE8EE;
+        }
+
+        td, th {
+            min-width: 34px;
+        }
+
+        thead th {
+            font-size: 12px;
+            font-weight: 300;
+        }
+
+        .table-bordered > thead > tr > th, table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+            border: 1px solid black;
+        }
+
+        .date {
+            width: 35px;
+            height: 29px;
+        }
+
+        table.schedule-table th.no_border {
+            background-color: #fff;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .info-th {
+            background:#4BB0E0;
+            border:1px solid white;
+            height:30px;
+            width:200px;
+        }
+        .info-title-td {
+            border-spacing:10px;
+            border:1px solid white;
+            background:#DAE8EE;
+            height:30px;
+            width:150px;
+        }
+        .info-content-td {
+            border:1px solid white;
+            background:#DAE8EE;
+            height:30px;
+            width:300px;
+        }
+        .info-btn {
+            background:#4BB0E0;
+            border: solid 1px gray;
+            color:white;
+            padding: 0px 15px;
+            font-size: 20px;
+        }
+        .fix_detail {
+            position: absolute;
+            left: 10px;
+            top: 220px;
+            z-index: 999;
+        }
+
+    </style>
+
+    <div class="row">
+        <br>
+        <button type="button" class="info-btn" onclick="editClick()">Edit</button>
+        <button type="button" class="info-btn" onclick="deleteClick()">Delete</button>
+        <button type="button" class="info-btn" onclick="closeClick()">Close</button>
+    </div>
+    <br>
+    <div class="row">
+        <div class="search-result-div clear-float">
+            <div class="row" id="schedule_form-schedule_list">
+                <table class="table-bordered schedule-table">
+                    <thead>
+                    <tr>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        {% for foo in range(menu_param["year_count"]*12) %}
+                            <th class="no_border"></th>
+                        {% endfor %}
+                    </tr>
+                    <tr style="height: 30px;">
+                        <th colspan="3"></th>
+                        <th colspan="3">M</th>
+                        <th colspan="3">E</th>
+                        {% for year in range(menu_param.min_year,menu_param.max_year+1) %}
+                            <th colspan="12">{{ year }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr align="center" style="height: 30px;">
+                        <th class="NW">Plant Code</th>
+                        <th class="NW">Country</th>
+                        <th class="NW">Unit</th>
+                        <th class="NW" colspan="2">PR</th>
+                        <th class="NW">stts</th>
+                        <th class="NW" colspan="2">PR</th>
+                        <th class="NW">stts</th>
+                        {% for year in range(menu_param["year_count"]) %}
+                            <th>Jan</th>
+                            <th>Feb</th>
+                            <th>Mar</th>
+                            <th>Apr</th>
+                            <th>May</th>
+                            <th>Jun</th>
+                            <th>Jul</th>
+                            <th>Aug</th>
+                            <th>Sep</th>
+                            <th>Oct</th>
+                            <th>Nov</th>
+                            <th>Dec</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for schedule in menu_param['outage_schedule_list'] %}
+                        <tr>
+                            <td class="NW"><a href="#">{{ schedule.plant_cd or '' }}</a></td>
+                            <td class="NW">{{ schedule.country_nm or '' }}</td>
+                            <td class="NW">{{ schedule.plant_name or '' }}</td>
+                            <td class="NW AC"></td>
+                            <td class="NW red"></td>
+                            <td class="NW AR"></td>
+                            <td class="NW AC"></td>
+                            <td class="NW"></td>
+                            <td class="NW AR"></td>
+                            {% for cell in schedule.cells %}
+                                <td class="NW date" style="padding: 0px !important;">
+                                    <img width="100%" height="100%" src="static/images/{{ cell }}.png">
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="fix_detail">
+                <table cellpadding="5">
+                    <thead>
+                        <tr>
+                            <th class="info-th"></th>
+                            <th class="info-th"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="height:3px;"></tr>
+                        <tr>
+                            <td class="info-title-td">Start</td>
+                            <td class="info-content-td">{{ outage_schedule_info.outage_start|sys_dfmt }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">End</td>
+                            <td class="info-content-td">{{ outage_schedule_info.outage_end|sys_dfmt}}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Duration</td>
+                            <td class="info-content-td">{{ outage_schedule_info.outage_duration }} days</td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td" rowspan="2">Outage Type</td>
+                            <td class="info-content-td">{{ outage_schedule_info.outage_type_t_nm or '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-content-td">{{ outage_schedule_info.outage_type_g_nm or '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Execution(%)</td>
+                            <td class="info-content-td">{{ outage_schedule_info.execution or '' }}%</td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Description</td>
+                            <td class="info-content-td">
+                                <div id="description" style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.description_html }}</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        //<![CDATA[
+        $(function () {
+            {% if menu_param["outage_schedule_list"] %}
+                fixedResultTable();
+            {% endif %}
+        });
+
+        function fixedResultTable() {
+            var fixedHeaderCols = 9;
+
+            initTlibJSFixedHeaderTable(
+                {
+                    table_div: 'schedule_form-schedule_list',
+                    header_cols: fixedHeaderCols,
+                    bg_color: ''
+                });
+        }
+
+
+        function closeClick() {
+            window.close();
+        }
+
+        function editClick() {
+            outage_schedule_edit('{{ outage_schedule_info.turbine_id }}', '{{ outage_schedule_info.teiken_id }}', '{{ form.date_start.data }}', '{{ form.date_end.data }}');
+        }
+
+        function deleteClick() {
+            if (!confirm("Are you sure to delete this data?")) return;
+            var url = "{{ url_for('outage_schedule_delete') }}";
+            showCover("お待ちください...");
+            $.post(url, {teiken_id:'{{form.teiken_id.data}}'}).done(function (data) {
+                hideCover();
+                if (data.msg) {
+                     alert(data.msg);
+                }else{
+                    window.opener.search();
+                    window.close();
+                }
+            }).fail(function () {
+                hideCover();
+                alert('delete faild!');
+            })
+        }
+
+        //]]>
+    </script>
+{% endblock %}

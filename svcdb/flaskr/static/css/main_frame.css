@@ -1,0 +1,397 @@
+
+/*
+ * IE: (html, body)
+ *  overflow: hiddenを指定しない場合、ページ全体のスクロールバーが表示される
+ *  height: 100%を指定しない場合、キーボードやマウスホイールでコンテンツを
+ *          スクロールできない
+*/
+html, body { padding: 0; margin: 0; overflow: hidden; height: 100%; }
+
+form { padding: 0; margin: 5px; }
+
+/* splitbarの書式 */
+div#middleArea .vsplitbar {
+	width: 2px;
+	border-right: 1px solid #dddddd;
+	z-index: 10;
+}
+/* drag&drop中のsplitbarの書式 */
+div#middleArea .vsplitbar.active {
+	border-right: 1px solid #999;
+	opacity: 0.7;
+}
+/*
+ * 左側のペイン (widthで初期値を指定)
+ * direction: rtlで左スクロールバー (内側のdivでltrに戻す)
+ */
+div#navigationArea {
+	height: 100%;
+	min-width: 200px;
+	width: 250px;
+	overflow: auto;
+	direction: ltr;
+	border-top: 1px #999 solid;
+	overflow: hidden;
+}
+/*
+ * 右側のペイン
+ * positionにstatic(default)以外を指定しておくと、子要素のpositionをabsolute
+ * にした場合に、位置指定の基準がこの要素になる
+ * (positionがstaticの場合は、ブラウザ全体が基準になる)
+ */
+div#mainArea {
+	position: relative;
+	border-top: 1px #999 solid;
+}
+div#treeListArea {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+/* splitbarの書式 */
+div#treeListArea .hsplitbar {
+	height: 2px;
+	border-top: 1px solid #999;
+	z-index: 10;
+}
+/* drag&drop中のsplitbarの書式 */
+div#treeListArea .hsplitbar.active {
+	border-top: 1px solid #333;
+	opacity: 0.7;
+}
+
+/*
+ * listAreaは常に表示しておいて、contentsViewを前面に表示する
+ * (listAreaとcontentsViewを交互にhide/showした場合、IEでlistAreaのスクロール
+ * 位置が保持されないため)
+ */
+div#listArea {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow-y: hidden;
+	z-index: 1;
+	padding-left: 10px;
+}
+div#treeArea {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow-y: hidden;
+	z-index: 1;
+	display: none;
+	margin-left: 10px;
+}
+div#treeDataHeader {
+	height: 1.5em;
+	width: 100%;
+	margin-top: 2px;
+	border-bottom: 1px #999 solid;
+}
+div#treeDataTitle {
+	position: absolute;
+	left: 5px;
+	right: 20px;
+	text-align: center;
+	font-weight: bold;
+}
+div#treeDataHeaderFunc {
+	position: absolute;
+	left: 5px;
+	right: 20px;
+	text-align: right;
+}
+div#treeData {
+	position: absolute;
+	margin-top: 1.7em;
+	margin-bottom: 5px;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+}
+div#contentsViewArea {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 100;
+	background-color: #fff;
+	display: none;
+}
+div#contentsMenuArea {
+	margin-right: 15px;
+}
+div#contentsScrArea {
+	position: absolute;
+	top: 40px;
+	left: 10px;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+}
+
+/*
+ IE: hover属性のあるdivにmouseoverすると、スクロールバーの高さがおかしくなる
+	 ことがある。コンテナ側にmin-height: 0%;を指定すると安定する
+*/
+div#contentsView {
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-bottom: 20px;
+	min-height: 0%;
+}
+div#contentsBody {
+	position: relative;
+	padding-right: 10px;
+}
+div#contentsShortcut {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+div.mail_recipient_table {
+	max-height: 4em;
+	overflow: auto;
+	border-top: 1px #999 solid;
+}
+div.mail_recipient_table_bottom {
+	max-height: 4em;
+	overflow: auto;
+	border-top: 1px #999 solid;
+	margin-bottom: 4px;
+}
+
+div.view_list {
+	margin-top: 10px;
+}
+
+div#contentsDiv {
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+div.contents {
+	position: relative;
+	border: 1px #999 solid;
+	padding: 10px;
+	margin-right: 10px;
+	background-color: #fff;
+}
+div.contentsHeader table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+div.contentsHeader table th {
+	text-align: right;
+	padding-left: 8px;
+	padding-right: 8px;
+	white-space: nowrap;
+}
+div.confirmContentsBody {
+	max-height: 200px;
+	overflow: auto;
+}
+
+div.attach_files_list {
+}
+
+div.comment {
+	margin-left: 40px;
+	border: 1px #999 solid;
+	padding: 10px;
+	margin-right: 10px;
+	background-color: #fff;
+}
+div.deleted_comment {
+	background-color: #ccc;
+}
+div.commentIndex {
+	float: left;
+	font-weight: bold;
+}
+div.commentHeader table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+div.commentHeader table th {
+	text-align: right;
+	padding-left: 8px;
+	padding-right: 8px;
+	white-space: nowrap;
+}
+div.commentBody {}
+div#comment_list_title {
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+.navi_menu_g {
+	color: white;
+}
+.navi_menu {
+	padding-left: 8px;
+	margin-bottom: 2px;
+}
+.navi_menu a { display: block; width: 100% }
+.navi_menu:hover { background: #aaa; }
+
+.navi_menu_active { background:#ccc; }
+.navi_menu_active:hover { background: #aaa; }
+.navi_menu_active a { }
+.navi_menu_active a:hover { background: #aaa; }
+
+.tt_tr { }
+.tt_tr td.tt_tr_link_td { color: blue; cursor: pointer; }
+.tt_tr:hover { background:#aaa; }
+.tt_tr_active { background:#ccc; }
+.tt_tr_active:hover { background:#aaa;}
+.tt_tr_active td.tt_tr_link_td { }
+.tt_tr_active td.tt_tr_link_td:hover { background: #aaa; }
+
+div.confirm_alert_msg { color: red; }
+.debug_msg { color: #999; }
+
+table#ctx_search_tbl {
+	width: 100%;
+	margin-top: 15px;
+	border: 1px solid #999;
+}
+table#ctx_search_tbl th { background: #ccc; }
+#ctx_search_cond { width:95%; }
+
+div#jqmodal_dlg {
+	position: relative;
+	height: auto;
+	width: 600px;
+	z-index: 9000;
+}
+
+div.pulldown_menu_div {
+	display: none;
+	position: absolute;
+	background: #eee;
+	border: 1px solid #999;
+	z-index: 300;
+}
+
+#treetable {
+	width: 100%;
+}
+
+#treetable tr td {
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+div#folder_select_dlg {
+	position: relative;
+	min-height: 300px;
+	height: 70%;
+}
+div#folder_select_table {
+	position: absolute;
+	top: 10px;
+	bottom: 0px;
+	left: 8px;
+	right: 120px;
+	overflow: auto;
+}
+div#folder_select_table.bottom_space {
+	bottom: 35px;
+}
+div#folder_dlg_btn_area {
+	position: absolute;
+	top: 10px;
+	bottom: 0px;
+	right: 10px;
+	width: 100px;
+}
+div#folder_dlg_btn_area.bottom_space {
+	bottom: 35px;
+}
+div#new_folder_input {
+	position:absolute;
+	left: 10px;
+	right: 10px;
+	bottom: 0px;
+	padding-top: 10px;
+	border-top: 1px solid #333;
+}
+div#select_ok_folder_dlg_btn {
+	float: none;
+	margin-bottom: 10px;
+}
+div#close_folder_dlg_btn {
+	float: none;
+	margin-bottom: 10px;
+}
+div#clear_folder_dlg_btn {
+	position:absolute;
+	left: 0px;
+	right: 0px;
+	bottom: 10px;
+}
+
+/* CSS3 */
+.folder_checkbox:checked + label{
+	color: black;
+	background: #aaa;
+	font-weight:bold;
+}
+/* for IE8 */
+.folder_checkbox_checked + label{
+	color: black;
+	background: #aaa;
+	font-weight:bold;
+}
+
+div#search_menu_dlg {
+    position: relative;
+    height: 70%;
+    width: 750px;
+}
+div#search_submit_btn {
+	float: left;
+	margin: 10px;
+}
+div#search_cancel_btn {
+	float: right;
+	margin: 10px;
+}
+
+div#workflow_dlg {
+    position: relative;
+    height: 70%;
+	width: 750px;
+}
+
+div#recipient_dlg {
+    position: absolute;
+    height: 70%;
+	width: 750px;
+}
+
+div#select_recipient_btn {
+    position: static;
+	text-align: right;
+}
+
+div#recipient_value {
+	position: absolute;
+	top: 35px;
+	left: 10px;
+	right: 10px;
+	bottom: 5px;
+	padding: 4px;
+	overflow: auto;
+	border: 1px solid #999;
+}
+
+

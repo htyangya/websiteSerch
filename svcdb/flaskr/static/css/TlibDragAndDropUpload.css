@@ -1,0 +1,75 @@
+
+div#tlibFileUploadLoadingMessage {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 200;
+	background-color: #999;
+	display: none;
+	overflow: auto;
+	filter: alpha(opacity=50);
+	-moz-opacity:0.50;
+	opacity:0.50;
+}
+div#tlibFileUploadLoadingMessageBody {
+	position: relative;
+	top: 40%;
+	background: #FFFFFF;
+	z-index: 210;
+	width: 60%;
+	height: 120px;
+	line-height: 22px;
+	text-align: center;
+	vertical-align: middle;
+/*	display: table-cell; 
+	padding-top: 20px;
+	padding-bottom: 20px; */
+	display: none;
+	padding: 10px;
+	margin: 0px auto;
+}
+
+progress {
+	width: 100%;
+	height: 14px;
+	display: block;
+	padding: 1px;
+	color: #00ff00;
+	appearance: none;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	border: none;
+	background-size: auto;
+	border-radius: 15px;
+}
+
+progress::-moz-progress-bar {
+	background:
+/*		-moz-linear-gradient(45deg, transparent, transparent 33%, rgba(0, 0, 0, 0.1) 33%, rgba(0, 0, 0, 0.1) 66%, transparent 66%),*/
+		-moz-linear-gradient(top, #00ff00, #00ff00 49%, #00ff00 50%, #00ff00);
+	border-radius: 15px;
+	box-shadow: 0 1px 0px 0 rgba(255, 255, 255, 0.2);
+	text-align: left;
+	background-size: 25px 14px, 100% 100%, 100% 100%;
+	-moz-animation: move 5s linear 0 infinite;
+}
+
+progress::-webkit-progress-bar {
+	background: -webkit-linear-gradient(top, #747467, #515145 49%, #414137 50%, #54544B);
+	border-radius: 15px;
+	padding: 1px;
+	box-shadow: 0 1px 0px 0 rgba(255, 255, 255, 0.2);
+	text-align:left;
+}
+
+progress::-webkit-progress-value {
+	border-radius: 15px;
+	box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+	background:
+		-webkit-linear-gradient(top, #00ff00, #00ff00 49%, #00ff00 50%, #00ff00);
+	background-size: 25px 14px, 100% 100%, 100% 100%;
+	-webkit-animation: move 5s linear 0 infinite;
+}
+

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block container_content %}
+
+<h1>Sorry, that page doesn’t exist!</h1>
+<div style="padding-left: 20px;">
+    <font color="#ff0000">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <p style="margin: 0px;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </font>
+</div>
+{% endblock %}

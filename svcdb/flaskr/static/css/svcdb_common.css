@@ -1,0 +1,535 @@
+
+/*
+ * body section
+ *  padding: ヘッダ, フッタのサイズ分、上下を空ける
+ *  font-size, font-family, line-height 読みやすい文字サイズ・行間を指定
+ *  color: 文字を完全な黒(#000)にしない (少し灰色にする)
+ *
+ * bodyのpaddingでheader,footerの部分を空けると、編集画面のpageup/pagedownで
+ * 表示内容が上にずれてしまう問題が発生する (Chromeブラウザで発生)
+ */
+html, body {
+	margin: 0;
+	padding: 0;
+	background-color: #fff;
+	color:#222;
+	font-family: 'MS Gothic', Sans-serif;
+/*  font-family: sans-serif; */
+/*	line-height: 1.3; */
+/*	font-size: 14px; */
+	font-weight: normal;
+	height: 100%;
+/*	word-wrap: break-word; */
+}
+
+input {
+	font-family: 'MS Gothic', Sans-serif;
+}
+textarea {
+	font-family: 'MS Gothic', Sans-serif;
+}
+
+h2 { margin: 4px; padding: 4px; }
+h3 { margin: 2px; padding: 2px; }
+
+a { color: blue; text-decoration: none; }
+a:hover { color: blue; background: #aaa; }
+
+img.blank_img { border: none; width: 1px; height: 1px; }
+img.b { border: none; width: 1px; height: 1px; }
+
+tr.odd { background: #ffffff; }
+tr.even { background: #f0f0e5; }
+tr.o { background: #ffffff; }
+tr.e { background: #f0f0e5; }
+td.odd { background: #ffffff; }
+td.even { background: #f0f0e5; }
+td.o { background: #ffffff; }
+td.e { background: #f0f0e5; }
+
+#ope_msg {
+	font-style: italic;
+	font-weight: bold;
+	text-align: left;
+	padding-left: 10px;
+}
+
+div#loadingMessage {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 200;
+	background-color: #999;
+	display: none;
+	overflow: auto;
+	filter: alpha(opacity=50);
+	-moz-opacity:0.50;
+	opacity:0.50;
+}
+div#loadingMessageBody {
+	position: absolute;
+	top:  50%;
+	left: 50%;
+	width:  360px;
+	height: 210px;
+	z-index: 210;
+	margin-left: -180px;
+	margin-top:  -105px;
+	text-align: center;
+	display: none;
+}
+div#nullLoading {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 200;
+	background-color: #fff;
+	display: none;
+	overflow: auto;
+	filter: alpha(opacity=0);
+	-moz-opacity:0.00;
+	opacity:0.00;
+}
+/* 表示領域にpaddingを設定 */
+.container {
+	padding: 10px;
+	direction: ltr;
+}
+
+/* for print_spacer() */
+.svcdb_border {
+	margin: 0px auto;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	padding: 0px;
+	border: none;
+	border-top: 1px solid #999;
+	height: 1px;
+	font-size: 1px;
+	left: 10px;
+	right: -10px;
+}
+
+.nav {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.nav-tabs {
+  margin-left:0px;
+  padding-left: 0px;
+  border-bottom: 2px solid #dddddd;
+}
+
+.svcdb-tabs > li {
+    min-width:80px;
+    text-align:center;
+}
+.svcdb-tabs > li > a,
+.svcdb-tabs > li > a:hover,
+.svcdb-tabs > li > a:focus {
+    color: #333;
+    background-color: #ccc;
+    border: 1px solid #dddddd;
+    /*border-bottom-color: transparent; */
+    padding: 4px 15px;
+}
+
+.svcdb-tabs > li > a:hover {
+    color: #fff;
+    background-color: #393f4c;
+    border: 1px solid #333;
+}
+
+.svcdb-tabs > li.active > a,
+.svcdb-tabs > li.active > a:hover,
+.svcdb-tabs > li.active > a:focus {
+    color: #fff;
+    cursor: default;
+    background-color: #393f4c;
+    border: 1px solid #ddd;
+    border-bottom-color: transparent;
+    padding: 4px 15px;
+}
+
+.datalist_headerC { width: 95%; }
+.datalist_headerC th { text-align: left; font-size: 16px; }
+.datalist_headerC td.function { text-align: right; }
+
+.datalistC {
+	width: 95%;
+	border: 1px #444 solid;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	margin-right: 10px;
+	background: #fff;
+}
+.datalistC th {
+	text-align: left;
+	padding-left: 0.2em;
+	padding-right: 0.2em;
+	padding-bottom: 2px;
+	font-weight: normal;
+	background: #ccc;
+}
+.datalistC th a {
+	display: block;
+}
+.datalistC th a.asc {
+	background-image: url("../images/asc.png");
+	background-repeat: no-repeat;
+	background-position: right center;
+	padding-right: 18px;
+}
+.datalistC th a.desc {
+	background-image: url("../images/desc.png");
+	background-repeat: no-repeat;
+	background-position: right center;
+	padding-right: 18px;
+}
+
+.datalistC td {
+	text-align: left;
+	padding: 1px 0.2em;
+	border-bottom: 1px solid #999999;
+	white-space: normal;
+}
+.datalistC tr.unread {
+	background: #F1EDC1;
+	font-weight: bold;
+}
+.datalistC td.last {
+	border-bottom: 3px double #666666;
+	white-space: normal;
+}
+.datalistC td.blank_row { border: none; padding: 0; }
+.datalistC td a { display: block; width: 100%; }
+.datalistC td.alert { color: red; }
+.datalistC td.alert2 { color: red; background: #bbbbff; }
+.datalistC td.num { text-align: right; white-space: nowrap; }
+.datalistC td.nowrap { white-space: nowrap; }
+.datalistC td.nowrap a { display: inline; }
+
+.datalistC td.td_link { color: blue; cursor: pointer; }
+.datalistC td.td_link:hover { background: #aaa; }
+
+#property_header { width: 95%; }
+#property_header th.title { font-weight: bold; text-align: left; }
+#property_header td.function { text-align: right; }
+
+#property {
+	width: 95%;
+	border: 1px #444444 solid;
+	margin-bottom: 10px;
+	margin-right: 10px;
+}
+#property th {
+	text-align: left;
+	width: 95%;
+	background: #ccc;
+	border-bottom: 1px solid #999999;
+}
+#property td {
+	text-align: left;
+	border-bottom: 1px solid #999999;
+}
+#property td.name { white-space: nowrap; }
+#property td.value { width: 70%; }
+
+.property_tbl {
+	width: 95%;
+	border: 1px #444444 solid;
+	margin-bottom: 10px;
+	margin-right: 10px;
+}
+.property_tbl th {
+	text-align: left;
+	width: 95%;
+	background: #ccc;
+	border-bottom: 1px solid #999999;
+}
+.property_tbl td {
+	text-align: left;
+	border-bottom: 1px solid #999999;
+}
+.property_tbl td.name { white-space: nowrap; }
+.property_tbl td.value { width: 70%; }
+
+#menu_list {
+	width: 95%;
+	border: 1px #444444 solid;
+	margin-bottom: 10px;
+	margin-right: 10px;
+}
+#menu_list th {
+	text-align: left;
+	padding-left: 0.2em;
+	padding-right: 0.2em;
+	padding-bottom: 2px;
+	font-weight: normal;
+	background: #ccc;
+	border-right: 1px solid white;
+}
+#menu_list td {
+	text-align: left;
+	padding-left: 0.2em;
+	padding-right: 0.2em;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-bottom: 1px solid #999999;
+}
+#menu_list td a { display: block; }
+
+table.menu_tbl { border-collapse:collapse; }
+
+.pjn_btn {
+	line-height: 1.4;
+	height:1.4;
+	float: left;
+	margin-right:5px;
+	color:#666;
+	font-weight:bold;
+	text-align:center;
+	background:#ccc;
+	border:1px solid #999;
+	cursor:pointer;
+	padding-left: 16px;
+	padding-right: 16px;
+}
+.pjn_btn:focus, .pjn_btn:hover {
+	background:-webkit-gradient( linear, left top, left bottom,
+		color-stop(5%, #bec5d1), color-stop(100%, #707178) );
+	background:-moz-linear-gradient( center top, #bec5d1 5%, #707178 100% );
+	background:-ms-linear-gradient( top, #bec5d1 5%, #707178 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(
+		startColorstr='#bec5d1', endColorstr='#707178');
+	background-color:#bec5d1;
+	color:#222;
+}
+
+.warn_msg { background:yellow; }
+.alert_msg { color:red; }
+.read_only { background: #cccccc; }
+.object_menu { white-space: nowrap; text-align: center; }
+.required{
+    color: red;
+    font-weight: bold;
+    margin: 0px 2px;
+}
+.object_menu a {
+  display: inline-block;
+  padding: 0.3em 0.3em;
+  text-decoration: none;
+  color: #333;
+  background-color: #fff;
+  border: solid 1px #777;
+  border-radius: 3px;
+  transition: .4s;
+  margin-right: 5px;
+}
+
+.object_menu a:hover {
+  background: #555;
+  color: #fff;
+}
+
+table#privs_form_table {
+	border: 1px #444 solid;
+	margin-bottom: 10px;
+	margin-right: 10px;
+	background: #fff;
+}
+table#privs_form_table th {
+	text-align: left;
+	padding-left: 0.2em;
+	padding-right: 0.2em;
+	padding-bottom: 2px;
+	font-weight: normal;
+	background: #ccc;
+	border-bottom: 1px solid #999999;
+}
+table#privs_form_table td {
+	padding-left: 4px;
+	padding-right: 4px;
+	border-right: 1px solid #999999;
+	border-bottom: 1px solid #999999;
+}
+
+/* headerArea: position: fixed, absoluteで絶対位置を指定 */
+div#headerArea {
+    padding: 0px 10px 0px 10px;
+	position: fixed !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 3.5em;
+	border-bottom: 1px #999 solid;
+	background-color: #d0f0f0;
+
+/* IE7/IE8でfilterを使うと、フォントにアンチエイリアスがかからなくなる */
+/*
+	background-color: #B0D6ED;
+	background:-moz-linear-gradient( center top, #b0d6ed 10%, #ddeeff 100% );
+	background:-webkit-gradient( linear, left top, left bottom,
+		color-stop(10%, #b0d6ed), color-stop(100%, #ddeeff) );
+	filter:progid:DXImageTransform.Microsoft.gradient(
+		startColorstr='#b0d6ed', endColorstr='#ddeeff');
+*/
+}
+/*
+ * middleArea
+ *  position: fixed, absoluteで絶対位置を指定
+ *  top, bottomでヘッダー、フッターの位置を空ける
+ *  (これでヘッダー、フッター以外の高さ100%を使えるようになる)
+*/
+div#middleArea {
+	position: fixed !important;
+	position: absolute;
+	top: 4.12em;
+	bottom: 0.4em;
+	width: 100%;
+}
+div#middleArea.scr {
+	overflow: auto;
+	border-top: 1px solid #999;
+}
+
+/* footerArea: position: fixed, absoluteで絶対位置を指定 */
+div#footerArea {
+	position: fixed !important;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 0.4em;
+	/* background-color: #B0D6ED; */
+	background-color: #fff;
+}
+
+table#headerTable {
+	padding: 5px;
+	width: 100%;
+}
+
+div#project_name {
+  color: #fff;
+  font-size: 18px;
+  font-family: 'MS Gothic', Sans-serif;
+  padding-top: 5px;
+}
+
+div#contentsBody a { text-decoration: underline; }
+div.commentBody a { text-decoration: underline; }
+
+.block_picture_msg {
+	background-color: #f3f47f;
+	position:fixed;
+	z-index:200;
+	margin-right :25px;
+	padding: 10px;
+}
+.block_picture_msg_shim {
+	background-color: #fff;
+	color: #fff;
+	margin-right :9px;
+	padding: 10px;
+}
+.block_picture_msg a { display: block; }
+
+span.mail_addr { white-space: nowrap; }
+
+div#search_next_area {
+	float: right;
+	width: 280px;
+}
+div#search_next_inputtext {
+	float: left;
+	margin-right: 3px;
+}
+div#search_next_btn {
+	float: right;
+	width: 80px;
+	line-height: 1.3;
+}
+
+a.close_x {
+	position: absolute;
+	color: #fff;
+	top: 2px;
+	right: 10px;
+	font-weight: bold;
+	text-decoration: none;
+	padding-left: 4px;
+	padding-right: 2px;
+}
+
+
+/* 
+ * Outlookから受信したメールについて、改行が<p></p>になる場合があり、
+ * <p>のdefault marginは1emのため行間が広くなってしまうのを修正
+ */
+p.MsoNormal, li.MsoNormal, div.MsoNormal {
+	margin:0mm;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	font-size:10.5pt;
+	font-family:"Arial","sans-serif";
+}
+
+table.tr_hover_table tr:hover {
+    background: #9fd694 !important;
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+    min-height: 100%;
+    height: 100%;
+    /* Negative indent footer by its height */
+    margin: 0px auto 0px;
+    /* Pad bottom by footer height */
+    /** padding: 0 0 30px; **/
+}
+
+/* Set the fixed height of the footer here */
+#footer {
+    height: 30px;
+}
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+#wrap > .container {
+    padding: 50px 0px 0px 10px;
+    margin-left: 0px;
+    width: auto;
+    height: 100%;
+}
+
+#wrap > .navbar {
+    margin-bottom: 0px;
+}
+
+#wrap > .navbar .navbar-brand {
+    padding: 0px;
+}
+
+div.pspromis-header {
+    background-color: #56a;
+    border: none;
+}
+
+div.pspromis-header .navbar-brand {
+    color: #fff;
+    cursor: default;
+}
+
+div.pspromis_footer {
+    background-color: #56a;
+    border: none;
+}

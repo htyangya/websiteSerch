@@ -1,0 +1,73 @@
+    <div class="jqDnRHandle">{{ jqmTitle }}</div>
+    <div class="jqmBody" id="jqmBody" style="overflow: hidden;">
+        <form id="editform" name="editform" method="post" action="./show_outage_schedule" class="main-form">
+            <div class="header-content" id="editform-headerContents">
+                <!-- キャンセル -->
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="close_jqmodal_dlg();" type="button">閉じる</button>
+                </div>
+            </div>
+            <div class="main-content" style="overflow: hidden;">
+                <div class="pjbase-content">
+                    <div id="outage_schedule_list" class="file-content sub-container" style="min-width: 765px;">
+                        <div class="outage_schedule_list_div" id="editform-outageScheduleTable">
+                            <input name="editform-downloadSaveFlg" id="editform-downloadSaveFlg" type="hidden" />
+                            <table id="editform-outageScheduleList" class="table-bordered psprimis-list-table">
+                                <tr>
+                                    <th class="NW" style="width:10px;">No.</th>
+                                    <th class="NW" style="width:100px;">Start</th>
+                                    <th class="NW" style="width:100px;">End</th>
+                                    <th class="NW" style="width:200px;">Outage Type</th>
+                                </tr>
+                                {% for outageSchedule in outageScheduleList %}
+                                <tr>
+                                    <td class="NW AT AL TL" onclick="outage_schedule_detail('{{outageSchedule.turbine_id}}', '{{outageSchedule.teiken_id}}', 'NEWWINDOW')">{{ outageSchedule.cnt }}</td>
+                                    <td class="NW AT AL">{{ outageSchedule.outage_start|sys_dfmt }}</td>
+                                    <td class="NW AT AL">{{ outageSchedule.outage_end|sys_dfmt }}</td>
+                                    <td class="NW AT AL">{{ outageSchedule.outage_type_nm }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    <br>
+                </div> <!-- pjbase-content -->
+            </div> <!-- main-content -->
+        </form>
+    </div>
+
+    <script>
+    //<![CDATA[
+        $("input").keypress(function(ev) {
+            if ((ev.which && ev.which === 13) || (ev.keyCode && ev.keyCode === 13)) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+
+        $(document).ready(function() {
+            initFixedResultTable();
+        });
+
+        function initFixedResultTable() {
+
+            var fixedHeaderCols = 0;
+
+            initTlibJSFixedHeaderTable(
+                {table_div: 'editform-outageScheduleTable',
+                    table_header_div: 'TlibTableHeaderfixed_table',
+                    table_height: -1,
+                    header_cols: 0,
+                    header_rows: 0,
+                    table_height: 380,
+                    no_resize_bind: 1,
+                    bg_color: '',
+                    header_cols: fixedHeaderCols,
+                    bg_color: ''
+                });
+            initResultListClick();
+            adjustFixedHeaderTable();
+        }
+    //]]>
+    </script>

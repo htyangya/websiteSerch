@@ -1,0 +1,653 @@
+{% extends "base.html" %}
+{% block js_content %}
+    <link rel="stylesheet" type="text/css" href="/static/tjslib/TlibJSCalendar.css?q={{ appVer }}"/>
+
+    <script src="/static/js/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSTableFilter.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSCalendar.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/jquery-validate/jquery.validate.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/jquery-validate/messages_ja.js?q={{ appVer }}" type="text/javascript"></script>
+{% endblock %}
+{% block header_name %} {{ header_name }} {% endblock %}
+{% block container_content %}
+    <style type="text/css">
+        body {
+            overflow: hidden;
+        }
+
+        .search-result {
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .search-result-div {
+            height: 100%;
+            overflow: auto;
+            padding-top: 0px;
+        }
+
+        thead th {
+            text-align: center;
+            background-color: #DAE8EE;
+        }
+
+        td, th {
+            min-width: 34px;
+        }
+
+        thead th {
+            font-size: 12px;
+            font-weight: 300;
+        }
+
+        .table-bordered > thead > tr > th, table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+            border: 1px solid black;
+        }
+
+        .date {
+            width: 35px;
+            height: 29px;
+        }
+
+        table.schedule-table th.no_border {
+            background-color: #fff;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .info-th {
+            background: #4BB0E0;
+            border: 1px solid white;
+            height: 30px;
+            width: 200px;
+        }
+
+        .info-title-td {
+            border-spacing: 10px;
+            border: 1px solid white;
+            background: #DAE8EE;
+            height: 30px;
+            width: 150px;
+        }
+
+        .info-content-td {
+            border: 1px solid white;
+            background: #DAE8EE;
+            height: 30px;
+            width: 300px;
+        }
+
+        .info-btn {
+            background: #4BB0E0;
+            border: solid 1px gray;
+            color: white;
+            padding: 0px 15px;
+            font-size: 20px;
+        }
+
+        .fix_detail {
+            position: absolute;
+            left: -1px;
+            top: 100px;
+            z-index: 200;
+        }
+
+        .td_radio {
+            height: 15px;
+            vertical-align: bottom;
+            margin-bottom: 3px;
+            margin-top: -1px;
+        }
+
+        .input_disabled {
+            background-color: #d1d1d1;
+        }
+
+        form.cmxform label.error, label.error {
+            color: red;
+            font-style: italic
+        }
+    </style>
+
+    <div class="row">
+        <br/>
+        <center id="msgDiv"></center>
+        <button type="button" class="info-btn" onclick="saveSchedule(false)">Save</button>
+        <button type="button" class="info-btn" onclick="saveSchedule(true)">Save&Close</button>
+        <button type="button" class="info-btn" onclick="closeCheck()">Close</button>
+    </div>
+    <br>
+    <div class="row" style="position: relative;">
+        <div class="search-result-div clear-float">
+            <div class="row" id="schedule_form-schedule_list">
+                <table class="table-bordered schedule-table">
+                    <thead>
+                    <tr>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        <th class="no_border"></th>
+                        {% for foo in range(menu_param["year_count"]*12) %}
+                            <th class="no_border"></th>
+                        {% endfor %}
+                    </tr>
+                    <tr style="height: 30px;">
+                        <th colspan="3"></th>
+                        <th colspan="3">M</th>
+                        <th colspan="3">E</th>
+                        {% for year in range(menu_param.min_year,menu_param.max_year+1) %}
+                            <th colspan="12">{{ year }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr align="center" style="height: 30px;">
+                        <th class="NW">Plant Code</th>
+                        <th class="NW">Country</th>
+                        <th class="NW">Unit</th>
+                        <th class="NW" colspan="2">PR</th>
+                        <th class="NW">stts</th>
+                        <th class="NW" colspan="2">PR</th>
+                        <th class="NW">stts</th>
+                        {% for year in range(menu_param["year_count"]) %}
+                            <th>Jan</th>
+                            <th>Feb</th>
+                            <th>Mar</th>
+                            <th>Apr</th>
+                            <th>May</th>
+                            <th>Jun</th>
+                            <th>Jul</th>
+                            <th>Aug</th>
+                            <th>Sep</th>
+                            <th>Oct</th>
+                            <th>Nov</th>
+                            <th>Dec</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for schedule in menu_param['outage_schedule_list'] %}
+                        <tr>
+                            <td class="NW"><a href="#">{{ schedule.plant_cd or '' }}</a></td>
+                            <td class="NW">{{ schedule.country_nm or '' }}</td>
+                            <td class="NW">{{ schedule.plant_name or '' }}</td>
+                            <td class="NW AC"></td>
+                            <td class="NW red"></td>
+                            <td class="NW AR"></td>
+                            <td class="NW AC"></td>
+                            <td class="NW"></td>
+                            <td class="NW AR"></td>
+                            {% for ind in schedule.cell_indexes %}
+                                {% set color = schedule.cells[loop.index - 1] %}
+                                <td class="NW date" style="padding: 0px !important;">
+                                    {% set color_class = "" %}
+                                    {% if color != 'gray' %} {% set color_class = "color_img_selected" %} {% endif %}
+                                    <a href="javascript:void(0);" onclick="gray_click('{{ ind }}')">
+                                        <img width="100%" height="100%" src="static/images/{{ color }}.png"
+                                             class="color_img {{ color_class }}" id="color_img_{{ ind }}">
+                                    </a>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="fix_detail">
+                <form id="outage_schedule_info_form" action="{{ url_for('outage_schedule_edit') }}"
+                      name="outage_schedule_info_form" method="post">
+                    <table cellpadding="5">
+                        <thead>
+                        <tr>
+                            <th class="info-th"></th>
+                            <th class="info-th"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr style="height:3px;"></tr>
+                        <tr>
+                            <td class="info-title-td">Start</td>
+                            <td class="info-content-td">
+                                <input type="text" name="outage_start" id="outage_start" size="25" maxlength="20"
+                                       required
+                                       value="{{ form.outage_start.data and form.outage_start.data.strftime('%Y/%m/%d') or '' }}"
+                                       onchange="onChangeStartDate()"/>
+                                <a href="javascript:void(0)"
+                                   onclick="calendar.show('outage_schedule_info_form', 'outage_start');"><img
+                                        src="/static/images/calendar.gif?q={{ appVer }}" border="0"></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">End</td>
+                            <td class="info-content-td">
+                                <input type="text" name="outage_end" id="outage_end" size="25" maxlength="20" required
+                                       value="{{ form.outage_end and form.outage_end.data.strftime('%Y/%m/%d') or '' }}"
+                                       onchange="onChangeEndDate()"
+                                        {% if form.outage_start.data is none or form.outage_start.data=="" %}
+                                       class="input_disabled" disabled{% endif %} />
+                                <a href="javascript:void(0)" id="outage_end_calendar"
+                                   {% if form.outage_start.data is none or form.outage_start.data=="" %}class="calendar_disabled"{% endif %}><img
+                                        src="/static/images/calendar.gif?q={{ appVer }}" border="0"></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Duration</td>
+                            <td class="info-content-td">
+                                <span id="duration">{{ form.outage_duration.data }}days</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td" rowspan="2">Outage Type</td>
+                            <td class="info-content-td">Turbine:
+                                <input class="td_radio outage_type_radio" type="radio" name="outage_type_t"
+                                       id="outage_type_t_1" value="1"/> Major
+                                <input class="td_radio outage_type_radio" type="radio" name="outage_type_t"
+                                       id="outage_type_t_2" value="2"/> Minor
+                                <input class="td_radio outage_type_radio" type="radio" name="outage_type_t"
+                                       id="outage_type_t_3" value="3"/> Other
+                                <input class="td_radio outage_type_radio" type="radio" name="outage_type_t"
+                                       id="outage_type_t_4" value="4"/> N/A
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="info-content-td">Generator:
+                                <input class="td_radio outage_type_radio" type="radio" name="outage_type_g"
+                                       id="outage_type_g_1" value="1"/> Major
+                                <input class="td_radio outage_type_radio" type="radio" name="outage_type_g"
+                                       id="outage_type_g_2" value="2"/> Minor
+                                <input class="td_radio outage_type_radio" type="radio" name="outage_type_g"
+                                       id="outage_type_g_3" value="3"/> Other
+                                <input class="td_radio outage_type_radio" type="radio" name="outage_type_g"
+                                       id="outage_type_g_4" value="4"/> N/A
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Execution(%)</td>
+                            <td class="info-content-td">
+                                <input class="td_radio" type="radio" name="execution" id="execution_100" value="100"
+                                       required/>
+                                100%
+                                <input class="td_radio" type="radio" name="execution" id="execution_90" value="90"/> 90%
+                                <input class="td_radio" type="radio" name="execution" id="execution_50" value="50"/> 50%
+                                <input class="td_radio" type="radio" name="execution" id="execution_30" value="30"/> 30%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Description</td>
+                            <td class="info-content-td">
+                                <textarea id="description" name="description" rows="5" required maxlength="85" required
+                                          cols="50">{{ form.description.data }}</textarea>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <input type="hidden" name="turbine_id" id="turbine_id" value="{{ form.turbine_id.data }}"/>
+                    <input type="hidden" name="teiken_id" id="teiken_id" value="{{ form.teiken_id.data }}"/>
+                    <input type="hidden" name="date_start" id="date_start" value="{{ form.date_start.data }}"/>
+                    <input type="hidden" name="date_end" id="date_end" value="{{ form.date_end.data }}"/>
+                    <input type="hidden" name="is_close" id="is_close" value={{ form.is_close.data }}/>
+                    <input type="hidden" name="is_success" id="is_success" value={{ form.is_success.data }}/>
+                </form>
+            </div>
+            <div id="TlibJSCalendarInternalDiv" class="TlibJSCalendarInternalDivC"></div>
+            <div id="TlibJSCalendarBkLayer" class="TlibJSCalendarBkLayerDivC"></div>
+            <iframe id="TlibJSCalendarShim" class="TlibJSCalendarShimC" src="javascript:false;"></iframe>
+        </div>
+    </div>
+    <script>
+        //<![CDATA[
+        var isEditFlg = false;
+        var gray_img = "static/images/gray.png";
+        var blue_img = "static/images/blue.png";
+        var green_img = "static/images/green.png";
+        var yellow_img = "static/images/yellow.png";
+        var red_img = "static/images/red.png";
+        // 開始日付（エラー時、直す）
+        var g_outage_start = '{{ form.outage_start.data }}';
+        // 終了日付（エラー時、直す）
+        var g_outage_end = '{{ form.outage_end.data }}';
+        var calendar = new TlibJSCalendar();
+        calendar.date_format = 'YYYY/MM/DD';
+        calendar.header_format = 'YYYY/MM';
+        calendar.date_changed = dateChange;
+
+        $(function () {
+            {% if menu_param["outage_schedule_list"] %}
+                fixedResultTable();
+            {% endif %}
+            $('input[type="text"], input[type="radio"], textarea').change(function () {
+                isEditFlg = true;
+            });
+
+            if ('{{form.outage_type_t.data}}' != '') {
+                $("#" + 'outage_type_t_' + '{{form.outage_type_t.data}}').prop("checked", true);
+            }
+            if ('{{form.outage_type_g.data}}' != '') {
+                $("#" + 'outage_type_g_' + '{{form.outage_type_g.data}}').prop("checked", true);
+            }
+            if ('{{form.execution.data}}' != '') {
+                $("#" + 'execution_' + '{{form.execution.data}}').prop("checked", true);
+            }
+
+            $('input[value="apple"]').prop('checked', false);
+
+            $('.outage_type_radio').on('change', function () {
+                setDateTableColor();
+            });
+
+            $("#outage_end_calendar").on('click', function () {
+                if ($(this).hasClass('calendar_disabled')) {
+                    return;
+                }
+                calendar.show('outage_schedule_info_form', 'outage_end');
+            });
+        });
+
+        function fixedResultTable() {
+            var fixedHeaderCols = 9;
+            initTlibJSFixedHeaderTable({
+                table_div: 'schedule_form-schedule_list',
+                header_cols: fixedHeaderCols,
+                bg_color: ''
+            });
+        }
+
+        // 日付比較チェック
+        function isFromGreaterTo() {
+            if (($("#outage_start").val() != "") && ($("#outage_end").val() != "")) {
+                if ($("#outage_start").val() > $("#outage_end").val()) {
+                    alert("終了日には開始日以降の日付を指定して下さい。");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function inputCheck() {
+            if (isNull("Please input Start Date.", $("#outage_start").val())) {
+                return false;
+            }
+            if (isNull("Please input End Date.", $("#outage_end").val())) {
+                return false;
+            }
+            if (isNull("Please input Description.", $("#description").val())) {
+                return false;
+            }
+            return true;
+        }
+
+        function isNull(text, val) {
+            if (typeof (val) == "undefined" || $.trim(val) == "") {
+                alert(text);
+                return true;
+            }
+            return false;
+        }
+
+        function saveSchedule(isClose) {
+            if (!$("#outage_schedule_info_form").valid()) return;
+            var data = $("#outage_schedule_info_form").serializeArray();
+            var url = $("#outage_schedule_info_form").attr("action");
+            showCover("お待ちください...");
+            $.post(url, data).done(function (data) {
+                hideCover();
+                isEditFlg = false;
+                window.opener.search();
+                if (isClose) {
+                    window.location.href = data.url;
+                } else {
+                    window.detail_url = data.url;
+                    showSaveMsg();
+                }
+            }).fail(function () {
+                hideCover();
+                alert('save faild!');
+            })
+        }
+
+        function closeCheck() {
+            if ((isEditFlg == true) && (!window.confirm('Are you sure to close without save data?'))) {
+                return false;
+            } else {
+                show_outage_schedule_detail();
+            }
+        }
+
+        function show_outage_schedule_detail() {
+            var turbine_id = {{form.turbine_id.data}};
+            var teiken_id = {{form.teiken_id.data}};
+            outage_schedule_detail(turbine_id, teiken_id, 'CURRENTWINDOW');
+        }
+
+        // 日付変更処理（カレンダー）
+        function dateChange() {
+            if ($(this._target).attr('id') == "outage_start") {
+                onChangeStartDate();
+            } else if ($(this._target).attr('id') == "outage_end") {
+                onChangeEndDate();
+            }
+        }
+
+        //　カレンダー無効化
+        // Startが変更される時の処理
+        function onChangeStartDate() {
+            var startDate = $("#outage_start").val();
+            var endDate = $("#outage_end").val();
+
+            // startDateが空の時
+            if (typeof (startDate) == 'undefined' || startDate == '') {
+                $('#outage_end_calendar').addClass('calendar_disabled');
+                $("#outage_end").addClass("input_disabled")
+                $("#outage_end").prop('disabled', true);
+                $("#outage_end").val("").change();
+            } else {
+                var errorFlg = false;
+                // 日付チェック
+                if (!validator($("#outage_start"))) {
+                    errorFlg = true;
+                }
+                // 表示期間チェック
+                if (!errorFlg) {
+                    errorFlg = !isPeriodKikan(startDate);
+                }
+                // エラー時、データ直す
+                if (errorFlg) {
+                    $("#outage_start").val(g_outage_start);
+                    return;
+                }
+                $('#outage_end_calendar').removeClass('calendar_disabled');
+                $("#outage_end").removeClass("input_disabled")
+                $("#outage_end").prop('disabled', false);
+                // EndDateを消す
+                $("#outage_end").val("").change();
+            }
+            // durationの設定
+            setDuration(("#outage_start").val(), $("#outage_end").val());
+            // 直すデータ最新化
+            g_outage_start = startDate;
+            // バーの色付
+            setDateTableColor();
+        }
+
+        // Endが変更される時の処理
+        function onChangeEndDate() {
+            var startDate = $("#outage_start").val();
+            var endDate = $("#outage_end").val();
+
+            if (endDate != "") {
+                var errorFlg = false;
+                // 日付チェック
+                if (!validator($("#outage_end"))) {
+                    errorFlg = true;
+                }
+                // 日付比較チェック
+                if (!errorFlg) {
+                    errorFlg = !isFromGreaterTo();
+                }
+                // 表示期間チェック
+                if (!errorFlg) {
+                    errorFlg = !isPeriodKikan(endDate);
+                }
+                // エラー時、データ直す
+                if (errorFlg) {
+                    $("#outage_end").val(g_outage_end);
+                    return;
+                }
+            }
+
+            // 直すデータ最新化
+            g_outage_end = endDate;
+            // durationの設定
+            setDuration($("#outage_start").val(), $("#outage_end").val());
+            // バーの色付
+            setDateTableColor();
+        }
+
+        // 期間設定
+        function setDuration(startDate, endDate) {
+            if ((startDate != "") && (endDate != "")) {
+                var outage_start = new Date(startDate.replace(/-/, "/"));
+                var outage_end = new Date(endDate.replace(/-/, "/"));
+                $("#duration").text((outage_end - outage_start) / (24 * 60 * 60 * 1000) + ' days');
+            } else {
+                $("#duration").text("");
+            }
+        }
+
+        // バーをクリック時の処理
+        function gray_click(month) {
+            var startDate = $("#outage_start").val();
+            var endDate = $("#outage_end").val();
+
+            // Start Date が選択されていない場合
+            if (!isStartDateSelected()) {
+                set_date("outage_start", month);
+                onChangeStartDate();
+
+            } else if (!isEndDateSelected()) {
+                // End Date が選択されていない場合
+                set_date("outage_end", month);
+                if (checkOutageDate()) {
+                    onChangeEndDate();
+                } else {
+                    set_date("outage_start", month);
+                    onChangeStartDate();
+                }
+
+            } else {
+                // 両方とも選択されている場合
+                set_date("outage_start", month);
+                set_date("outage_end", "");
+                onChangeStartDate();
+            }
+        }
+
+        function checkOutageDate() {
+            var startDate = $("#outage_start").val();
+            var endDate = $("#outage_end").val();
+
+            if (!isStartDateSelected()) return false;
+            if (!isEndDateSelected()) return false;
+
+            if (startDate > endDate) return false;
+            //for(i = parseInt(startTime); i <= parseInt(endTime); i++) {
+            //    if(parseInt(time_table[i]) == 1) return false;
+            //}
+            return true;
+        }
+
+        // 日付を設定
+        function set_date(elem_id, month) {
+            if (month !== "") {
+                $("#" + elem_id).val(month.substring(0, 4) + "/" + month.substring(4) + "/" + "01");
+                return;
+            }
+            $("#" + elem_id).val("");
+        }
+
+        // バー色付の変更
+        function setDateTableColor() {
+            var outage_type_t = $('input[name="outage_type_t"]:checked').val();
+            var outage_type_g = $('input[name="outage_type_g"]:checked').val();
+            var outage_type = 0;
+            if (typeof (outage_type_t) !== "undefined") {
+                outage_type = parseInt(outage_type_t);
+            }
+            if (typeof (outage_type_g) !== "undefined"
+                && (outage_type == 0 || parseInt(outage_type_g) < outage_type)) {
+                outage_type = parseInt(outage_type_g);
+            }
+
+            var bar_color = gray_img;
+            if (outage_type == 1) bar_color = blue_img;
+            else if (outage_type == 2) bar_color = green_img;
+            else if (outage_type == 3 || outage_type == 4) bar_color = red_img;
+
+            var startDateStr = $("#outage_start").val().replace("/", "").substring(0, 6);
+            var endDateStr = $("#outage_end").val().replace("/", "").substring(0, 6);
+            var sDate = new Date(startDateStr.substring(0, 4), ("0" + (parseInt(startDateStr.substring(4)) - 1)).slice(-2), "01");
+
+            $(".color_img").each(function (index, elem) {
+                $(this).attr("src", gray_img);
+                $(this).removeClass("color_img_selected");
+            });
+
+            // 日付が設定されていない場合
+            if (startDateStr == "") {
+                return true;
+            }
+            if (endDateStr == "") {
+                endDateStr = startDateStr;
+            }
+            while (startDateStr <= endDateStr) {
+                $("#color_img_" + startDateStr).attr("src", bar_color);
+                $("#color_img_" + startDateStr).addClass("color_img_selected");
+
+                // 月を加算
+                sDate = addMonths(sDate, 1);
+                startDateStr = sDate.getFullYear() + ('0' + (sDate.getMonth() + 1)).slice(-2);
+                console.log("current date: " + startDateStr);
+            }
+
+            return true;
+        }
+
+        // 終了日変更処理
+        function isStartDateSelected() {
+            return $("#outage_start").val() !== "";
+        }
+
+        function isEndDateSelected() {
+            return $("#outage_end").val() !== "";
+        }
+
+        function addMonths(date, months) {
+            var resultDate = new Date(date.getTime());
+            resultDate.setMonth(date.getMonth() + months);
+            if (date.getDate() > date.getDate()) {
+                resultDate.setDate(0);
+            }
+            return resultDate;
+        }
+
+        // 表示期間チェック
+        function isPeriodKikan(targetVal) {
+            if (targetVal == "") return true;
+            var periodStart = $("#date_start").val();
+            var periodEnd = $("#date_end").val();
+            // yyyy取得
+            var outageDate = targetVal.substring(0, 4);
+            if (outageDate < periodStart || outageDate > periodEnd) {
+                alert("期間指定開始日または終了日の日付範囲が正しくありません。");
+                return false;
+            }
+            return true;
+        }
+
+        //]]>
+    </script>
+{% endblock %}

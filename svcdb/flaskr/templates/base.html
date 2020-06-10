@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-dist/css/bootstrap.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/svcdb_common.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/svcdb.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
+    {% block css_content %} {% endblock %}
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/bootstrap-dist/js/bootstrap.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    {% block js_content %} {% endblock %}
+
+    <script src="/static/js/svcdb-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/svcdb.js?q={{appVer}}" type="text/javascript"></script>
+
+    <!-- 子画面再設定 -->
+    <title>{% block title %}{% endblock %}</title>
+    <style type="text/css">
+        div.pspromis-header { background-color: #394fff; }
+        .float_none { float: none !important; }
+        .width_170 { width: 170px !important; }
+        span.navbar-brand{
+            line-height: 50px;
+            margin-left: 10px;
+        }
+        .row {
+            margin-right: 0px;
+            margin-left: 0px;
+        }
+        ul.navbar-right {
+            line-height: 50px;
+            padding-right: 15px;
+        }
+    </style>
+    {% block style_content %} {% endblock %}
+</head>
+<body>
+    <div id="wrap">
+        <div class="navbar navbar-inverse navbar-fixed-top pspromis-header" role="navigation">
+            <div class="navbar-header">
+                <span class="navbar-brand">{% block header_name %} {% endblock %}</span>
+            </div><!--navbar-header end-->
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <span style="color: #fff; font-size: 11pt;">{{ user_name }}</span>
+                    </li>
+                </ul>
+            </div><!--collapse navbar-collapse-->
+            <div class="border"></div>
+        </div><!--navbar navbar-inverse navbar-fixed-top pspromis-header-->
+
+        <div class="container">
+        {% block container_content %} {% endblock %}
+        </div>
+    </div><!--wrap end-->
+    {% block script_content %} {% endblock %}
+</body>
+</html>
