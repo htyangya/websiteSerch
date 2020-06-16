@@ -198,7 +198,10 @@
                 </table>
             </div>
             <div class="fix_detail">
-                <form id="outage_schedule_info_form" action="{{ url_for('outage_schedule_add') }}"
+                <form id="outage_schedule_info_form"
+                      action="{% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}
+                                {% else %}{{ url_for('outage_schedule_add') }}
+                                {% endif %}"
                       name="outage_schedule_info_form" method="post">
                     <table cellpadding="5">
                         <thead>
@@ -214,7 +217,8 @@
                             <td class="info-content-td">
                                 <input type="text" name="outage_start" id="outage_start" size="25" maxlength="20"
                                        required
-                                       value="{{ form.outage_start.data or '' }}" onchange="onChangeStartDate()"/>
+                                       value="{{ form.outage_start.data and form.outage_start.data.strftime('%Y/%m/%d') or '' }}"
+                                       onchange="onChangeStartDate()"/>
                                 <a href="javascript:void(0)"
                                    onclick="calendar.show('outage_schedule_info_form', 'outage_start');"><img
                                         src="/static/images/calendar.gif?q={{ appVer }}" border="0"></a>
@@ -224,7 +228,8 @@
                             <td class="info-title-td">End</td>
                             <td class="info-content-td">
                                 <input type="text" name="outage_end" id="outage_end" size="25" maxlength="20" required
-                                       value="{{ form.outage_end.data or '' }}" onchange="onChangeEndDate()"
+                                       value="{{ form.outage_end and form.outage_end.data.strftime('%Y/%m/%d') or '' }}"
+                                       onchange="onChangeEndDate()"
                                         {% if form.outage_start.data is none or form.outage_start.data=="" %}
                                        class="input_disabled" disabled{% endif %} />
                                 <a href="javascript:void(0)" id="outage_end_calendar"
@@ -235,7 +240,7 @@
                         <tr>
                             <td class="info-title-td">Duration</td>
                             <td class="info-content-td">
-                                <span id="duration"> days</span>
+                                <span id="duration">{{ form.outage_duration.data }}days</span>
                             </td>
                         </tr>
                         <tr>
@@ -284,6 +289,7 @@
                         </tbody>
                     </table>
                     <input type="hidden" name="turbine_id" id="turbine_id" value="{{ form.turbine_id.data }}"/>
+                    <input type="hidden" name="teiken_id" id="teiken_id" value="{{ form.teiken_id.data }}"/>
                     <input type="hidden" name="date_start" id="date_start" value="{{ form.date_start.data }}"/>
                     <input type="hidden" name="date_end" id="date_end" value="{{ form.date_end.data }}"/>
                     <input type="hidden" name="is_close" id="is_close" value={{ form.is_close.data }}/>
@@ -443,11 +449,21 @@
             if ((isEditFlg == true) && (!window.confirm('Are you sure to close without save data?'))) {
                 return false;
             }
-            if (window.detail_url) {
-                window.location.href = window.detail_url;
+            if ('{{ form.teiken_id.data }}') {
+                show_outage_schedule_detail();
             } else {
-                window.close();
+                if (window.detail_url) {
+                    window.location.href = window.detail_url;
+                } else {
+                    window.close();
+                }
             }
+        }
+
+        function show_outage_schedule_detail() {
+            var turbine_id = {{form.turbine_id.data}};
+            var teiken_id = {{form.teiken_id.data}};
+            outage_schedule_detail(turbine_id, teiken_id, 'CURRENTWINDOW');
         }
 
         // 日付変更処理（カレンダー）

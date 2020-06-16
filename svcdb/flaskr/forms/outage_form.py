@@ -13,15 +13,15 @@ class OutageForm(FlaskForm):
     country = SelectField("Country ", choices={})
     plant = StringField("Plant")
 
-    c1 = BooleanField("定検情報有")
+    c1 = BooleanField("Registerd")
     c2 = BooleanField('My Project')
     c3 = BooleanField('Mechanical', default=True)
     c4 = BooleanField('Electrical', default=True)
     search = SubmitField("Search")
     date_start = SelectField("Period", choices=[(str(i), str(i)) for i in range(2019, 2041)],
-                             default=lambda: str(datetime.now().year - 1))
+                             default=lambda: str(datetime.now().year))
     date_end = SelectField("", choices=[(str(i), str(i)) for i in range(2019, 2041)],
-                           default=lambda: str(datetime.now().year + 4))
+                           default=lambda: str(datetime.now().year + 5))
 
     def validate_date_start(self, field):
         if field.data > self.date_end.data:

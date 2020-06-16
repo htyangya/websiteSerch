@@ -198,7 +198,10 @@
                 </table>
             </div>
             <div class="fix_detail">
-                <form id="outage_schedule_info_form" action="{{ url_for('outage_schedule_edit') }}"
+                <form id="outage_schedule_info_form"
+                      action="{% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}
+                                {% else %}{{ url_for('outage_schedule_add') }}
+                                {% endif %}"
                       name="outage_schedule_info_form" method="post">
                     <table cellpadding="5">
                         <thead>
@@ -345,6 +348,39 @@
                 }
                 calendar.show('outage_schedule_info_form', 'outage_end');
             });
+
+            $("#outage_schedule_info_form").validate({
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                },
+                rules: {
+                    outage_type_t: {
+                        required: function () {
+                            if ($('input[name="outage_type_g"]:checked').length == 0) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    },
+                    outage_type_g: {
+                        required: function () {
+                            if ($('input[name="outage_type_t"]:checked').length == 0) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                },
+                messages: {
+                    outage_type_t: {
+                        required: "Turbine又はGeneratorは必須です"
+                    },
+                    outage_type_g: {
+                        required: "Generator又はTurbineは必須です"
+                    },
+                }
+
+            });
         });
 
         function fixedResultTable() {
@@ -412,8 +448,15 @@
         function closeCheck() {
             if ((isEditFlg == true) && (!window.confirm('Are you sure to close without save data?'))) {
                 return false;
-            } else {
+            }
+            if ('{{ form.teiken_id.data }}') {
                 show_outage_schedule_detail();
+            } else {
+                if (window.detail_url) {
+                    window.location.href = window.detail_url;
+                } else {
+                    window.close();
+                }
             }
         }
 
@@ -466,7 +509,7 @@
                 $("#outage_end").val("").change();
             }
             // durationの設定
-            setDuration(("#outage_start").val(), $("#outage_end").val());
+            setDuration($("#outage_start").val(), $("#outage_end").val());
             // 直すデータ最新化
             g_outage_start = startDate;
             // バーの色付
@@ -537,7 +580,6 @@
                     set_date("outage_start", month);
                     onChangeStartDate();
                 }
-
             } else {
                 // 両方とも選択されている場合
                 set_date("outage_start", month);
@@ -610,7 +652,7 @@
                 // 月を加算
                 sDate = addMonths(sDate, 1);
                 startDateStr = sDate.getFullYear() + ('0' + (sDate.getMonth() + 1)).slice(-2);
-                console.log("current date: " + startDateStr);
+                {#console.log("current date: " + startDateStr);#}
             }
 
             return true;

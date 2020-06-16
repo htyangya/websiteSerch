@@ -97,6 +97,13 @@ def searching(form, menu_param):
     if plant_cd and plant_cd != "None":
         plant_cd = plant_cd.upper()
         and_sql += f''' AND UPPER(A.KHN_PLANT_CD) LIKE '{plant_cd}%' \n'''
+    registered = form.c1.data if hasattr(form, "c1") else None
+    if registered and registered != "None":
+        date_start = form.date_start.data+"-01-01"
+        date_end = form.date_end.data+"-12-31"
+        and_sql += f'''AND C.DELETE_FLG = 0 
+                AND C.OUTAGE_START <= TO_DATE( '{date_end}', 'yyyy-mm-dd') 
+                AND C.OUTAGE_END >= TO_DATE( '{date_start}', 'yyyy-mm-dd')'''
 
     search_table = "TURBINE_LIST_ESS" if (current_user.corp_cd == 'CNV') else "TURBINE_LIST_EX"
     menu_param["min_year"], menu_param["max_year"] = int(form.date_start.data), int(form.date_end.data)
@@ -109,9 +116,9 @@ def searching(form, menu_param):
                                                min_year=menu_param["min_year"],
                                                max_year=menu_param["max_year"])
         elif row.delete_flg == 0:
-                rows_dict[row.turbine_id].teiken_id = row.teiken_id
-                rows_dict[row.turbine_id].cnt += 1
-                rows_dict[row.turbine_id].colour_cells(row.outage_start, row.outage_end, row.color_number)
+            rows_dict[row.turbine_id].teiken_id = row.teiken_id
+            rows_dict[row.turbine_id].cnt += 1
+            rows_dict[row.turbine_id].colour_cells(row.outage_start, row.outage_end, row.color_number)
     menu_param["outage_schedule_list"] = rows_dict.values()
 
 
