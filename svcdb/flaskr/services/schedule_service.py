@@ -265,7 +265,7 @@ def open_outage_schedule_add(request):
                                                      min_year=menu_param["min_year"],
                                                      max_year=menu_param["max_year"])]
     return render_template(
-        'outage_schedule_add.html',
+        'outage_schedule_edit.html',
         header_name='Outage Schedule',
         title='Outage Schedule',
         menu_param=menu_param,

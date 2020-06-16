@@ -199,9 +199,7 @@
             </div>
             <div class="fix_detail">
                 <form id="outage_schedule_info_form"
-                      action="{% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}
-                                {% else %}{{ url_for('outage_schedule_add') }}
-                                {% endif %}"
+                      action="{% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
                       name="outage_schedule_info_form" method="post">
                     <table cellpadding="5">
                         <thead>
@@ -228,7 +226,7 @@
                             <td class="info-title-td">End</td>
                             <td class="info-content-td">
                                 <input type="text" name="outage_end" id="outage_end" size="25" maxlength="20" required
-                                       value="{{ form.outage_end and form.outage_end.data.strftime('%Y/%m/%d') or '' }}"
+                                       value="{{ form.outage_end.data and form.outage_end.data.strftime('%Y/%m/%d') or '' }}"
                                        onchange="onChangeEndDate()"
                                         {% if form.outage_start.data is none or form.outage_start.data=="" %}
                                        class="input_disabled" disabled{% endif %} />
@@ -461,8 +459,8 @@
         }
 
         function show_outage_schedule_detail() {
-            var turbine_id = {{form.turbine_id.data}};
-            var teiken_id = {{form.teiken_id.data}};
+            var turbine_id = '{{form.turbine_id.data}}';
+            var teiken_id = '{{form.teiken_id.data}}';
             outage_schedule_detail(turbine_id, teiken_id, 'CURRENTWINDOW');
         }
 
