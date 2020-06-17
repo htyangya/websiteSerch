@@ -126,11 +126,7 @@ def outage_schedule_jqmodal():
 
 @UserAuth.login_required
 def outage_schedule_detail():
-    turbine_id = request.args.get('turbine_id')
-    teiken_id = request.args.get('teiken_id')
-    date_start = request.args.get('date_start')
-    date_end = request.args.get('date_end')
-    return schedule_service.open_outage_schedule_detail(turbine_id, teiken_id, date_start, date_end)
+    return schedule_service.open_outage_schedule_detail(request)
 
 
 @UserAuth.login_required

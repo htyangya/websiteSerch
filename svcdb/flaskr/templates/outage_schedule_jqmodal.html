@@ -21,7 +21,7 @@
                                 </tr>
                                 {% for outageSchedule in outageScheduleList %}
                                 <tr>
-                                    <td class="NW AT AL TL" onclick="outage_schedule_detail('{{outageSchedule.turbine_id}}', '{{outageSchedule.teiken_id}}', 'NEWWINDOW')">{{ outageSchedule.cnt }}</td>
+                                    <td class="NW AT AL TL" onclick="outage_schedule_detail('{{outageSchedule.turbine_id}}', '{{outageSchedule.teiken_id}}', 'NEWWINDOW')">{{ loop.index }}</td>
                                     <td class="NW AT AL">{{ outageSchedule.outage_start|sys_dfmt }}</td>
                                     <td class="NW AT AL">{{ outageSchedule.outage_end|sys_dfmt }}</td>
                                     <td class="NW AT AL">{{ outageSchedule.outage_type_nm }}</td>

@@ -163,11 +163,10 @@ def open_outage_schedule_jqmodal(turbine_id):
         outageScheduleList=outageScheduleList)
 
 
-def open_outage_schedule_detail(turbine_id, teiken_id, date_start, date_end):
+def open_outage_schedule_detail(request):
     menu_param = {}
-    form = OutageEditForm()
-    form.teiken_id.data = teiken_id
-    outage_schedule_info = OutageSchedule.query.filter_by(teiken_id=teiken_id).first()
+    form = OutageEditForm(request.args)
+    outage_schedule_info = OutageSchedule.query.filter_by(teiken_id=request.args.get("teiken_id")).first()
     searching(form, menu_param)
     template_name = 'outage_schedule_detail.html'
     header_name = 'Outage Schedule'

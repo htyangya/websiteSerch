@@ -571,7 +571,7 @@
 
             } else if (!isEndDateSelected()) {
                 // End Date が選択されていない場合
-                set_date("outage_end", month);
+                set_date("outage_end", month, true);
                 if (checkOutageDate()) {
                     onChangeEndDate();
                 } else {
@@ -601,9 +601,15 @@
         }
 
         // 日付を設定
-        function set_date(elem_id, month) {
+        function set_date(elem_id, month, isLast) {
             if (month !== "") {
-                $("#" + elem_id).val(month.substring(0, 4) + "/" + month.substring(4) + "/" + "01");
+                var temDate = new Date(month.substring(0, 4), month.substring(4), 1);
+                temDate.setMonth(temDate.getMonth() - 1);
+                if (isLast) {
+                    temDate.setMonth(temDate.getMonth() + 1);
+                    temDate.setDate(0);
+                }
+                $("#" + elem_id).val(temDate.format("yyyy/MM/dd"));
                 return;
             }
             $("#" + elem_id).val("");

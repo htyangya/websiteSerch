@@ -250,6 +250,8 @@
                                                     {% else %}
                                             onclick="outage_schedule_detail('{{ schedule.turbine_id }}', '{{ schedule.teiken_id }}', 'NEWWINDOW');"
                                                     {% endif %}
+                                                {% else %}
+                                            onclick="addOutageByStartStr(this,'{{ schedule.cell_indexes[loop.index -1 ] }}');"
                                                 {% endif %}>
                                             <img width="100%" src="static/images/{{ cell }}.png">
                                         </td>
@@ -313,6 +315,19 @@
                 var path = url + "?" + param_str;
                 window.open(path,"_blank");
             }
+        }
+        // 予定追加
+        function addOutageByStartStr(self,startStr) {
+            var url = '{{url_for("outage_schedule_add")}}';
+            var param_str = $.param({
+                    turbine_id: $(self).parent("tr").attr("id"),
+                    data_type: $(self).parent("tr").attr("data_type"),
+                    outage_start:startStr.substr(0,4)+"/"+startStr.substr(-2)+"/01",
+                    date_start: $("#date_start").val(),
+                    date_end: $("#date_end").val(),
+                });
+            var path = url + "?" + param_str;
+                window.open(path,"_blank");
         }
         // 再検索をします
         function search() {
