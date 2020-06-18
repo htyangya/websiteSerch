@@ -14,6 +14,7 @@ login_manager.login_view = 'login'
 
 from flaskr.controllers import route
 
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)

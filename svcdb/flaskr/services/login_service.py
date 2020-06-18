@@ -1,11 +1,10 @@
 from flask import session, request, redirect, render_template, url_for, flash, current_app
 from flask_login import login_user, current_user
 
-import flaskr.lib.svcdb_lib.session
 from flaskr.controllers.package import PkgUserAuth, PkgSvcdbLog
+from flaskr.lib.conf.const import Const
 from flaskr.lib.svcdb_lib.session import set_cookie
 from flaskr.lib.svcdb_lib.str_util import StrUtil
-from flaskr.lib.conf.const import Const
 from flaskr.models.user import User
 
 
@@ -41,7 +40,8 @@ def doLogin(form):
 
         # ログインログを記録する
         pkgSvcdbLog = PkgSvcdbLog()
-        pkgSvcdbLog.saveOperationLog(form.user_id.data, '', operation_cd=Const.OPERATION_CD_LOGIN, object_type='DB', note=Const.SESSION_COOKIE_NAME)
+        pkgSvcdbLog.saveOperationLog(form.user_id.data, '', operation_cd=Const.OPERATION_CD_LOGIN, object_type='DB',
+                                     note=Const.SESSION_COOKIE_NAME)
 
         return set_cookie(Const.SESSION_COOKIE_NAME, current_user.tuid, 'main')
 

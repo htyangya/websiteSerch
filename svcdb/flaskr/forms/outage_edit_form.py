@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SelectField, RadioField,DateField
+from wtforms import StringField, TextAreaField, SelectField, RadioField, DateField
 
 
 class OutageEditForm(FlaskForm):
@@ -23,9 +23,9 @@ class OutageEditForm(FlaskForm):
     is_close = StringField("is_close")
     is_success = StringField("is_success")
     date_start = SelectField("Period", choices=[(str(i), str(i)) for i in range(2019, 2041)],
-                             default=lambda: str(datetime.now().year - 1))
+                             default=lambda: str(datetime.now().year))
     date_end = SelectField("", choices=[(str(i), str(i)) for i in range(2019, 2041)],
-                           default=lambda: str(datetime.now().year + 4))
+                           default=lambda: str(datetime.now().year + 5))
 
     def create_duration(self):
         if self.outage_end.data and self.outage_start.data:
