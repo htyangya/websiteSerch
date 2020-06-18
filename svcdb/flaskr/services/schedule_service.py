@@ -1,6 +1,8 @@
 import datetime
+
 from flask import render_template, url_for, jsonify
 from flask_login import current_user
+
 from flaskr import db
 from flaskr.forms.outage_edit_form import OutageEditForm
 from flaskr.forms.outage_form import OutageForm
@@ -99,8 +101,8 @@ def searching(form, menu_param):
         and_sql += f''' AND UPPER(A.KHN_PLANT_CD) LIKE '{plant_cd}%' \n'''
     registered = form.c1.data if hasattr(form, "c1") else None
     if registered and registered != "None":
-        date_start = form.date_start.data+"-01-01"
-        date_end = form.date_end.data+"-12-31"
+        date_start = form.date_start.data + "-01-01"
+        date_end = form.date_end.data + "-12-31"
         and_sql += f'''AND C.DELETE_FLG = 0 
                 AND C.OUTAGE_START <= TO_DATE( '{date_end}', 'yyyy-mm-dd') 
                 AND C.OUTAGE_END >= TO_DATE( '{date_start}', 'yyyy-mm-dd')'''

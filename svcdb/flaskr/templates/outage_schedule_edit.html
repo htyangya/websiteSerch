@@ -114,7 +114,7 @@
         <br/>
         <center id="msgDiv" style="height: 16px"></center>
         <button type="button" class="info-btn" onclick="saveSchedule(false)">Save</button>
-        <button type="button" class="info-btn" onclick="saveSchedule(true)">Save&Close</button>
+        <button type="button" class="info-btn" onclick="saveSchedule(true)">Save & Close</button>
         <button type="button" class="info-btn" onclick="closeCheck()">Close</button>
     </div>
     <br>
@@ -312,9 +312,9 @@
         var yellow_img = "static/images/yellow.png";
         var red_img = "static/images/red.png";
         // 開始日付（エラー時、直す）
-        var g_outage_start = '{{ form.outage_start.data or ""}}';
+        var g_outage_start = '{{form.outage_start.data and  form.outage_start.data.strftime('%Y/%m/%d') or ""}}';
         // 終了日付（エラー時、直す）
-        var g_outage_end = '{{ form.outage_end.data or ""}}';
+        var g_outage_end = '{{ form.outage_end.data and form.outage_end.data.strftime('%Y/%m/%d') or ''}}';
         var calendar = new TlibJSCalendar();
         calendar.date_format = 'YYYY/MM/DD';
         calendar.header_format = 'YYYY/MM';
