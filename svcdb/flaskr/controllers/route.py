@@ -1,9 +1,6 @@
 # Flaskとrender_template（HTMLを表示させるための関数）をインポート
-import datetime
-import json
-from datetime import datetime
 
-from flask import render_template, Response, current_app, request
+from flask import render_template, current_app, request
 from flask import url_for
 from flask_login import current_user
 from flask_login import logout_user
@@ -15,12 +12,11 @@ from flaskr.lib.svcdb_lib.session import get_db_id
 from flaskr.lib.svcdb_lib.user_auth import UserAuth
 from flaskr.services import main_service, file_service, schedule_service
 from flaskr.services.login_service import doLogin
+from flaskr.services.main_service import index_init
 
 
-# 利用者メイン画面表示
-@UserAuth.login_required
 def index():
-    return main_service.main_init(get_db_id(), request)
+    return index_init(request)
 
 
 @UserAuth.login_required

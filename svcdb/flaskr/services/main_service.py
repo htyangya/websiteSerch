@@ -1,4 +1,5 @@
 from flask import render_template, url_for
+from flask_login import current_user
 from werkzeug.utils import redirect
 
 from flaskr.lib.conf.const import Const
@@ -16,3 +17,9 @@ def main_init(sub_menu, request):
     # その他のメニュー予定
     else:
         return redirect(url_for('main'))
+
+
+def index_init(request):
+    if current_user.is_active:
+        return redirect(url_for('main'))
+    return redirect(url_for('login'))
