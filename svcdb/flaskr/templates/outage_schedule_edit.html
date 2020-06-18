@@ -88,9 +88,9 @@
 
         .fix_detail {
             position: absolute;
-            left: -1px;
-            top: 100px;
-            z-index: 200;
+            left: 9px;
+            top: 225px;
+            z-index: 999;
         }
 
         .td_radio {
@@ -112,13 +112,13 @@
 
     <div class="row">
         <br/>
-        <center id="msgDiv"></center>
+        <center id="msgDiv" style="height: 16px"></center>
         <button type="button" class="info-btn" onclick="saveSchedule(false)">Save</button>
         <button type="button" class="info-btn" onclick="saveSchedule(true)">Save&Close</button>
         <button type="button" class="info-btn" onclick="closeCheck()">Close</button>
     </div>
     <br>
-    <div class="row" style="position: relative;">
+    <div class="row" >
         <div class="search-result-div clear-float">
             <div class="row" id="schedule_form-schedule_list">
                 <table class="table-bordered schedule-table">
@@ -238,7 +238,11 @@
                         <tr>
                             <td class="info-title-td">Duration</td>
                             <td class="info-content-td">
-                                <span id="duration">{{ form.outage_duration.data }}days</span>
+                                <span id="duration">
+                                    {% if form.outage_duration.data %}
+                                        {{ form.outage_duration.data }} days
+                                    {% endif %}
+                                </span>
                             </td>
                         </tr>
                         <tr>
@@ -308,18 +312,16 @@
         var yellow_img = "static/images/yellow.png";
         var red_img = "static/images/red.png";
         // 開始日付（エラー時、直す）
-        var g_outage_start = '{{ form.outage_start.data }}';
+        var g_outage_start = '{{ form.outage_start.data or ""}}';
         // 終了日付（エラー時、直す）
-        var g_outage_end = '{{ form.outage_end.data }}';
+        var g_outage_end = '{{ form.outage_end.data or ""}}';
         var calendar = new TlibJSCalendar();
         calendar.date_format = 'YYYY/MM/DD';
         calendar.header_format = 'YYYY/MM';
         calendar.date_changed = dateChange;
 
         $(function () {
-            {% if menu_param["outage_schedule_list"] %}
-                fixedResultTable();
-            {% endif %}
+            fixedResultTable();
             $('input[type="text"], input[type="radio"], textarea').change(function () {
                 isEditFlg = true;
             });
@@ -346,6 +348,8 @@
                 }
                 calendar.show('outage_schedule_info_form', 'outage_end');
             });
+
+            setDateTableColor();
 
             $("#outage_schedule_info_form").validate({
                 errorPlacement: function (error, element) {
