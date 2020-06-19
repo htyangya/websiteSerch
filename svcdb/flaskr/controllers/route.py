@@ -116,8 +116,7 @@ def outage_schedule():
 
 @UserAuth.login_required
 def outage_schedule_jqmodal():
-    turbine_id = request.args.get('turbine_id')
-    return schedule_service.open_outage_schedule_jqmodal(turbine_id)
+    return schedule_service.open_outage_schedule_jqmodal(request)
 
 
 @UserAuth.login_required

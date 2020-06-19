@@ -497,7 +497,8 @@ TlibJSCalendar.prototype = {
 		if(!this._cal) this._createCalendarDiv();
 		this._target = document.forms[form_name].elements[input_name];
 
-		this._date = new Date();
+		this._date = new Date(this._target.value.split("/"));
+		if (!this._date.getTime()) this._date = new Date();
 		this._buildCalendar();
 
 		this._cal.style.top = 0;

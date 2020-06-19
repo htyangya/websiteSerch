@@ -244,16 +244,16 @@
                                     {% for cell in schedule.cells %}
                                         <td class="NW date td_link"
                                             style="padding: 0px !important;"
-                                                {% if cell != 'gray' %}
-                                                    {% if schedule.cnt > 1 %}
-                                            onclick="outageScheduleList('{{ schedule.turbine_id }}');"
+                                                {% if cell.color != 'gray' %}
+                                                    {% if cell.length > 1 %}
+                                            onclick="outageScheduleList('{{ cell.teiken_ids_str }}');"
                                                     {% else %}
                                             onclick="outage_schedule_detail('{{ schedule.turbine_id }}', '{{ schedule.teiken_id }}', 'NEWWINDOW');"
                                                     {% endif %}
                                                 {% else %}
-                                            onclick="addOutageByStartStr(this,'{{ schedule.cell_indexes[loop.index -1 ] }}');"
+                                            onclick="addOutageByStartStr(this,'{{cell.label }}');"
                                                 {% endif %}>
-                                            <img width="100%" src="static/images/{{ cell }}.png">
+                                            <img width="100%" src="{{ cell.img_src }}">
                                         </td>
                                     {% endfor %}
                                 </tr>
@@ -295,8 +295,17 @@
         }
 
         // 予定選択画面「jqModal」
-        function outageScheduleList(turbine_id) {
-            popupOutageScheduleList(turbine_id);
+        function outageScheduleList(teiken_ids_str) {
+            var url = '{{url_for("outage_schedule_jqmodal")}}';
+            var modal = $("#jqmWindow").jqm().css("opacity", "0").jqmShow();
+            $.post(url, {teiken_ids_str: teiken_ids_str})
+                .done(function (data) {
+                    modal.html(data);
+                    var l = ($(window).width() / 2) - (modal.width() / 2);
+                    var t = ($(window).height() / 2) - (modal.height() / 2);
+                    modal.css("left", l).css("top", t).jqDrag(".jqDnRHandle").css("opacity", "1.0");
+                });
+            {#load_jqmodal_dlg(url, on_load_jqmodal_dlg)#}
         }
 
         // 予定追加

@@ -21,11 +21,3 @@ fetchOneTurbineSql = '''
     WHERE TURBINE_ID = '{turbine_id}'
       AND DATA_TYPE = '{data_type}'
 '''
-
-fetchOutageByTurbineId = '''
-    SELECT ROWNUM AS CNT,S.TURBINE_ID, S.TEIKEN_ID,OUTAGE_START,OUTAGE_END,
-           GET_OUTAGE_TYPE_STR('T', S.OUTAGE_TYPE_T) || ', ' || GET_OUTAGE_TYPE_STR('G', S.OUTAGE_TYPE_G) OUTAGE_TYPE_NM
-    FROM OUTAGE_SCHEDULE S
-    WHERE S.DELETE_FLG=0 and S.TURBINE_ID = '{turbine_id}'
-    ORDER BY S.OUTAGE_START
-'''

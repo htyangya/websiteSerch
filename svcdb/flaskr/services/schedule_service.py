@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from flask import render_template, url_for, jsonify
 from flask_login import current_user
@@ -28,7 +29,7 @@ class RowObj:
         return (date2.year - date1.year) * 12 + (date2.month - date1.month)
 
     # 色をつける処理
-    def colour_cells(self, outage_start, outage_end, color_number):
+    def colour_cells(self, outage_start, outage_end, color_number, teiken_id):
         if color_number != "999" and outage_start and outage_end:
             if outage_start.__class__ == datetime.datetime: outage_start = outage_start.date()
             if outage_end.__class__ == datetime.datetime: outage_end = outage_end.date()
@@ -39,31 +40,17 @@ class RowObj:
             index_start, index_end = self.month_delta(cells_start, target_start), self.month_delta(cells_start,
                                                                                                    target_end)
             for index in range(index_start, index_end + 1):
-                self.cells[index] = COLORMAPPING.get(color_number, "gray")
+                self.cells[index].color = COLORMAPPING.get(color_number, "gray")
+                self.cells[index].teiken_ids.add(teiken_id)
 
-    # セールIndex
-    def set_cell_indexes(self):
-        indexes = []
-        if self.min_year is None or self.max_year is None:
-            self.cell_indexes = indexes
+    # セールを初期化
+    def set_cells(self):
         for year in range(int(self.min_year), int(self.max_year) + 1):
-            indexes.append(str(year) + '01')
-            indexes.append(str(year) + '02')
-            indexes.append(str(year) + '03')
-            indexes.append(str(year) + '04')
-            indexes.append(str(year) + '05')
-            indexes.append(str(year) + '06')
-            indexes.append(str(year) + '07')
-            indexes.append(str(year) + '08')
-            indexes.append(str(year) + '09')
-            indexes.append(str(year) + '10')
-            indexes.append(str(year) + '11')
-            indexes.append(str(year) + '12')
-        self.cell_indexes = indexes
+            for month in range(1, 13):
+                self.cells.append(Cell("gray", str(year) + str(month).zfill(2)))
 
     def __init__(self, plant_cd, plant_name, country_nm, turbine_id, data_type, min_year, max_year, outage_start=None,
                  outage_end=None, color_number=None, teiken_id=None, delete_flg=0, **dict):
-        self.cnt = 0
         self.plant_cd = plant_cd
         self.plant_name = plant_name
         self.country_nm = country_nm
@@ -71,14 +58,33 @@ class RowObj:
         self.data_type = data_type
         self.min_year = min_year
         self.max_year = max_year
+        self.cells = []
         # セルリストの作成と処理
-        self.cell_indexes = []
-        self.cells = ["gray"] * (self.max_year - self.min_year + 1) * 12
-        self.set_cell_indexes()
+        self.set_cells()
+
         if delete_flg == 0:
             self.teiken_id = teiken_id
-            self.cnt += 1
-            self.colour_cells(outage_start, outage_end, color_number)
+            self.colour_cells(outage_start, outage_end, color_number, teiken_id)
+
+
+# 各セールに対応するオブジェクト
+class Cell:
+    def __init__(self, color, label):
+        self.color = color
+        self.label = label
+        self.teiken_ids = set()
+
+    @property
+    def img_src(self):
+        return f"static/images/{self.color}.png"
+
+    @property
+    def teiken_ids_str(self):
+        return json.dumps(list(self.teiken_ids))
+
+    @property
+    def length(self):
+        return self.teiken_ids.__len__()
 
 
 # ボータンを押すと
@@ -119,8 +125,7 @@ def searching(form, menu_param):
                                                max_year=menu_param["max_year"])
         elif row.delete_flg == 0:
             rows_dict[row.turbine_id].teiken_id = row.teiken_id
-            rows_dict[row.turbine_id].cnt += 1
-            rows_dict[row.turbine_id].colour_cells(row.outage_start, row.outage_end, row.color_number)
+            rows_dict[row.turbine_id].colour_cells(row.outage_start, row.outage_end, row.color_number, row.teiken_id)
     menu_param["outage_schedule_list"] = rows_dict.values()
 
 
@@ -153,15 +158,13 @@ def show_schedule(request):
     )
 
 
-def open_outage_schedule_jqmodal(turbine_id):
-    if len(turbine_id) == 0:
-        return render_template('error/404.html')
-
-    outageScheduleList = DbUtil.sqlExcuter(scheduleSql.fetchOutageByTurbineId, turbine_id=turbine_id)
+def open_outage_schedule_jqmodal(request):
+    teiken_ids_str = request.form.get("teiken_ids_str")
+    teiken_ids = json.loads(teiken_ids_str)
+    outageScheduleList = OutageSchedule.query.filter(OutageSchedule.teiken_id.in_(teiken_ids)).all()
     return render_template(
         'outage_schedule_jqmodal.html',
         jqmTitle='予定選択画面',
-        turbine_id=turbine_id,
         outageScheduleList=outageScheduleList)
 
 
@@ -185,7 +188,6 @@ def open_outage_schedule_edit(request):
     menu_param = {}
     if request.method == 'POST':
         form = OutageEditForm()
-        form.create_duration()
         teiken_id = form.teiken_id.data
         outage = OutageSchedule.query.filter_by(teiken_id=teiken_id).first()
         outage.outage_start = form.outage_start.data or None
@@ -228,7 +230,6 @@ def open_outage_schedule_add(request):
     menu_param = {}
     if request.method == 'POST':
         form = OutageEditForm()
-        form.create_duration()
         outage_model = OutageSchedule(turbine_id=form.turbine_id.data or None,
                                       description=form.description.data or None,
                                       outage_start=form.outage_start.data or None,

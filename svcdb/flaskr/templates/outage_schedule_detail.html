@@ -156,7 +156,7 @@
                             <td class="NW AR"></td>
                             {% for cell in schedule.cells %}
                                 <td class="NW date" style="padding: 0px !important;">
-                                    <img width="100%" height="100%" src="static/images/{{ cell }}.png">
+                                    <img width="100%" height="100%" src="{{ cell.img_src }}">
                                 </td>
                             {% endfor %}
                         </tr>

@@ -27,6 +27,10 @@ class OutageEditForm(FlaskForm):
     date_end = SelectField("", choices=[(str(i), str(i)) for i in range(2019, 2041)],
                            default=lambda: str(datetime.now().year + 5))
 
+    def __init__(self, *args, **kwargs):
+        super(OutageEditForm, self).__init__(*args, **kwargs)
+        self.create_duration()
+
     def create_duration(self):
         if self.outage_end.data and self.outage_start.data:
             self.outage_duration.data = (self.outage_end.data - self.outage_start.data).days

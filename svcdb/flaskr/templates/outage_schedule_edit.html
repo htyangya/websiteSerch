@@ -118,7 +118,7 @@
         <button type="button" class="info-btn" onclick="closeCheck()">Close</button>
     </div>
     <br>
-    <div class="row" >
+    <div class="row">
         <div class="search-result-div clear-float">
             <div class="row" id="schedule_form-schedule_list">
                 <table class="table-bordered schedule-table">
@@ -181,14 +181,12 @@
                             <td class="NW AC"></td>
                             <td class="NW"></td>
                             <td class="NW AR"></td>
-                            {% for ind in schedule.cell_indexes %}
-                                {% set color = schedule.cells[loop.index - 1] %}
+                            {% for cell in schedule.cells %}
                                 <td class="NW date" style="padding: 0px !important;">
-                                    {% set color_class = "" %}
-                                    {% if color != 'gray' %} {% set color_class = "color_img_selected" %} {% endif %}
-                                    <a href="javascript:void(0);" onclick="gray_click('{{ ind }}')">
-                                        <img width="100%" height="100%" src="static/images/{{ color }}.png"
-                                             class="color_img {{ color_class }}" id="color_img_{{ ind }}">
+                                    <a href="javascript:void(0);" onclick="gray_click('{{ cell.label }}')">
+                                        <img width="100%" height="100%" src="{{ cell.img_src }}"
+                                             class="color_img {% if cell.color != 'gray' %}color_img_selected{% endif %}"
+                                             id="color_img_{{ cell.label }}">
                                     </a>
                                 </td>
                             {% endfor %}
@@ -199,7 +197,8 @@
             </div>
             <div class="fix_detail">
                 <form id="outage_schedule_info_form"
-                      action="{% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
+                      action="
+                              {% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
                       name="outage_schedule_info_form" method="post">
                     <table cellpadding="5">
                         <thead>

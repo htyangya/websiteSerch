@@ -38,7 +38,7 @@ def create_app():
     app.add_url_rule('/main', 'main', route.main_menu, methods=['GET', 'POST'])
     app.add_url_rule('/outage_schedule', 'outage_schedule', route.outage_schedule, methods=['GET', 'POST'])
     app.add_url_rule('/outage_schedule_jqmodal', 'outage_schedule_jqmodal', route.outage_schedule_jqmodal,
-                     methods=['GET'])
+                     methods=['GET', 'POST'])
     app.add_url_rule('/outage_schedule_detail', 'outage_schedule_detail', route.outage_schedule_detail,
                      methods=['GET', 'POST'])
     app.add_url_rule('/outage_schedule_edit', 'outage_schedule_edit', route.outage_schedule_edit,
