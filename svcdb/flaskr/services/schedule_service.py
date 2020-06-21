@@ -170,8 +170,8 @@ def open_outage_schedule_jqmodal(request):
 
 def open_outage_schedule_detail(request):
     menu_param = {}
-    form = OutageEditForm(request.args)
-    outage_schedule_info = OutageSchedule.query.filter_by(teiken_id=request.args.get("teiken_id")).first()
+    outage = OutageSchedule.query.filter_by(teiken_id=request.args.get("teiken_id")).first()
+    form = OutageEditForm(request.args, obj=outage)
     searching(form, menu_param)
     template_name = 'outage_schedule_detail.html'
     header_name = 'Outage Schedule'
@@ -181,7 +181,7 @@ def open_outage_schedule_detail(request):
         title=header_name,
         form=form,
         menu_param=menu_param,
-        outage_schedule_info=outage_schedule_info)
+        outage_schedule_info=outage)
 
 
 def open_outage_schedule_edit(request):
@@ -210,12 +210,8 @@ def open_outage_schedule_edit(request):
         return jsonify({'url': target_url})
     else:
         teiken_id = request.args.get('teiken_id')
-        date_start = request.args.get('date_start')
-        date_end = request.args.get('date_end')
         outage = OutageSchedule.query.filter_by(teiken_id=teiken_id).first()
-        form = OutageEditForm(obj=outage)
-        form.date_start.data = date_start
-        form.date_end.data = date_end
+        form = OutageEditForm(request.args, obj=outage)
         searching(form, menu_param)
     header_name = 'Outage Schedule'
     return render_template(

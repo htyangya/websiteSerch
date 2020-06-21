@@ -30,6 +30,8 @@ class OutageEditForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(OutageEditForm, self).__init__(*args, **kwargs)
         self.create_duration()
+        self.date_start.data = min(self.date_start.data, str(self.outage_start.data.year))
+        self.date_end.data = max(self.date_end.data, str(self.outage_end.data.year))
 
     def create_duration(self):
         if self.outage_end.data and self.outage_start.data:
