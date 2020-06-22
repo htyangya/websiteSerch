@@ -99,12 +99,12 @@ def searching(form, menu_param):
 
     country_cd = form.country.data
     if country_cd and country_cd != "None":
-        and_sql += f''' AND TM.MASTER_KIND = 'COUNTRY' \n'''
         and_sql += f''' AND A.COUNTRY_CD = '{country_cd}' \n'''
-    plant_cd = form.plant.data
-    if plant_cd and plant_cd != "None":
-        plant_cd = plant_cd.upper()
-        and_sql += f''' AND UPPER(A.KHN_PLANT_CD) LIKE '{plant_cd}%' \n'''
+    plant_name = form.plant.data
+    and_sql += f''' AND TM.MASTER_KIND = 'COUNTRY' \n'''
+    if plant_name and plant_name != "None":
+        plant_name = plant_name.upper()
+        and_sql += f''' AND UPPER(NVL(A.PLANT_NAME_EN, A.PLANT_NAME_JP)) LIKE '%{plant_name}%' \n'''
     registered = form.c1.data if hasattr(form, "c1") else None
     if registered and registered != "None":
         date_start = form.date_start.data + "-01-01"
@@ -141,7 +141,9 @@ def show_schedule(request):
     svcdbTurbineMasterTable = SvcdbTurbineMasterTable()
     rst = svcdbTurbineMasterTable.get_master_list(master_kind='COUNTRY')
     country_dict = [(str(item.code), item.data1) for item in rst]
+    country_dict.insert(0, ("None", "---"))
     form.country.choices = country_dict
+    form.country.default = "None"
 
     # do search
     if "POST" == request.method and form.validate():
