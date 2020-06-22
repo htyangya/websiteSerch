@@ -248,7 +248,7 @@
                                                     {% if cell.length > 1 %}
                                             onclick="outageScheduleList('{{ cell.teiken_ids_str }}');"
                                                     {% else %}
-                                            onclick="outage_schedule_detail('{{ schedule.turbine_id }}', '{{ schedule.teiken_id }}', 'NEWWINDOW');"
+                                            onclick="outage_schedule_detail('{{ schedule.turbine_id }}', '{{ cell.teiken_ids[0] }}', 'NEWWINDOW');"
                                                     {% endif %}
                                                 {% else %}
                                             onclick="addOutageByStartStr(this,'{{cell.label }}');"

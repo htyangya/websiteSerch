@@ -41,7 +41,7 @@ class RowObj:
                                                                                                    target_end)
             for index in range(index_start, index_end + 1):
                 self.cells[index].color = COLORMAPPING.get(color_number, "gray")
-                self.cells[index].teiken_ids.add(teiken_id)
+                self.cells[index].teiken_ids.append(teiken_id)
 
     # セールを初期化
     def set_cells(self):
@@ -61,9 +61,7 @@ class RowObj:
         self.cells = []
         # セルリストの作成と処理
         self.set_cells()
-
         if delete_flg == 0:
-            self.teiken_id = teiken_id
             self.colour_cells(outage_start, outage_end, color_number, teiken_id)
 
 
@@ -72,7 +70,7 @@ class Cell:
     def __init__(self, color, label):
         self.color = color
         self.label = label
-        self.teiken_ids = set()
+        self.teiken_ids = []
 
     @property
     def img_src(self):
@@ -80,7 +78,7 @@ class Cell:
 
     @property
     def teiken_ids_str(self):
-        return json.dumps(list(self.teiken_ids))
+        return json.dumps(self.teiken_ids)
 
     @property
     def length(self):
