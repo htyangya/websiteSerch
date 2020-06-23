@@ -108,6 +108,39 @@
             color: red;
             font-style: italic
         }
+
+        .pr_date {
+            margin: 0px;
+            width: 100%;
+            height: 28px;
+            border: none;
+        }
+
+        .pr_date:disabled {
+            background-color: #e6e6e6;
+        }
+
+        .pr_date_table td:nth-child(1) {
+            border: 1px solid #2b2b2b;
+            background-color: #A8ADCD;
+            font-size: medium;
+            width: 260px;
+        }
+
+        .pr_date_table td:nth-child(2) {
+            border: 1px solid #2b2b2b;
+            padding: 0px;
+            width: 260px;
+        }
+
+        .pr_date_table td:nth-child(3) input {
+            margin-left: 2px;
+            height: 15px;
+        }
+
+        .pr_date_table td:nth-child(3) label {
+            font-size: 15px;
+        }
     </style>
 
     <div class="row">
@@ -198,6 +231,7 @@
             <div class="fix_detail">
                 <form id="outage_schedule_info_form"
                       action="
+
                               {% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
                       name="outage_schedule_info_form" method="post">
                     <table cellpadding="5">
@@ -287,8 +321,51 @@
                                           cols="50">{{ form.description.data }}</textarea>
                             </td>
                         </tr>
+                        <tr></tr>
+
                         </tbody>
                     </table>
+
+
+                    <div style="float:left;padding-top:60px;margin-left:2px;">
+                        <table class="pr_date_table">
+                            <tr>
+                                <td>{{ form.pr_date_m.label(class="control-label") }}</td>
+                                <td>
+                                    {{ form.pr_date_m(class="pr_date", disabled="disabled") }}
+                                    <a href="javascript:void(0)" style="margin: -60px">
+                                        <img src="/static/images/calendar.gif?q={{ appVer }}" border="0">
+                                    </a>
+                                </td>
+                                <td>
+                                    <input type="checkbox" id="pr_date_m_manual" name="Manual_m" value="1"
+                                           onclick="followInput_able(0,this.name)"/><label for="pr_date_m_manual">Manual
+                                    input</label>
+                                    &nbsp;&nbsp;
+                                    <input type="checkbox" id="pr_date_m_na" name="Manual_m" value="0"
+                                           onclick="followInput_able(1,this.name)"/><label
+                                        for="pr_date_m_na">N/A</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{ form.pr_date_e.label(class="control-label") }}</td>
+                                <td>
+                                    {{ form.pr_date_e(class="pr_date", disabled="disabled") }}
+                                    <a href="javascript:void(0)" style="margin: -60px">
+                                        <img src="/static/images/calendar.gif?q={{ appVer }}" border="0">
+                                    </a>
+                                </td>
+                                <td>
+                                    <input type="checkbox" id="pr_date_e_manual" name="Manual_e" value="1"/><label
+                                        for="pr_date_e_manual">Manual input</label>
+                                    &nbsp;&nbsp;
+                                    <input type="checkbox" id="pr_date_e_na" name="Manual_e" value="0"/><label
+                                        for="pr_date_e_na">N/A</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
                     <input type="hidden" name="turbine_id" id="turbine_id" value="{{ form.turbine_id.data }}"/>
                     <input type="hidden" name="teiken_id" id="teiken_id" value="{{ form.teiken_id.data }}"/>
                     <input type="hidden" name="date_start" id="date_start" value="{{ form.date_start.data }}"/>
@@ -297,6 +374,7 @@
                     <input type="hidden" name="is_success" id="is_success" value={{ form.is_success.data }}/>
                 </form>
             </div>
+
             <div id="TlibJSCalendarInternalDiv" class="TlibJSCalendarInternalDivC"></div>
             <div id="TlibJSCalendarBkLayer" class="TlibJSCalendarBkLayerDivC"></div>
             <iframe id="TlibJSCalendarShim" class="TlibJSCalendarShimC" src="javascript:false;"></iframe>
@@ -335,6 +413,8 @@
                 $("#" + 'execution_' + '{{form.execution.data}}').prop("checked", true);
             }
 
+            pr_date_followBy_start();
+
             $('input[value="apple"]').prop('checked', false);
 
             $('.outage_type_radio').on('change', function () {
@@ -350,6 +430,40 @@
 
             setDateTableColor();
 
+            // Manual inputとN/Aの排他処理、クリックする時　pr_dateの制御
+            $(".pr_date_table input[type='checkbox']").on('click', function () {
+                var self = $(this);
+                var pr_date_id = self.attr("id").toString().substr(0, 9);
+                var pr_date = $("#" + pr_date_id);
+                if (self.prop("checked")) {
+                    $("input[name={0}]".format(self.attr("name"))).prop("checked", false);
+                    self.prop("checked", true);
+                    if (self.val() == 1) {
+                        pr_date.prop("disabled", false);
+                    } else if (self.val() == 0) {
+                        pr_date.val("");
+                        pr_date.prop("disabled", true);
+                    }
+                }
+                if ($("input[name={0}]:checked".format(self.attr("name"))).length <= 0) {
+                    pr_date.prop("disabled", true);
+                }
+            });
+            // カレンダーの制御
+            $(".pr_date_table a").on("click", function () {
+                var pr_date = $(this).parent().find("input");
+                if (pr_date.prop("disabled")) return
+                calendar.show('outage_schedule_info_form', pr_date.attr("id"));
+
+            });
+            // pr_dateのデータフォーマットをチェックする
+            $(".pr_date").on("change", function () {
+                if (!validator($(this))) {
+                    this.value = "";
+                }
+            });
+
+            // コミットフォームを検証
             $("#outage_schedule_info_form").validate({
                 errorPlacement: function (error, element) {
                     error.appendTo(element.parent());
@@ -382,7 +496,9 @@
                 }
 
             });
+
         });
+
 
         function fixedResultTable() {
             var fixedHeaderCols = 9;
@@ -488,6 +604,7 @@
                 $("#outage_end").addClass("input_disabled")
                 $("#outage_end").prop('disabled', true);
                 $("#outage_end").val("").change();
+
             } else {
                 var errorFlg = false;
                 // 日付チェック
@@ -511,6 +628,7 @@
             }
             // durationの設定
             setDuration($("#outage_start").val(), $("#outage_end").val());
+            pr_date_followBy_start();
             // 直すデータ最新化
             g_outage_start = startDate;
             // バーの色付
@@ -561,6 +679,24 @@
                 $("#duration").text("");
             }
         }
+
+        // 1st PR DateにStartの2年前の日付をセット
+        function pr_date_followBy_start() {
+            var startDate = $("#outage_start").val();
+            var outage_type_t = $("input[name='outage_type_t']:checked").val();
+            var outage_type_g = $("input[name='outage_type_g']:checked").val();
+            if (!startDate) return;
+            if (outage_type_t && outage_type_t != 4 && $("input[name='Manual_m']:checked").length <= 0) {
+                var pr_date_m = startDate.substr(0, 4) - 2 + startDate.substr(4);
+                $("#pr_date_m").val(pr_date_m);
+            }
+
+            if (outage_type_g && outage_type_g != 4 && $("input[name='Manual_e']:checked").length <= 0) {
+                var pr_date_e = startDate.substr(0, 4) - 2 + startDate.substr(4);
+                $("#pr_date_e").val(pr_date_e);
+            }
+        }
+
 
         // バーをクリック時の処理
         function gray_click(month) {

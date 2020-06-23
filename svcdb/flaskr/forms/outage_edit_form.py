@@ -13,6 +13,8 @@ class OutageEditForm(FlaskForm):
     # data_type = StringField("data_type")
     outage_start = DateField("outage_start", format='%Y/%m/%d')
     outage_end = DateField("outage_end", format='%Y/%m/%d')
+    pr_date_m = DateField("1st PR Date(Mechanical)", format='%Y/%m/%d')
+    pr_date_e = DateField("1st PR Date(Electric)", format='%Y/%m/%d')
     description = TextAreaField("description")
     outage_type_t = StringField("outage_type_t")
     outage_type_g = StringField("outage_type_g")
