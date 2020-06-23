@@ -116,7 +116,7 @@
             border: none;
         }
 
-        .pr_date:disabled {
+        .pr_date[readonly="readonly"],.pr_date[readonly=""]{
             background-color: #e6e6e6;
         }
 
@@ -262,7 +262,7 @@
                                        value="{{ form.outage_end.data and form.outage_end.data.strftime('%Y/%m/%d') or '' }}"
                                        onchange="onChangeEndDate()"
                                         {% if form.outage_start.data is none or form.outage_start.data=="" %}
-                                       class="input_disabled" disabled{% endif %} />
+                                       class="input_disabled" readonly{% endif %} />
                                 <a href="javascript:void(0)" id="outage_end_calendar"
                                    {% if form.outage_start.data is none or form.outage_start.data=="" %}class="calendar_disabled"{% endif %}><img
                                         src="/static/images/calendar.gif?q={{ appVer }}" border="0"></a>
@@ -332,7 +332,7 @@
                             <tr>
                                 <td>{{ form.pr_date_m.label(class="control-label") }}</td>
                                 <td>
-                                    {{ form.pr_date_m(class="pr_date", disabled="disabled") }}
+                                    {{ form.pr_date_m(class="pr_date", readonly="readonly") }}
                                     <a href="javascript:void(0)" style="margin: -60px">
                                         <img src="/static/images/calendar.gif?q={{ appVer }}" border="0">
                                     </a>
@@ -350,7 +350,7 @@
                             <tr>
                                 <td>{{ form.pr_date_e.label(class="control-label") }}</td>
                                 <td>
-                                    {{ form.pr_date_e(class="pr_date", disabled="disabled") }}
+                                    {{ form.pr_date_e(class="pr_date", readonly="readonly") }}
                                     <a href="javascript:void(0)" style="margin: -60px">
                                         <img src="/static/images/calendar.gif?q={{ appVer }}" border="0">
                                     </a>
@@ -439,20 +439,20 @@
                     $("input[name={0}]".format(self.attr("name"))).prop("checked", false);
                     self.prop("checked", true);
                     if (self.val() == 1) {
-                        pr_date.prop("disabled", false);
+                        pr_date.prop("readonly", false);
                     } else if (self.val() == 0) {
                         pr_date.val("");
-                        pr_date.prop("disabled", true);
+                        pr_date.prop("readonly", true);
                     }
                 }
                 if ($("input[name={0}]:checked".format(self.attr("name"))).length <= 0) {
-                    pr_date.prop("disabled", true);
+                    pr_date.prop("readonly", true);
                 }
             });
             // カレンダーの制御
             $(".pr_date_table a").on("click", function () {
                 var pr_date = $(this).parent().find("input");
-                if (pr_date.prop("disabled")) return
+                if (pr_date.prop("readonly")) return
                 calendar.show('outage_schedule_info_form', pr_date.attr("id"));
 
             });
@@ -602,7 +602,7 @@
             if (typeof (startDate) == 'undefined' || startDate == '') {
                 $('#outage_end_calendar').addClass('calendar_disabled');
                 $("#outage_end").addClass("input_disabled")
-                $("#outage_end").prop('disabled', true);
+                $("#outage_end").prop('readonly', true);
                 $("#outage_end").val("").change();
 
             } else {
@@ -622,7 +622,7 @@
                 }
                 $('#outage_end_calendar').removeClass('calendar_disabled');
                 $("#outage_end").removeClass("input_disabled")
-                $("#outage_end").prop('disabled', false);
+                $("#outage_end").prop('readonly', false);
                 // EndDateを消す
                 $("#outage_end").val("").change();
             }

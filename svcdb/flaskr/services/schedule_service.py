@@ -197,6 +197,8 @@ def open_outage_schedule_edit(request):
         outage.execution = form.execution.data or None
         outage.description = form.description.data or None
         outage.outage_duration = form.outage_duration.data or None
+        outage.pr_date_m = form.pr_date_m.data or None
+        outage.pr_date_e = form.pr_date_e.data or None
         outage.updated_by = current_user.get_id()
         outage.updated_at = datetime.datetime.now()
         db.session.add(outage)
@@ -233,7 +235,9 @@ def open_outage_schedule_add(request):
                                       outage_type_g=form.outage_type_g.data or None,
                                       outage_type_t=form.outage_type_t.data or None,
                                       execution=form.execution.data or None,
-                                      outage_duration=form.outage_duration.data or None
+                                      outage_duration=form.outage_duration.data or None,
+                                      pr_date_m=form.pr_date_m.data or None,
+                                      pr_date_e=form.pr_date_e.data or None
                                       )
         db.session.add(outage_model)
         db.session.commit()
