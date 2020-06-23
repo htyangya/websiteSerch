@@ -938,3 +938,16 @@ table.psprimis-list-table th {
     text-align:center;
     border: 1px solid #333;
 }
+
+.gray {
+    background-image: url("/static/images/gray.png");
+}
+.blue{
+    background-image: url("/static/images/blue.png");
+}
+.green{
+    background-image: url("/static/images/green.png");
+}
+.red{
+    background-image: url("/static/images/red.png");
+}

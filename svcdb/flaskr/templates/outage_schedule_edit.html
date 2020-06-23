@@ -116,7 +116,7 @@
             border: none;
         }
 
-        .pr_date[readonly="readonly"],.pr_date[readonly=""]{
+        .pr_date[readonly="readonly"], .pr_date[readonly=""] {
             background-color: #e6e6e6;
         }
 
@@ -209,7 +209,7 @@
                             <td class="NW">{{ schedule.country_nm or '' }}</td>
                             <td class="NW">{{ schedule.plant_name or '' }}</td>
                             <td class="NW AC"></td>
-                            <td class="NW red"></td>
+                            <td class="NW"></td>
                             <td class="NW AR"></td>
                             <td class="NW AC"></td>
                             <td class="NW"></td>
@@ -231,6 +231,7 @@
             <div class="fix_detail">
                 <form id="outage_schedule_info_form"
                       action="
+
 
                               {% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
                       name="outage_schedule_info_form" method="post">
@@ -338,13 +339,11 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <input type="checkbox" id="pr_date_m_manual" name="Manual_m" value="1"
-                                           onclick="followInput_able(0,this.name)"/><label for="pr_date_m_manual">Manual
-                                    input</label>
+                                    <input type="checkbox" id="pr_date_m_manual" name="Manual_m" value="1"/>
+                                    <label for="pr_date_m_manual">Manual input</label>
                                     &nbsp;&nbsp;
-                                    <input type="checkbox" id="pr_date_m_na" name="Manual_m" value="0"
-                                           onclick="followInput_able(1,this.name)"/><label
-                                        for="pr_date_m_na">N/A</label>
+                                    <input type="checkbox" id="pr_date_m_na" name="Manual_m" value="0"/>
+                                    <label for="pr_date_m_na">N/A</label>
                                 </td>
                             </tr>
                             <tr>
@@ -356,11 +355,11 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <input type="checkbox" id="pr_date_e_manual" name="Manual_e" value="1"/><label
-                                        for="pr_date_e_manual">Manual input</label>
+                                    <input type="checkbox" id="pr_date_e_manual" name="Manual_e" value="1"/>
+                                    <label for="pr_date_e_manual">Manual input</label>
                                     &nbsp;&nbsp;
-                                    <input type="checkbox" id="pr_date_e_na" name="Manual_e" value="0"/><label
-                                        for="pr_date_e_na">N/A</label>
+                                    <input type="checkbox" id="pr_date_e_na" name="Manual_e" value="0"/>
+                                    <label for="pr_date_e_na">N/A</label>
                                 </td>
                             </tr>
                         </table>

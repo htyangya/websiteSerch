@@ -75,6 +75,9 @@
 
         td, th {
             min-width: 34px;
+            white-space: nowrap;
+            text-align: center;
+            width:75px;
         }
 
         thead th {
@@ -86,7 +89,7 @@
             border: 1px solid black;
         }
 
-        .date {
+        .td_link {
             width: 35px;
             height: 29px;
         }
@@ -206,13 +209,13 @@
                                 {% endfor %}
                             </tr>
                             <tr align="center" style="height: 30px;">
-                                <th class="NW">Plant Code</th>
-                                <th class="NW">Country</th>
-                                <th class="NW">Unit</th>
-                                <th class="NW" colspan="2">PR</th>
-                                <th class="NW">stts</th>
-                                <th class="NW" colspan="2">PR</th>
-                                <th class="NW">stts</th>
+                                <th >Plant Code</th>
+                                <th >Country</th>
+                                <th >Unit</th>
+                                <th  colspan="2">PR</th>
+                                <th >stts</th>
+                                <th  colspan="2">PR</th>
+                                <th >stts</th>
                                 {% for year in range(menu_param["year_count"]) %}
                                     <th>Jan</th>
                                     <th>Feb</th>
@@ -232,29 +235,17 @@
                             <tbody>
                             {% for schedule in menu_param['outage_schedule_list'] %}
                                 <tr id="{{ schedule.turbine_id }}" data_type="{{ schedule.data_type }}">
-                                    <td class="NW"><a href="#">{{ schedule.plant_cd or '' }}</a></td>
-                                    <td class="NW">{{ schedule.country_nm or '' }} {{ schedule.cnt }}</td>
-                                    <td class="NW">{{ schedule.plant_name or '' }}</td>
-                                    <td class="NW AC"></td>
-                                    <td class="NW red"></td>
-                                    <td class="NW AR"></td>
-                                    <td class="NW AC"></td>
-                                    <td class="NW"></td>
-                                    <td class="NW AR"></td>
+                                    <td ><a href="#">{{ schedule.plant_cd or '' }}</a></td>
+                                    <td >{{ schedule.country_nm or '' }} {{ schedule.cnt }}</td>
+                                    <td >{{ schedule.plant_name or '' }}</td>
+                                    <td class="AC"></td>
+                                    <td ></td>
+                                    <td class="AR"></td>
+                                    <td class="AC"></td>
+                                    <td ></td>
+                                    <td class="AR"></td>
                                     {% for cell in schedule.cells %}
-                                        <td class="NW date td_link"
-                                            style="padding: 0px !important;"
-                                                {% if cell.color != 'gray' %}
-                                                    {% if cell.length > 1 %}
-                                            onclick="outageScheduleList('{{ cell.teiken_ids_str }}');"
-                                                    {% else %}
-                                            onclick="outage_schedule_detail('{{ schedule.turbine_id }}', '{{ cell.teiken_ids[0] }}', 'NEWWINDOW');"
-                                                    {% endif %}
-                                                {% else %}
-                                            onclick="addOutageByStartStr(this,'{{cell.label }}');"
-                                                {% endif %}>
-                                            <img width="100%" src="{{ cell.img_src }}">
-                                        </td>
+                                        <td class="td_link {{ cell.color }}" id="{{ cell.teiken_ids_str }}" label="{{ cell.label }}"></td>
                                     {% endfor %}
                                 </tr>
                             {% endfor %}
@@ -276,6 +267,18 @@
                 } else {
                     return true;
                 }
+            });
+            $(".td_link").on("click", function () {
+                var teiken_ids = JSON.parse(this.id);
+                if (teiken_ids.length == 0) {
+                    addOutageByStartStr(this);
+                } else if (teiken_ids.length == 1) {
+                    outageScheduleDetail(teiken_ids[0]);
+                } else {
+                    outageScheduleList(this.id);
+                }
+
+
             });
             {% if menu_param["outage_schedule_list"] %}
                 fixedResultTable();
@@ -307,6 +310,12 @@
                 });
             {#load_jqmodal_dlg(url, on_load_jqmodal_dlg)#}
         }
+        
+        function outageScheduleDetail(teiken_id) {
+            var url = '{{url_for("outage_schedule_detail")}}';
+            var path = url + "?teiken_id=" + teiken_id;
+            window.open(path,"_blank");
+        }
 
         // 予定追加
         function addOutageSchedule() {
@@ -326,7 +335,8 @@
             }
         }
         // 予定追加
-        function addOutageByStartStr(self,startStr) {
+        function addOutageByStartStr(self) {
+            var startStr = $(self).attr("label");
             var url = '{{url_for("outage_schedule_add")}}';
             var param_str = $.param({
                     turbine_id: $(self).parent("tr").attr("id"),
