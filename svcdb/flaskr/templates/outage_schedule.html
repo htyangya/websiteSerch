@@ -2,6 +2,9 @@
 {% block js_content %}
     <script src="/static/js/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
 {% endblock %}
+{% block css_content %}
+    <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{appVer}}">
+{% endblock %}
 {% block header_name %} {{ header_name }} {% endblock %}
 {% block container_content %}
     <style type="text/css">
@@ -12,22 +15,6 @@
         .header-content {
             padding-bottom: 10px;
             overflow: hidden;
-        }
-
-        .main-content {
-            height: 100%;
-            width: 100%;
-        }
-
-        .search-result {
-            overflow: hidden;
-            height: 100%;
-        }
-
-        .search-result-div {
-            height: 100%;
-            overflow: auto;
-            padding-top: 0px;
         }
 
         .form-inline {
@@ -68,32 +55,6 @@
             height: auto !important;
         }
 
-        thead th {
-            text-align: center;
-            background-color: #DAE8EE;
-        }
-
-        td, th {
-            min-width: 34px;
-            white-space: nowrap;
-            text-align: center;
-            width:75px;
-        }
-
-        thead th {
-            font-size: 12px;
-            font-weight: 300;
-        }
-
-        .table-bordered > thead > tr > th, table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
-            border: 1px solid black;
-        }
-
-        .td_link {
-            width: 35px;
-            height: 29px;
-        }
-
         div.condition_area {
             float: left;
         }
@@ -102,25 +63,6 @@
             font-size: 18px;
             position: relative;
             margin-top: 20px;
-        }
-
-        .yellow {
-            background: #e6e680e6;
-        }
-
-        table.schedule-table th.no_border {
-            background-color: #fff;
-            padding-top: 0px;
-            padding-bottom: 0px;
-        }
-
-        table.schedule-table tr td:nth-child(-n+3) {
-            max-width: 120px;
-            overflow: hidden;
-        }
-
-        tr.fixed_table_header {
-            height: 30px;
         }
 
         /* jqModal用CSS */
@@ -188,75 +130,7 @@
 
             {% if menu_param["outage_schedule_list"] %}
                 <div class="search-result-div clear-float">
-                    <div class="row" id="schedule_form-schedule_list">
-                        <table class="table-bordered schedule-table">
-                            <thead>
-                            <tr>
-                                <th class="no_border"></th>
-                                <th class="no_border"></th>
-                                <th class="no_border"></th>
-                                <th class="no_border"></th>
-                                <th class="no_border"></th>
-                                <th class="no_border"></th>
-                                <th class="no_border"></th>
-                                <th class="no_border"></th>
-                                <th class="no_border"></th>
-                                {% for foo in range(menu_param["year_count"]*12) %}
-                                    <th class="no_border"></th>
-                                {% endfor %}
-                            </tr>
-                            <tr style="height: 30px;">
-                                <th colspan="3"></th>
-                                <th colspan="3">M</th>
-                                <th colspan="3">E</th>
-                                {% for year in range(menu_param.min_year,menu_param.max_year+1) %}
-                                    <th colspan="12">{{ year }}</th>
-                                {% endfor %}
-                            </tr>
-                            <tr align="center" style="height: 30px;">
-                                <th>Plant Code</th>
-                                <th>Country</th>
-                                <th>Unit</th>
-                                <th colspan="2">PR</th>
-                                <th>stts</th>
-                                <th colspan="2">PR</th>
-                                <th>stts</th>
-                                {% for year in range(menu_param["year_count"]) %}
-                                    <th>Jan</th>
-                                    <th>Feb</th>
-                                    <th>Mar</th>
-                                    <th>Apr</th>
-                                    <th>May</th>
-                                    <th>Jun</th>
-                                    <th>Jul</th>
-                                    <th>Aug</th>
-                                    <th>Sep</th>
-                                    <th>Oct</th>
-                                    <th>Nov</th>
-                                    <th>Dec</th>
-                                {% endfor %}
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for schedule in menu_param['outage_schedule_list'] %}
-                                <tr id="{{ schedule.turbine_id }}" data_type="{{ schedule.data_type }}">
-                                    <td><a href="#">{{ schedule.plant_cd or '' }}</a></td>
-                                    <td>{{ schedule.country_nm or '' }} {{ schedule.cnt }}</td>
-                                    <td>{{ schedule.plant_name or '' }}</td>
-                                    <td class="AC"></td>
-                                    <td></td>
-                                    <td class="AR"></td>
-                                    <td class="AC"></td>
-                                    <td></td>
-                                    <td class="AR"></td>
-                                    {% for cell in schedule.cells %}
-                                        <td class="td_link {{ cell.color }}" id="{{ cell.teiken_ids_str }}" label="{{ cell.label }}"></td>
-                                    {% endfor %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                    {% include "part_outage_schedule_list.html" %}
                 </div>
             {% elif "POST" == request.method %}
                 <div class="required">該当データがありません.</div>

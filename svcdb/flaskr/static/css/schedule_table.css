@@ -1,0 +1,49 @@
+.search-result-div {
+    height: 100%;
+    overflow: auto;
+    padding-top: 0px;
+}
+
+thead th {
+    text-align: center;
+    background-color: #DAE8EE;
+}
+
+td, th {
+    min-width: 34px;
+    white-space: nowrap;
+    text-align: center;
+    width: 75px;
+}
+
+thead th {
+    font-size: 12px;
+    font-weight: 300;
+}
+
+.table-bordered > thead > tr > th, table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+    border: 1px solid black;
+}
+
+.td_link {
+    width: 35px;
+    height: 29px;
+}
+
+
+table.schedule-table th.no_border {
+    background-color: #fff;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+table.schedule-table tr td:nth-child(-n+3) {
+    max-width: 300px;
+    overflow: hidden;
+    text-align: left;
+}
+
+tr.fixed_table_header {
+    height: 30px;
+}
+

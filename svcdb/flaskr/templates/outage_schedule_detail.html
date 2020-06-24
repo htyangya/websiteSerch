@@ -2,51 +2,14 @@
 {% block js_content %}
     <script src="/static/js/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
 {% endblock %}
+{% block css_content %}
+    <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{appVer}}">
+{% endblock %}
 {% block header_name %} {{ header_name }} {% endblock %}
 {% block container_content %}
     <style type="text/css">
         body {
             overflow: hidden;
-        }
-
-        .search-result {
-            overflow: hidden;
-            height: 100%;
-        }
-
-        .search-result-div {
-            height: 100%;
-            overflow: auto;
-            padding-top: 0px;
-        }
-
-        thead th {
-            text-align: center;
-            background-color: #DAE8EE;
-        }
-
-        td, th {
-            min-width: 34px;
-        }
-
-        thead th {
-            font-size: 12px;
-            font-weight: 300;
-        }
-
-        .table-bordered > thead > tr > th, table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
-            border: 1px solid black;
-        }
-
-        .date {
-            width: 35px;
-            height: 29px;
-        }
-
-        table.schedule-table th.no_border {
-            background-color: #fff;
-            padding-top: 0px;
-            padding-bottom: 0px;
         }
 
         .info-th {
@@ -81,7 +44,6 @@
             top: 220px;
             z-index: 999;
         }
-
     </style>
 
     <div class="row">
@@ -93,77 +55,7 @@
     <br>
     <div class="row">
         <div class="search-result-div clear-float">
-            <div class="row" id="schedule_form-schedule_list">
-                <table class="table-bordered schedule-table">
-                    <thead>
-                    <tr>
-                        <th class="no_border"></th>
-                        <th class="no_border"></th>
-                        <th class="no_border"></th>
-                        <th class="no_border"></th>
-                        <th class="no_border"></th>
-                        <th class="no_border"></th>
-                        <th class="no_border"></th>
-                        <th class="no_border"></th>
-                        <th class="no_border"></th>
-                        {% for foo in range(menu_param["year_count"]*12) %}
-                            <th class="no_border"></th>
-                        {% endfor %}
-                    </tr>
-                    <tr style="height: 30px;">
-                        <th colspan="3"></th>
-                        <th colspan="3">M</th>
-                        <th colspan="3">E</th>
-                        {% for year in range(menu_param.min_year,menu_param.max_year+1) %}
-                            <th colspan="12">{{ year }}</th>
-                        {% endfor %}
-                    </tr>
-                    <tr align="center" style="height: 30px;">
-                        <th class="NW">Plant Code</th>
-                        <th class="NW">Country</th>
-                        <th class="NW">Unit</th>
-                        <th class="NW" colspan="2">PR</th>
-                        <th class="NW">stts</th>
-                        <th class="NW" colspan="2">PR</th>
-                        <th class="NW">stts</th>
-                        {% for year in range(menu_param["year_count"]) %}
-                            <th>Jan</th>
-                            <th>Feb</th>
-                            <th>Mar</th>
-                            <th>Apr</th>
-                            <th>May</th>
-                            <th>Jun</th>
-                            <th>Jul</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                        {% endfor %}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for schedule in menu_param['outage_schedule_list'] %}
-                        <tr>
-                            <td class="NW"><a href="#">{{ schedule.plant_cd or '' }}</a></td>
-                            <td class="NW">{{ schedule.country_nm or '' }}</td>
-                            <td class="NW">{{ schedule.plant_name or '' }}</td>
-                            <td class="NW AC"></td>
-                            <td class="NW"></td>
-                            <td class="NW AR"></td>
-                            <td class="NW AC"></td>
-                            <td class="NW"></td>
-                            <td class="NW AR"></td>
-                            {% for cell in schedule.cells %}
-                                <td class="NW date" style="padding: 0px !important;">
-                                    <img width="100%" height="100%" src="{{ cell.img_src }}">
-                                </td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {% include "part_outage_schedule_list.html" %}
             <div class="fix_detail">
                 <table cellpadding="5">
                     <thead>
