@@ -209,13 +209,13 @@
                                 {% endfor %}
                             </tr>
                             <tr align="center" style="height: 30px;">
-                                <th >Plant Code</th>
-                                <th >Country</th>
-                                <th >Unit</th>
-                                <th  colspan="2">PR</th>
-                                <th >stts</th>
-                                <th  colspan="2">PR</th>
-                                <th >stts</th>
+                                <th>Plant Code</th>
+                                <th>Country</th>
+                                <th>Unit</th>
+                                <th colspan="2">PR</th>
+                                <th>stts</th>
+                                <th colspan="2">PR</th>
+                                <th>stts</th>
                                 {% for year in range(menu_param["year_count"]) %}
                                     <th>Jan</th>
                                     <th>Feb</th>
@@ -235,14 +235,14 @@
                             <tbody>
                             {% for schedule in menu_param['outage_schedule_list'] %}
                                 <tr id="{{ schedule.turbine_id }}" data_type="{{ schedule.data_type }}">
-                                    <td ><a href="#">{{ schedule.plant_cd or '' }}</a></td>
-                                    <td >{{ schedule.country_nm or '' }} {{ schedule.cnt }}</td>
-                                    <td >{{ schedule.plant_name or '' }}</td>
+                                    <td><a href="#">{{ schedule.plant_cd or '' }}</a></td>
+                                    <td>{{ schedule.country_nm or '' }} {{ schedule.cnt }}</td>
+                                    <td>{{ schedule.plant_name or '' }}</td>
                                     <td class="AC"></td>
-                                    <td ></td>
+                                    <td></td>
                                     <td class="AR"></td>
                                     <td class="AC"></td>
-                                    <td ></td>
+                                    <td></td>
                                     <td class="AR"></td>
                                     {% for cell in schedule.cells %}
                                         <td class="td_link {{ cell.color }}" id="{{ cell.teiken_ids_str }}" label="{{ cell.label }}"></td>
@@ -277,8 +277,6 @@
                 } else {
                     outageScheduleList(this.id);
                 }
-
-
             });
             {% if menu_param["outage_schedule_list"] %}
                 fixedResultTable();

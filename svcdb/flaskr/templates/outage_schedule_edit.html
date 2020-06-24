@@ -230,10 +230,7 @@
             </div>
             <div class="fix_detail">
                 <form id="outage_schedule_info_form"
-                      action="
-
-
-                              {% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
+                      action="{% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
                       name="outage_schedule_info_form" method="post">
                     <table cellpadding="5">
                         <thead>
@@ -323,10 +320,8 @@
                             </td>
                         </tr>
                         <tr></tr>
-
                         </tbody>
                     </table>
-
 
                     <div style="float:left;padding-top:60px;margin-left:2px;">
                         <table class="pr_date_table">
@@ -373,7 +368,6 @@
                     <input type="hidden" name="is_success" id="is_success" value={{ form.is_success.data }}/>
                 </form>
             </div>
-
             <div id="TlibJSCalendarInternalDiv" class="TlibJSCalendarInternalDivC"></div>
             <div id="TlibJSCalendarBkLayer" class="TlibJSCalendarBkLayerDivC"></div>
             <iframe id="TlibJSCalendarShim" class="TlibJSCalendarShimC" src="javascript:false;"></iframe>
@@ -451,7 +445,7 @@
             // カレンダーの制御
             $(".pr_date_table a").on("click", function () {
                 var pr_date = $(this).parent().find("input");
-                if (pr_date.prop("readonly")) return
+                if (pr_date.prop("readonly")) return;
                 calendar.show('outage_schedule_info_form', pr_date.attr("id"));
 
             });
@@ -495,9 +489,7 @@
                 }
 
             });
-
         });
-
 
         function fixedResultTable() {
             var fixedHeaderCols = 9;
@@ -603,7 +595,6 @@
                 $("#outage_end").addClass("input_disabled")
                 $("#outage_end").prop('readonly', true);
                 $("#outage_end").val("").change();
-
             } else {
                 var errorFlg = false;
                 // 日付チェック
@@ -695,7 +686,6 @@
                 $("#pr_date_e").val(pr_date_e);
             }
         }
-
 
         // バーをクリック時の処理
         function gray_click(month) {
