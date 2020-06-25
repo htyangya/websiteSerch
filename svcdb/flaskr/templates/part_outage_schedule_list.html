@@ -50,9 +50,9 @@
         <tbody>
         {% for schedule in menu_param['outage_schedule_list'] %}
             <tr id="{{ schedule.turbine_id }}" data_type="{{ schedule.data_type }}">
-                <td><a href="#">{{ schedule.plant_cd or '' }}</a></td>
-                <td>{{ schedule.country_nm or '' }} {{ schedule.cnt }}</td>
-                <td>{{ schedule.plant_name or '' }}</td>
+                <td><a href="#">{{ schedule.plant_cd|tooltip(18) }}</a></td>
+                <td>{{ schedule.country_nm|tooltip(18) }}</td>
+                <td>{{ schedule.plant_name|tooltip(18) }}</td>
                 <td class="AC"></td>
                 <td></td>
                 <td class="AR"></td>

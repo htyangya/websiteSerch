@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flaskr.lib.conf import key
 from flaskr.lib.conf.config import Config
-from flaskr.lib.svcdb_lib.template_filter import date_format, date_time_format
+from flaskr.lib.svcdb_lib.template_filter import date_format, date_time_format, string_tooltip
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -26,6 +26,7 @@ def create_app():
     app.secret_key = key.SECRET_KEY
     app.add_template_filter(date_format, "sys_dfmt")
     app.add_template_filter(date_time_format, "sys_dtfmt")
+    app.add_template_filter(string_tooltip, "tooltip")
     app.add_url_rule('/login', 'login', route.login, methods=['GET', 'POST'])
     app.add_url_rule('/logout', 'logout', route.logout)
     app.add_url_rule('/index', 'index', methods=['GET', 'POST'])
