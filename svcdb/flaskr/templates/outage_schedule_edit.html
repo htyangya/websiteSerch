@@ -48,12 +48,13 @@
             font-size: 20px;
         }
 
-        .fix_detail {
-            position: absolute;
-            left: 9px;
-            top: 225px;
-            z-index: 200;
-        }
+        {#.fix_detail {#}
+        {#    position: absolute;#}
+        {#    left: 9px;#}
+        {#    top: 225px;#}
+        {#    z-index: 200;#}
+        {#    overflow-x: auto;#}
+        {#}#}
 
         .td_radio {
             height: 15px;
@@ -295,6 +296,10 @@
             if ('{{form.execution.data}}' != '') {
                 $("#" + 'execution_' + '{{form.execution.data}}').prop("checked", true);
             }
+            $(window).on("resize load",function () {
+                $("#schedule_form-schedule_list").height(55);
+                $("#undefined_COL").height(30);
+            });
 
             {% if not form.teiken_id.data %}
                 pr_date_followBy_start();
