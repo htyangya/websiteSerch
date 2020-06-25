@@ -19,10 +19,16 @@ def date_time_format(date: datetime.datetime, fmt=None):
 def string_tooltip(mystr: str, length: int = 20):
     if mystr is None:
         return ""
-    if len(mystr) > length:
-        sub = mystr[:length] + "..."
-        return Markup(f'''
-        <span data-toggle="tooltip" title="{mystr}">
-            {sub}
-        </span> ''')
+    lenCount = 0
+    for index, char in enumerate(mystr):
+        if ord(char) <= 255:
+            lenCount += 1
+        else:
+            lenCount += 2
+        if lenCount > length:
+            sub = mystr[:index] + "..."
+            return Markup(f'''
+                    <span data-toggle="tooltip" title="{mystr}">
+                        {sub}
+                    </span> ''')
     return mystr

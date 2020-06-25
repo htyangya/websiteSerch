@@ -210,8 +210,8 @@
                         <tr></tr>
                         </tbody>
                     </table>
-
-                    <div style="float:left;padding-top:60px;margin-left:2px;">
+                    <br/>
+                    <div style="float:left;margin-left:2px;">
                         <table class="pr_date_table">
                             <tr>
                                 <td>{{ form.pr_date_m.label(class="control-label") }}</td>
@@ -636,8 +636,8 @@
             var color_str = COLORMAPPING[Math.min(outage_type_t,outage_type_g)] || "gray";
             var outage_start = $("#outage_start").val();
             var outage_end = $("#outage_end").val() || outage_start;
-            var sDate = new Date(outage_start.split("/"));
-            var eDate = new Date(outage_end.split("/"));
+            var sDate = new Date(outage_start);
+            var eDate = new Date(outage_end);
             sDate.setDate(1);
             eDate.setDate(1);
             $(".td_link").attr("class","td_link gray");

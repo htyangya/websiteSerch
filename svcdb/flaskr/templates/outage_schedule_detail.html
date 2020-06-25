@@ -97,6 +97,18 @@
                                 <div id="description" style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.description_html }}</div>
                             </td>
                         </tr>
+                        <tr>
+                            <td class="info-title-td">1st PR Date(Mechanical)</td>
+                            <td class="info-content-td">
+                                <div id="description" style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.pr_date_m|sys_dfmt }}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">1st PR Date(Electric)</td>
+                            <td class="info-content-td">
+                                <div id="description" style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.pr_date_e|sys_dfmt }}</div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
