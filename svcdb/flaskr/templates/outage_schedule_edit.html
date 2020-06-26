@@ -9,7 +9,7 @@
     <script src="/static/jquery-validate/messages_ja.js?q={{ appVer }}" type="text/javascript"></script>
 {% endblock %}
 {% block css_content %}
-    <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{ appVer }}">
 {% endblock %}
 {% block header_name %} {{ header_name }} {% endblock %}
 {% block container_content %}
@@ -48,13 +48,10 @@
             font-size: 20px;
         }
 
-        {#.fix_detail {#}
-        {#    position: absolute;#}
-        {#    left: 9px;#}
-        {#    top: 225px;#}
-        {#    z-index: 200;#}
-        {#    overflow-x: auto;#}
-        {#}#}
+        .fix_detail {
+            width: 100%;
+            overflow-y: scroll;
+        }
 
         .td_radio {
             height: 15px;
@@ -119,7 +116,8 @@
             {% include "part_outage_schedule_list.html" %}
             <div class="fix_detail">
                 <form id="outage_schedule_info_form"
-                      action="{% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
+                      action="
+                              {% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
                       name="outage_schedule_info_form" method="post">
                     <table cellpadding="5">
                         <thead>
@@ -223,10 +221,12 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <input class="pr_date_checkbox"  type="checkbox" id="pr_date_m_manual" name="Manual_m" value="1"/>
+                                    <input class="pr_date_checkbox" type="checkbox" id="pr_date_m_manual"
+                                           name="Manual_m" value="1"/>
                                     <label for="pr_date_m_manual">Manual input</label>
                                     &nbsp;&nbsp;
-                                    <input class="pr_date_checkbox" type="checkbox" id="pr_date_m_na" name="Manual_m" value="0"/>
+                                    <input class="pr_date_checkbox" type="checkbox" id="pr_date_m_na" name="Manual_m"
+                                           value="0"/>
                                     <label for="pr_date_m_na">N/A</label>
                                 </td>
                             </tr>
@@ -239,10 +239,12 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <input class="pr_date_checkbox" type="checkbox" id="pr_date_e_manual" name="Manual_e" value="1"/>
+                                    <input class="pr_date_checkbox" type="checkbox" id="pr_date_e_manual"
+                                           name="Manual_e" value="1"/>
                                     <label for="pr_date_e_manual">Manual input</label>
                                     &nbsp;&nbsp;
-                                    <input class="pr_date_checkbox" type="checkbox" id="pr_date_e_na" name="Manual_e" value="0"/>
+                                    <input class="pr_date_checkbox" type="checkbox" id="pr_date_e_na" name="Manual_e"
+                                           value="0"/>
                                     <label for="pr_date_e_na">N/A</label>
                                 </td>
                             </tr>
@@ -296,9 +298,10 @@
             if ('{{form.execution.data}}' != '') {
                 $("#" + 'execution_' + '{{form.execution.data}}').prop("checked", true);
             }
-            $(window).on("resize load",function () {
+            $(window).on("resize load", function () {
                 $("#schedule_form-schedule_list").height(55);
                 $("#undefined_COL").height(30);
+                $(".fix_detail").height($(window).height() - 250);
             });
 
             {% if not form.teiken_id.data %}
@@ -639,22 +642,22 @@
 
         // バー色付の変更
         function setDateTableColor() {
-            var outage_type_t = $('input[name="outage_type_t"]:checked').val()  || "888";
-            var outage_type_g = $('input[name="outage_type_g"]:checked').val()  || "888";
-            var color_str = COLORMAPPING[Math.min(outage_type_t,outage_type_g)] || "gray";
+            var outage_type_t = $('input[name="outage_type_t"]:checked').val() || "888";
+            var outage_type_g = $('input[name="outage_type_g"]:checked').val() || "888";
+            var color_str = COLORMAPPING[Math.min(outage_type_t, outage_type_g)] || "gray";
             var outage_start = $("#outage_start").val();
             var outage_end = $("#outage_end").val() || outage_start;
             var sDate = new Date(outage_start);
             var eDate = new Date(outage_end);
             sDate.setDate(1);
             eDate.setDate(1);
-            $(".td_link").attr("class","td_link gray");
+            $(".td_link").attr("class", "td_link gray");
 
             // 日付が設定されていない場合
             if (outage_start == "") return;
             while (sDate <= eDate) {
                 var date_label = sDate.getFullYear() + ('0' + (sDate.getMonth() + 1)).slice(-2);
-                $(".td_link[label="+date_label+"]").attr("class", "td_link "+color_str);
+                $(".td_link[label=" + date_label + "]").attr("class", "td_link " + color_str);
                 sDate.setMonth(sDate.getMonth() + 1);
             }
         }

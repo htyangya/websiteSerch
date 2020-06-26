@@ -3,7 +3,7 @@
     <script src="/static/js/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
 {% endblock %}
 {% block css_content %}
-    <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{ appVer }}">
 {% endblock %}
 {% block header_name %} {{ header_name }} {% endblock %}
 {% block container_content %}
@@ -11,33 +11,43 @@
         body {
             overflow: hidden;
         }
+
+        .fix_detail {
+            width: 100%;
+            overflow-y: scroll;
+        }
+
         .info-th {
-            background:#4BB0E0;
-            border:1px solid white;
-            height:30px;
-            width:200px;
+            background: #4BB0E0;
+            border: 1px solid white;
+            height: 30px;
+            width: 200px;
         }
+
         .info-title-td {
-            border-spacing:10px;
-            border:1px solid white;
-            background:#DAE8EE;
-            height:30px;
-            width:150px;
+            border-spacing: 10px;
+            border: 1px solid white;
+            background: #DAE8EE;
+            height: 30px;
+            width: 150px;
         }
+
         .info-content-td {
-            border:1px solid white;
-            background:#DAE8EE;
-            height:30px;
-            width:300px;
+            border: 1px solid white;
+            background: #DAE8EE;
+            height: 30px;
+            width: 300px;
         }
+
         .info-btn {
-            background:#4BB0E0;
+            background: #4BB0E0;
             border: solid 1px gray;
-            color:white;
+            color: white;
             padding: 0px 15px;
             font-size: 20px;
         }
-        td.td_link{
+
+        td.td_link {
             cursor: auto;
         }
     </style>
@@ -55,54 +65,57 @@
             <div class="fix_detail">
                 <table cellpadding="5">
                     <thead>
-                        <tr>
-                            <th class="info-th"></th>
-                            <th class="info-th"></th>
-                        </tr>
+                    <tr>
+                        <th class="info-th"></th>
+                        <th class="info-th"></th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr style="height:3px;"></tr>
-                        <tr>
-                            <td class="info-title-td">Start</td>
-                            <td class="info-content-td">{{ outage_schedule_info.outage_start|sys_dfmt }}</td>
-                        </tr>
-                        <tr>
-                            <td class="info-title-td">End</td>
-                            <td class="info-content-td">{{ outage_schedule_info.outage_end|sys_dfmt}}</td>
-                        </tr>
-                        <tr>
-                            <td class="info-title-td">Duration</td>
-                            <td class="info-content-td">{{ outage_schedule_info.outage_duration }} days</td>
-                        </tr>
-                        <tr>
-                            <td class="info-title-td" rowspan="2">Outage Type</td>
-                            <td class="info-content-td">{{ outage_schedule_info.outage_type_t_nm or '' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="info-content-td">{{ outage_schedule_info.outage_type_g_nm or '' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="info-title-td">Execution(%)</td>
-                            <td class="info-content-td">{{ outage_schedule_info.execution or '' }}%</td>
-                        </tr>
-                        <tr>
-                            <td class="info-title-td">Description</td>
-                            <td class="info-content-td">
-                                <div id="description" style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.description_html }}</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="info-title-td">1st PR Date(Mechanical)</td>
-                            <td class="info-content-td">
-                                <div id="description" style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.pr_date_m|sys_dfmt }}</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="info-title-td">1st PR Date(Electric)</td>
-                            <td class="info-content-td">
-                                <div id="description" style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.pr_date_e|sys_dfmt }}</div>
-                            </td>
-                        </tr>
+                    <tr style="height:3px;"></tr>
+                    <tr>
+                        <td class="info-title-td">Start</td>
+                        <td class="info-content-td">{{ outage_schedule_info.outage_start|sys_dfmt }}</td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td">End</td>
+                        <td class="info-content-td">{{ outage_schedule_info.outage_end|sys_dfmt }}</td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td">Duration</td>
+                        <td class="info-content-td">{{ outage_schedule_info.outage_duration }} days</td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td" rowspan="2">Outage Type</td>
+                        <td class="info-content-td">{{ outage_schedule_info.outage_type_t_nm or '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="info-content-td">{{ outage_schedule_info.outage_type_g_nm or '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td">Execution(%)</td>
+                        <td class="info-content-td">{{ outage_schedule_info.execution or '' }}%</td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td">Description</td>
+                        <td class="info-content-td">
+                            <div id="description"
+                                 style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.description_html }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td">1st PR Date(Mechanical)</td>
+                        <td class="info-content-td">
+                            <div id="description"
+                                 style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.pr_date_m|sys_dfmt }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td">1st PR Date(Electric)</td>
+                        <td class="info-content-td">
+                            <div id="description"
+                                 style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.pr_date_e|sys_dfmt }}</div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -114,9 +127,10 @@
             {% if menu_param["outage_schedule_list"] %}
                 fixedResultTable();
             {% endif %}
-            $(window).on("resize load",function () {
+            $(window).on("resize load", function () {
                 $("#schedule_form-schedule_list").height(55);
                 $("#undefined_COL").height(30);
+                $(".fix_detail").height($(window).height() - 250);
             });
         });
 
@@ -144,11 +158,11 @@
             if (!confirm("Are you sure to delete this data?")) return;
             var url = "{{ url_for('outage_schedule_delete') }}";
             showCover("お待ちください...");
-            $.post(url, {teiken_id:'{{form.teiken_id.data}}'}).done(function (data) {
+            $.post(url, {teiken_id: '{{form.teiken_id.data}}'}).done(function (data) {
                 hideCover();
                 if (data.msg) {
-                     alert(data.msg);
-                }else{
+                    alert(data.msg);
+                } else {
                     window.opener.search();
                     window.close();
                 }
