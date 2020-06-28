@@ -46,14 +46,21 @@
             padding: 0px 15px;
             font-size: 20px;
         }
-
-        td.td_link {
+/*
+        .fix_detail {
+            position: absolute;
+            left: 10px;
+            top: 220px;
+            z-index: 999;
+        }
+*/
+        td.td_link{
             cursor: auto;
         }
     </style>
 
     <div class="row">
-        <br>
+        <center id="msgDiv" style="height: 21px;padding-top: 8px;"></center>
         <button type="button" class="info-btn" onclick="editClick()">Edit</button>
         <button type="button" class="info-btn" onclick="deleteClick()">Delete</button>
         <button type="button" class="info-btn" onclick="closeClick()">Close</button>
@@ -127,10 +134,11 @@
             {% if menu_param["outage_schedule_list"] %}
                 fixedResultTable();
             {% endif %}
+            // TlibFixedHeaderTableの高さを再設定する
             $(window).on("resize load", function () {
                 $("#schedule_form-schedule_list").height(55);
                 $("#undefined_COL").height(30);
-                $(".fix_detail").height($(window).height() - 250);
+                $(".fix_detail").height($(window).height() - 236);
             });
         });
 

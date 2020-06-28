@@ -104,8 +104,7 @@
     </style>
 
     <div class="row">
-        <br/>
-        <center id="msgDiv" style="height: 16px"></center>
+        <center id="msgDiv" style="height: 21px;padding-top: 8px;"></center>
         <button type="button" class="info-btn" onclick="saveSchedule(false)">Save</button>
         <button type="button" class="info-btn" onclick="saveSchedule(true)">Save & Close</button>
         <button type="button" class="info-btn" onclick="closeCheck()">Close</button>
@@ -298,10 +297,11 @@
             if ('{{form.execution.data}}' != '') {
                 $("#" + 'execution_' + '{{form.execution.data}}').prop("checked", true);
             }
+            // TlibFixedHeaderTableの高さを再設定する
             $(window).on("resize load", function () {
                 $("#schedule_form-schedule_list").height(55);
                 $("#undefined_COL").height(30);
-                $(".fix_detail").height($(window).height() - 250);
+                $(".fix_detail").height($(window).height() - 236);
             });
 
             {% if not form.teiken_id.data %}

@@ -3,7 +3,7 @@
     <script src="/static/js/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
 {% endblock %}
 {% block css_content %}
-    <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{ appVer }}">
 {% endblock %}
 {% block header_name %} {{ header_name }} {% endblock %}
 {% block container_content %}
@@ -71,6 +71,8 @@
             min-height: 500px !important;
             max-height: 80% !important;
         }
+
+
     </style>
 
     <div class="row">
@@ -102,6 +104,8 @@
                         <div class="form-group">
                             {{ form.c3(class="form-control") }}
                             {{ form.c3.label(class="control-label") }}
+                        </div>
+                        <div class="form-group">
                             {{ form.c4(class="form-control") }}
                             {{ form.c4.label(class="control-label") }}
                         </div>
@@ -127,8 +131,24 @@
                     </div>
                 </div>
             </div>
-
             {% if menu_param["outage_schedule_list"] %}
+                <div class="right-header-btn" id="search-result-sub-title" style="position: relative;top: -16px;">
+                    <span class="search-count-title">
+                        <span class="sub-title">検索結果</span>
+                        <span class="search-count">
+                            <span d="resultForm-resultCount">{{ menu_param.page_model.item_count }}件 {{ menu_param.page_model.page_count }}页</span>
+                        </span>
+                    </span>
+                    <span class="search-page-control" id="resultForm-paging" style="display: inline-block;">
+                            {% for page in menu_param.page_model.current_pages %}
+                                <input class="btn btn-page {% if page==menu_param.page_model.page %}
+                                    btn-primary
+                                    {% else %}
+                                    btn-default
+                                {% endif %}" name="page" type="submit" value="{{ page }}">
+                            {% endfor %}
+                    </span>
+                </div>
                 <div class="search-result-div clear-float">
                     {% include "part_outage_schedule_list.html" %}
                 </div>
@@ -187,11 +207,11 @@
                 });
             {#load_jqmodal_dlg(url, on_load_jqmodal_dlg)#}
         }
-        
+
         function outageScheduleDetail(teiken_id) {
             var url = '{{url_for("outage_schedule_detail")}}';
             var path = url + "?teiken_id=" + teiken_id;
-            window.open(path,"_blank");
+            window.open(path, "_blank");
         }
 
         // 予定追加
@@ -208,23 +228,25 @@
                     date_end: $("#date_end").val(),
                 });
                 var path = url + "?" + param_str;
-                window.open(path,"_blank");
+                window.open(path, "_blank");
             }
         }
+
         // 予定追加
         function addOutageByStartStr(self) {
             var startStr = $(self).attr("label");
             var url = '{{url_for("outage_schedule_add")}}';
             var param_str = $.param({
-                    turbine_id: $(self).parent("tr").attr("id"),
-                    data_type: $(self).parent("tr").attr("data_type"),
-                    outage_start:startStr.substr(0,4)+"/"+startStr.substr(-2)+"/01",
-                    date_start: $("#date_start").val(),
-                    date_end: $("#date_end").val(),
-                });
+                turbine_id: $(self).parent("tr").attr("id"),
+                data_type: $(self).parent("tr").attr("data_type"),
+                outage_start: startStr.substr(0, 4) + "/" + startStr.substr(-2) + "/01",
+                date_start: $("#date_start").val(),
+                date_end: $("#date_end").val(),
+            });
             var path = url + "?" + param_str;
-                window.open(path,"_blank");
+            window.open(path, "_blank");
         }
+
         // 再検索をします
         function search() {
             $("#search").click()

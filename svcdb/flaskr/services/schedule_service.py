@@ -8,6 +8,7 @@ from flaskr import db
 from flaskr.forms.outage_edit_form import OutageEditForm
 from flaskr.forms.outage_form import OutageForm
 from flaskr.lib.svcdb_lib.db_util import DbUtil
+from flaskr.lib.svcdb_lib.page_model import PageModel
 from flaskr.models.svcdb_outage_schedule import OutageSchedule
 from flaskr.models.svcdb_turbine_master_table import SvcdbTurbineMasterTable
 from flaskr.sql import scheduleSql
@@ -40,14 +41,9 @@ class RowObj:
             index_start, index_end = self.month_delta(cells_start, target_start), self.month_delta(cells_start,
                                                                                                    target_end)
             for index in range(index_start, index_end + 1):
-                self.cells[index].color = COLORMAPPING.get(color_number, "gray")
-                self.cells[index].teiken_ids.append(teiken_id)
-
-    # セールを初期化
-    def set_cells(self):
-        for year in range(int(self.min_year), int(self.max_year) + 1):
-            for month in range(1, 13):
-                self.cells.append(Cell("gray", str(year) + str(month).zfill(2)))
+                cell = self.cells[index]
+                cell.color = COLORMAPPING.get(color_number, "gray")
+                cell.teiken_ids.append(teiken_id)
 
     def __init__(self, plant_cd, plant_name, country_nm, turbine_id, data_type, min_year, max_year, outage_start=None,
                  outage_end=None, color_number=None, teiken_id=None, delete_flg=0, **dict):
@@ -56,33 +52,28 @@ class RowObj:
         self.country_nm = country_nm
         self.turbine_id = turbine_id
         self.data_type = data_type
-        self.min_year = min_year
-        self.max_year = max_year
-        self.cells = []
+        self.min_year = int(min_year)
+        self.max_year = int(max_year)
         # セルリストの作成と処理
-        self.set_cells()
+        self.cells = list(map(Cell, [year + month
+                                     for month in map(lambda m: str(m).zfill(2), range(1, 13)) for year in
+                                     map(str, range(self.min_year, self.max_year))]))
         if delete_flg == 0:
             self.colour_cells(outage_start, outage_end, color_number, teiken_id)
 
 
 # 各セールに対応するオブジェクト
 class Cell:
-    def __init__(self, color, label):
-        self.color = color
+    __slots__ = ["color", "label", "teiken_ids"]
+
+    def __init__(self, label):
+        self.color = "gray"
         self.label = label
         self.teiken_ids = []
 
     @property
-    def img_src(self):
-        return f"static/images/{self.color}.png"
-
-    @property
     def teiken_ids_str(self):
         return json.dumps(self.teiken_ids)
-
-    @property
-    def length(self):
-        return self.teiken_ids.__len__()
 
 
 # ボータンを押すと
@@ -114,7 +105,14 @@ def searching(form, menu_param):
     search_table = "TURBINE_LIST_ESS" if (current_user.corp_cd == 'CNV') else "TURBINE_LIST_EX"
     menu_param["min_year"], menu_param["max_year"] = int(form.date_start.data), int(form.date_end.data)
     menu_param["year_count"] = menu_param["max_year"] - menu_param["min_year"] + 1
-    outage_schedule_list = DbUtil.sqlExcuter(scheduleSql.scheduleListSql, search_table=search_table, and_sql=and_sql)
+    item_count = DbUtil.sqlExcuter(scheduleSql.scheduleListCountSql, search_table=search_table,
+                                   and_sql=and_sql).first()[0]
+    where_sql = ""
+    if hasattr(form, "page"):
+        menu_param["page_model"] = page_model = PageModel(form.page.data, item_count)
+        where_sql = f"WHERE IDX BETWEEN {page_model.begin_item} AND {page_model.end_item}"
+    outage_schedule_list = DbUtil.sqlExcuter(scheduleSql.scheduleListSql, search_table=search_table, and_sql=and_sql,
+                                             where_sql=where_sql)
     rows_dict = {}
     for row in outage_schedule_list:
         if row.turbine_id not in rows_dict:
@@ -122,7 +120,6 @@ def searching(form, menu_param):
                                                min_year=menu_param["min_year"],
                                                max_year=menu_param["max_year"])
         elif row.delete_flg == 0:
-            rows_dict[row.turbine_id].teiken_id = row.teiken_id
             rows_dict[row.turbine_id].colour_cells(row.outage_start, row.outage_end, row.color_number, row.teiken_id)
     menu_param["outage_schedule_list"] = rows_dict.values()
 

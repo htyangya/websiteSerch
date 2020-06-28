@@ -31,7 +31,7 @@ class Config:
     # ページング件数デフォルト100件
     PAGE_RANGE = 100
     # 1ページに表示する最大ページングリンク数
-    MAX_PAGE_SIZE = 10
+    MAX_PAGE_SIZE = 100
 
     # 「Remember me」機能対応
     REMEMBER_COOKIE_DURATION = timedelta(minutes=60)

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField, BooleanField, ValidationError
+from wtforms import StringField, SubmitField, SelectField, BooleanField, ValidationError,IntegerField
 
 
 class OutageForm(FlaskForm):
@@ -22,6 +22,7 @@ class OutageForm(FlaskForm):
                              default=lambda: str(datetime.now().year))
     date_end = SelectField("", choices=[(str(i), str(i)) for i in range(2019, 2041)],
                            default=lambda: str(datetime.now().year + 5))
+    page = IntegerField(default=1)
 
     def validate_date_start(self, field):
         if field.data > self.date_end.data:
