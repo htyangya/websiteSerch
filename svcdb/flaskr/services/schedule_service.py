@@ -55,9 +55,8 @@ class RowObj:
         self.min_year = int(min_year)
         self.max_year = int(max_year)
         # セルリストの作成と処理
-        self.cells = list(map(Cell, [year + month
-                                     for month in map(lambda m: str(m).zfill(2), range(1, 13)) for year in
-                                     map(str, range(self.min_year, self.max_year))]))
+        self.cells = list(map(Cell, [year + month for year in map(str, range(self.min_year, self.max_year + 1))
+                                     for month in map(lambda m: str(m).zfill(2), range(1, 13))]))
         if delete_flg == 0:
             self.colour_cells(outage_start, outage_end, color_number, teiken_id)
 
