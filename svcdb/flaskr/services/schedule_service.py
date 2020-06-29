@@ -55,8 +55,9 @@ class RowObj:
         self.min_year = int(min_year)
         self.max_year = int(max_year)
         # セルリストの作成と処理
+        month_range = [str(m).zfill(2) for m in range(1, 13)]
         self.cells = list(map(Cell, [year + month for year in map(str, range(self.min_year, self.max_year + 1))
-                                     for month in map(lambda m: str(m).zfill(2), range(1, 13))]))
+                                     for month in month_range]))
         if delete_flg == 0:
             self.colour_cells(outage_start, outage_end, color_number, teiken_id)
 
@@ -104,10 +105,10 @@ def searching(form, menu_param):
     search_table = "TURBINE_LIST_ESS" if (current_user.corp_cd == 'CNV') else "TURBINE_LIST_EX"
     menu_param["min_year"], menu_param["max_year"] = int(form.date_start.data), int(form.date_end.data)
     menu_param["year_count"] = menu_param["max_year"] - menu_param["min_year"] + 1
-    item_count = DbUtil.sqlExcuter(scheduleSql.scheduleListCountSql, search_table=search_table,
-                                   and_sql=and_sql).first()[0]
     where_sql = ""
     if hasattr(form, "page"):
+        item_count = DbUtil.sqlExcuter(scheduleSql.scheduleListCountSql, search_table=search_table,
+                                       and_sql=and_sql).first()[0]
         menu_param["page_model"] = page_model = PageModel(form.page.data, item_count)
         where_sql = f"WHERE IDX BETWEEN {page_model.begin_item} AND {page_model.end_item}"
     outage_schedule_list = DbUtil.sqlExcuter(scheduleSql.scheduleListSql, search_table=search_table, and_sql=and_sql,
