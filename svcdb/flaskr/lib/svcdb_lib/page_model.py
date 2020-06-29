@@ -10,14 +10,14 @@ class PageModel:
         self.page = max(page, 1)
         self.item_count = item_count
         self.page_size = page_size
-        self.begin_item = None
-        self.end_item = None
-        self.page_count = None
+        self.begin_item = 1
+        self.end_item = Config.MAX_PAGE_SIZE
+        self.page_count = 1
         self.result_list = []
         self.current_pages = []
-        if display_page_count:
+        if display_page_count is not None:
             self.display_page_count = display_page_count
-        if item_count:
+        if item_count is not None:
             self.set_item_count(item_count)
 
     def set_item_count(self, item_count):

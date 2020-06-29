@@ -71,8 +71,6 @@
             min-height: 500px !important;
             max-height: 80% !important;
         }
-
-
     </style>
 
     <div class="row">
@@ -136,7 +134,7 @@
                     <span class="search-count-title">
                         <span class="sub-title">検索結果</span>
                         <span class="search-count">
-                            <span d="resultForm-resultCount">{{ menu_param.page_model.item_count }}件 {{ menu_param.page_model.page_count }}页</span>
+                            <span d="resultForm-resultCount">{{ menu_param.page_model.item_count }}件 </span>
                         </span>
                     </span>
                     <span class="search-page-control" id="resultForm-paging" style="display: inline-block;">
@@ -153,7 +151,7 @@
                     {% include "part_outage_schedule_list.html" %}
                 </div>
             {% elif "POST" == request.method %}
-                <div class="required">該当データがありません.</div>
+                <div class="required">該当データがありません。</div>
             {% endif %}
         </form>
     </div>

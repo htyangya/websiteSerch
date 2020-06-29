@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField, BooleanField, ValidationError,IntegerField
+from wtforms import StringField, SubmitField, SelectField, BooleanField, ValidationError, IntegerField
 
 
 class OutageForm(FlaskForm):

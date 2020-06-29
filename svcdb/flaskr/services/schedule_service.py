@@ -109,6 +109,8 @@ def searching(form, menu_param):
     if hasattr(form, "page"):
         item_count = DbUtil.sqlExcuter(scheduleSql.scheduleListCountSql, search_table=search_table,
                                        and_sql=and_sql).first()[0]
+        if item_count == 0:
+            return
         menu_param["page_model"] = page_model = PageModel(form.page.data, item_count)
         where_sql = f"WHERE IDX BETWEEN {page_model.begin_item} AND {page_model.end_item}"
     outage_schedule_list = DbUtil.sqlExcuter(scheduleSql.scheduleListSql, search_table=search_table, and_sql=and_sql,
