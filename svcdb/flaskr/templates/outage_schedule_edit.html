@@ -40,6 +40,12 @@
             width: 300px;
         }
 
+        .info-content-td select {
+            width: 300px;
+            font-family: 'MS Gothic', Sans-serif;
+            height: auto !important;
+        }
+
         .info-btn {
             background: #4BB0E0;
             border: solid 1px gray;
@@ -82,7 +88,7 @@
 
         .pr_date_table td:nth-child(1) {
             border: 1px solid #2b2b2b;
-            background-color: #A8ADCD;
+            background-color: #DAE8EE;
             font-size: medium;
             width: 260px;
         }
@@ -114,17 +120,13 @@
         <div class="search-result-div clear-float">
             {% include "part_outage_schedule_list.html" %}
             <div class="fix_detail">
-                <form id="outage_schedule_info_form"
+                <form style="width:100%" id="outage_schedule_info_form"
                       action="
+
                               {% if form.teiken_id.data %}{{ url_for('outage_schedule_edit') }}{% else %}{{ url_for('outage_schedule_add') }}{% endif %}"
                       name="outage_schedule_info_form" method="post">
-                    <table cellpadding="5">
-                        <thead>
-                        <tr>
-                            <th class="info-th"></th>
-                            <th class="info-th"></th>
-                        </tr>
-                        </thead>
+                    <table cellpadding="5" style="float:left;width:40%">
+                        <thead></thead>
                         <tbody>
                         <tr style="height:3px;"></tr>
                         <tr>
@@ -208,6 +210,35 @@
                         <tr></tr>
                         </tbody>
                     </table>
+                    {% if form.teiken_id.data %}
+                        <table cellpadding="5" style="float:right;width:40%;margin-right:20px">
+                            <tbody>
+                            <tr style="height:3px;"></tr>
+                            <tr>
+                                <td class="info-title-td">Create Date</td>
+                                <td class="info-content-td">{{ form.created_at.data|sys_dfmt('%Y-%m-%d') }}</td>
+                            </tr>
+                            <tr>
+                                <td class="info-title-td">Created By</td>
+                                <td class="info-content-td">{{ outage.created_by_name  or '' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="info-title-td">Update Date</td>
+                                <td class="info-content-td">{{ form.updated_at.data|sys_dfmt('%Y-%m-%d') }}</td>
+                            </tr>
+                            <tr>
+                                <td class="info-title-td">Updated By</td>
+                                <td class="info-content-td">{{ outage.updated_by_name  or '' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="info-title-td">Representive</td>
+                                <td class="info-content-td">
+                                    {{ form.representive_id(class="form-control") }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    {% endif %}
+                    <div class="clear-float"></div>
                     <br/>
                     <div style="float:left;margin-left:2px;">
                         <table class="pr_date_table">
@@ -249,7 +280,6 @@
                             </tr>
                         </table>
                     </div>
-
                     <input type="hidden" name="turbine_id" id="turbine_id" value="{{ form.turbine_id.data }}"/>
                     <input type="hidden" name="teiken_id" id="teiken_id" value="{{ form.teiken_id.data }}"/>
                     <input type="hidden" name="date_start" id="date_start" value="{{ form.date_start.data }}"/>

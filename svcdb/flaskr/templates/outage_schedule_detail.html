@@ -46,17 +46,27 @@
             padding: 0px 15px;
             font-size: 20px;
         }
-/*
-        .fix_detail {
-            position: absolute;
-            left: 10px;
-            top: 220px;
-            z-index: 999;
-        }
-*/
-        td.td_link{
+
+        /*
+                .fix_detail {
+                    position: absolute;
+                    left: 10px;
+                    top: 220px;
+                    z-index: 999;
+                }
+        */
+        td.td_link {
             cursor: auto;
         }
+
+        .pr_date_table td {
+            border: 1px solid #2b2b2b;
+            background-color: #DAE8EE;
+            font-size: medium;
+            width: 260px;
+        }
+
+
     </style>
 
     <div class="row">
@@ -69,13 +79,9 @@
     <div class="row">
         <div class="search-result-div clear-float">
             {% include "part_outage_schedule_list.html" %}
-            <div class="fix_detail">
-                <table cellpadding="5">
+            <div class="fix_detail" style="width:100%">
+                <table cellpadding="5" style="float:left;width:40%">
                     <thead>
-                    <tr>
-                        <th class="info-th"></th>
-                        <th class="info-th"></th>
-                    </tr>
                     </thead>
                     <tbody>
                     <tr style="height:3px;"></tr>
@@ -109,22 +115,52 @@
                                  style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.description_html }}</div>
                         </td>
                     </tr>
+                    </tbody>
+                </table>
+                <table cellpadding="5" style="float:right;width:40%;margin-right:20px">
+                    <tbody>
+                    <tr style="height:3px;"></tr>
                     <tr>
-                        <td class="info-title-td">1st PR Date(Mechanical)</td>
-                        <td class="info-content-td">
-                            <div id="description"
-                                 style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.pr_date_m|sys_dfmt }}</div>
-                        </td>
+                        <td class="info-title-td">Create Date</td>
+                        <td class="info-content-td">{{ form.created_at.data|sys_dfmt('%Y-%m-%d') }}</td>
                     </tr>
                     <tr>
-                        <td class="info-title-td">1st PR Date(Electric)</td>
+                        <td class="info-title-td">Created By</td>
+                        <td class="info-content-td">{{ outage_schedule_info.created_by_name  or '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td">Update Date</td>
+                        <td class="info-content-td">{{ form.updated_at.data|sys_dfmt('%Y-%m-%d') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td">Updated By</td>
+                        <td class="info-content-td">{{ outage_schedule_info.updated_by_name  or '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="info-title-td">Representive</td>
                         <td class="info-content-td">
-                            <div id="description"
-                                 style="overflow: auto; max-height: 100px; max-width: 300px;">{{ outage_schedule_info.pr_date_e|sys_dfmt }}</div>
-                        </td>
+                            {{ form.representive_name or '' }}</td>
                     </tr>
                     </tbody>
                 </table>
+                <div class="clear-float"></div>
+                <br/>
+                <div style="float:left;margin-left:2px">
+                    <table class="pr_date_table">
+                        <tr>
+                            <td>{{ form.pr_date_m.label(class="control-label") }}</td>
+                            <td>
+                                {{ outage_schedule_info.pr_date_m|sys_dfmt }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ form.pr_date_e.label(class="control-label") }}</td>
+                            <td>
+                                {{ outage_schedule_info.pr_date_e|sys_dfmt }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

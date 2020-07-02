@@ -200,6 +200,9 @@ def open_outage_schedule_edit(request):
         outage.pr_date_e = form.pr_date_e.data or None
         outage.updated_by = current_user.get_id()
         outage.updated_at = datetime.datetime.now()
+        outage.updated_by_name = current_user.get_user_person_name()
+        outage.representive_id = form.representive_id.data
+        outage.representive_name = form.representive_name or None
         db.session.add(outage)
         db.session.commit()
         target_url = url_for("outage_schedule_detail",
@@ -220,6 +223,7 @@ def open_outage_schedule_edit(request):
         header_name=header_name,
         title=header_name,
         form=form,
+        outage=outage,
         menu_param=menu_param)
 
 
@@ -280,6 +284,7 @@ def open_outage_schedule_delete(request):
     outage.delete_flg = 1
     outage.deleted_at = datetime.datetime.now()
     outage.deleted_by = current_user.get_id()
+    outage.deleted_by_name = current_user.get_user_person_name()
     db.session.add(outage)
     db.session.commit()
     msg = None

@@ -27,11 +27,14 @@ class OutageSchedule(db.Model):
     representive_name = db.Column(db.String())
     created_at = db.Column(db.DateTime, default=datetime.now)
     created_by = db.Column(db.String(), default=lambda: current_user.get_id())
+    created_by_name = db.Column(db.String(), default=lambda: current_user.get_user_person_name())
     updated_at = db.Column(db.DateTime, default=datetime.now)
     updated_by = db.Column(db.String(), default=lambda: current_user.get_id())
+    updated_by_name = db.Column(db.String(), default=lambda: current_user.get_user_person_name())
     delete_flg = db.Column(db.Integer(), default=0)
     deleted_at = db.Column(db.DateTime)
     deleted_by = db.Column(db.String)
+    deleted_by_name = db.Column(db.String())
     _outage_type_mapping = {
         '1': "Major",
         '2': "Minor",

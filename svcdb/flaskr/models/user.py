@@ -10,6 +10,8 @@ class User(UserMixin, db.Model):
     tuid = db.Column(db.String(11), primary_key=True)
     l_lang_family_name = db.Column(db.String(20))
     l_lang_first_name = db.Column(db.String(20))
+    person_family_name = db.Column(db.String(20))
+    person_first_name = db.Column(db.String(20))
     alias_mail_address = db.Column(db.String(80))
     corp_cd = db.Column(db.String(3))
 
@@ -31,6 +33,9 @@ class User(UserMixin, db.Model):
 
     def get_user_name(self):
         return self.l_lang_family_name + ' ' + self.l_lang_first_name
+
+    def get_user_person_name(self):
+        return self.person_family_name + ' ' + self.person_first_name
 
     def getUserInfo(user_id):
         selectSql = '''
