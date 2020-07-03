@@ -37,8 +37,8 @@ class OutageEditForm(FlaskForm):
         super(OutageEditForm, self).__init__(*args, **kwargs)
         rst = DbUtil.sqlExcuter(scheduleSql.fetchRepresentiveSql, tuid=current_user.get_id(),
                                 teiken_id=self.teiken_id.data)
-        self.representive_id.choices = [(str(item.representive_id), item.representive_name) for item in rst if
-                                        item.representive_id is not None]
+        self.representive_id.choices = [("", "")] + [(str(item.representive_id), item.representive_name)
+                                                      for item in rst if item.representive_id is not None]
         self.do_init()
 
     @property

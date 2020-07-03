@@ -210,34 +210,32 @@
                         <tr></tr>
                         </tbody>
                     </table>
-                    {% if form.teiken_id.data %}
-                        <table cellpadding="5" style="float:right;width:40%;margin-right:20px">
-                            <tbody>
-                            <tr style="height:3px;"></tr>
-                            <tr>
-                                <td class="info-title-td">Create Date</td>
-                                <td class="info-content-td">{{ form.created_at.data|sys_dfmt('%Y-%m-%d') }}</td>
-                            </tr>
-                            <tr>
-                                <td class="info-title-td">Created By</td>
-                                <td class="info-content-td">{{ outage.created_by_name  or '' }}</td>
-                            </tr>
-                            <tr>
-                                <td class="info-title-td">Update Date</td>
-                                <td class="info-content-td">{{ form.updated_at.data|sys_dfmt('%Y-%m-%d') }}</td>
-                            </tr>
-                            <tr>
-                                <td class="info-title-td">Updated By</td>
-                                <td class="info-content-td">{{ outage.updated_by_name  or '' }}</td>
-                            </tr>
-                            <tr>
-                                <td class="info-title-td">Representive</td>
-                                <td class="info-content-td">
-                                    {{ form.representive_id(class="form-control") }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    {% endif %}
+                    <table cellpadding="5" style="float:right;width:40%;margin-right:10px">
+                        <tbody>
+                        <tr style="height:3px;"></tr>
+                        <tr>
+                            <td class="info-title-td">Create Date</td>
+                            <td class="info-content-td">{{ form.created_at.data|sys_dfmt }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Created By</td>
+                            <td class="info-content-td">{{ outage.created_by_name  or '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Update Date</td>
+                            <td class="info-content-td">{{ form.updated_at.data|sys_dfmt }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Updated By</td>
+                            <td class="info-content-td">{{ outage.updated_by_name  or '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-title-td">Representive</td>
+                            <td class="info-content-td">
+                                {{ form.representive_id(class="form-control") }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                     <div class="clear-float"></div>
                     <br/>
                     <div style="float:left;margin-left:2px;">
@@ -314,7 +312,7 @@
 
         $(function () {
             fixedResultTable();
-            $('input[type="text"], input[type="radio"], textarea').change(function () {
+            $('input[type="text"], input[type="checkbox"], input[type="radio"], select, textarea').change(function () {
                 isEditFlg = true;
             });
 

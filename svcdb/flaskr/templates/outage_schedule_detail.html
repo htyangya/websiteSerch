@@ -66,7 +66,6 @@
             width: 260px;
         }
 
-
     </style>
 
     <div class="row">
@@ -117,12 +116,12 @@
                     </tr>
                     </tbody>
                 </table>
-                <table cellpadding="5" style="float:right;width:40%;margin-right:20px">
+                <table cellpadding="5" style="float:right;width:40%;margin-right:10px">
                     <tbody>
                     <tr style="height:3px;"></tr>
                     <tr>
                         <td class="info-title-td">Create Date</td>
-                        <td class="info-content-td">{{ form.created_at.data|sys_dfmt('%Y-%m-%d') }}</td>
+                        <td class="info-content-td">{{ form.created_at.data|sys_dfmt }}</td>
                     </tr>
                     <tr>
                         <td class="info-title-td">Created By</td>
@@ -130,7 +129,7 @@
                     </tr>
                     <tr>
                         <td class="info-title-td">Update Date</td>
-                        <td class="info-content-td">{{ form.updated_at.data|sys_dfmt('%Y-%m-%d') }}</td>
+                        <td class="info-content-td">{{ form.updated_at.data|sys_dfmt }}</td>
                     </tr>
                     <tr>
                         <td class="info-title-td">Updated By</td>
