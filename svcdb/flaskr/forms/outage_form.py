@@ -18,11 +18,16 @@ class OutageForm(FlaskForm):
     c3 = BooleanField('Mechanical', default=True)
     c4 = BooleanField('Electrical', default=True)
     search = SubmitField("Search")
-    date_start = SelectField("Period", choices=[(str(i), str(i)) for i in range(2019, 2041)],
-                             default=lambda: str(datetime.now().year))
-    date_end = SelectField("", choices=[(str(i), str(i)) for i in range(2019, 2041)],
-                           default=lambda: str(datetime.now().year + 5))
+    date_start = SelectField("Period")
+    date_end = SelectField("")
     page = IntegerField(default=1)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.date_start.choices = [(i, i) for i in map(str, range(datetime.now().year - 1, datetime.now().year + 21))]
+        self.date_start.default = str(datetime.now().year)
+        self.date_end.choices = [(i, i) for i in map(str, range(datetime.now().year + 4, datetime.now().year + 26))]
+        self.date_end.default = str(datetime.now().year + 5)
 
     def validate_date_start(self, field):
         if field.data > self.date_end.data:

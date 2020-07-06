@@ -113,10 +113,11 @@
                             <label>Period
                                 {{ form.date_start(class="form-control") }}
                                 <span style="padding: 0 10px 0 10px;">～</span>
-                                {{ form.date_end(class="form-control") }}
+                                {{ form.date_end(class="form-control",disabled="")}}
                             </label>
                         </div>
                     </div>
+                    {{ form.page(class="hidden")}}
                 </div>
                 <div class="right-header-btn">
                     <div class="form-group" style="vertical-align: bottom;">
@@ -143,7 +144,7 @@
                                     btn-primary
                                     {% else %}
                                     btn-default
-                                {% endif %}" name="page" type="submit" value="{{ page }}">
+                                {% endif %}" name="page_control" type="submit" value="{{ page }}">
                             {% endfor %}
                     </span>
                 </div>
@@ -178,6 +179,23 @@
             {% if menu_param["outage_schedule_list"] %}
                 fixedResultTable();
             {% endif %}
+            //min-yearを選択されたとき、max-yearが自動的に変化します
+            $("#date_start").on("change", function () {
+                $("#date_end").val(Math.min(this.value*1+5, $("#date_end option:last").val()));
+            });
+            //検索条件が変化する時、ページが初期化をします
+            $("#country,#plant,#c1,#c2,#c3,#c4").on("change", function () {
+                $("#page").val(1);
+            });
+            //ページングの設定
+            $("#resultForm-paging input:submit").on("click", function () {
+                $("#page").val(this.value);
+            });
+            //提出のため、date_endが活性化にする
+            $("#schedule_form").on("submit", function () {
+                $("#date_end").prop("disabled",false);
+            });
+
         });
 
         function fixedResultTable() {
@@ -203,12 +221,16 @@
                     var t = ($(window).height() / 2) - (modal.height() / 2);
                     modal.css("left", l).css("top", t).jqDrag(".jqDnRHandle").css("opacity", "1.0");
                 });
-            {#load_jqmodal_dlg(url, on_load_jqmodal_dlg)#}
         }
 
         function outageScheduleDetail(teiken_id) {
             var url = '{{url_for("outage_schedule_detail")}}';
-            var path = url + "?teiken_id=" + teiken_id;
+            var param_str = $.param({
+                    teiken_id: teiken_id,
+                    date_start: $("#date_start").val(),
+                    date_end: $("#date_end").val(),
+                });
+            var path = url + "?" + param_str;
             window.open(path, "_blank");
         }
 

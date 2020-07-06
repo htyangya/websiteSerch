@@ -28,10 +28,8 @@ class OutageEditForm(FlaskForm):
     plant = StringField("Plant")
     is_close = StringField("is_close")
     is_success = StringField("is_success")
-    date_start = SelectField("Period", choices=[(str(i), str(i)) for i in range(2019, 2041)],
-                             default=lambda: str(datetime.now().year))
-    date_end = SelectField("", choices=[(str(i), str(i)) for i in range(2019, 2041)],
-                           default=lambda: str(datetime.now().year + 5))
+    date_start = SelectField("Period", default=lambda: str(datetime.now().year))
+    date_end = SelectField("", default=lambda: str(datetime.now().year + 5))
 
     def __init__(self, *args, **kwargs):
         super(OutageEditForm, self).__init__(*args, **kwargs)
