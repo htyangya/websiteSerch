@@ -113,7 +113,7 @@
                             <label>Period
                                 {{ form.date_start(class="form-control") }}
                                 <span style="padding: 0 10px 0 10px;">～</span>
-                                {{ form.date_end(class="form-control",disabled="")}}
+                                {{ form.date_end(class="form-control")}}
                             </label>
                         </div>
                     </div>
@@ -183,17 +183,13 @@
             $("#date_start").on("change", function () {
                 $("#date_end").val(Math.min(this.value*1+5, $("#date_end option:last").val()));
             });
-            //検索条件が変化する時、ページが初期化をします
-            $("#country,#plant,#c1,#c2,#c3,#c4").on("change", function () {
+            //再検索する時、ページが初期化をします
+            $("#search").on("click", function () {
                 $("#page").val(1);
             });
             //ページングの設定
             $("#resultForm-paging input:submit").on("click", function () {
                 $("#page").val(this.value);
-            });
-            //提出のため、date_endが活性化にする
-            $("#schedule_form").on("submit", function () {
-                $("#date_end").prop("disabled",false);
             });
 
         });
@@ -280,9 +276,9 @@
             window.open(path, "_blank");
         }
 
-        // 再検索をします
+        // add,edit画面で保存するとき、該当画面をreload
         function search() {
-            $("#search").click()
+            window.location.reload();
         }
 
         //]]>
