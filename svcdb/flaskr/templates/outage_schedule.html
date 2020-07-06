@@ -230,14 +230,27 @@
             }
         }
 
+        //最終日処理
+        function get_end_date(str) {
+            var date = new Date(str);
+            date.setMonth(date.getMonth() + 1);
+            date.setDate(0);
+            var date_year = date.getFullYear();
+            var date_month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var date_date = ('0' + (date.getDate())).slice(-2);
+            return date_year + "/" + date_month + "/" + date_date;
+        }
+
         // 予定追加
         function addOutageByStartStr(self) {
             var startStr = $(self).attr("label");
             var url = '{{url_for("outage_schedule_add")}}';
+            //  var endStr = startStr.substr(0, 4) + "/" + startStr.substr(-2) + "/01");
             var param_str = $.param({
                 turbine_id: $(self).parent("tr").attr("id"),
                 data_type: $(self).parent("tr").attr("data_type"),
                 outage_start: startStr.substr(0, 4) + "/" + startStr.substr(-2) + "/01",
+                outage_end: get_end_date(startStr.substr(0, 4) + "/" + startStr.substr(-2) + "/01"),
                 date_start: $("#date_start").val(),
                 date_end: $("#date_end").val(),
             });

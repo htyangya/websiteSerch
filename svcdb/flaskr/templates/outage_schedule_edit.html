@@ -146,6 +146,7 @@
                             <td class="info-content-td">
                                 <input type="text" name="outage_end" id="outage_end" size="25" maxlength="20" required
                                        value="{{ form.outage_end.data and form.outage_end.data.strftime('%Y/%m/%d') or '' }}"
+
                                        onchange="onChangeEndDate()"
                                         {% if form.outage_start.data is none or form.outage_start.data=="" %}
                                        class="input_disabled" readonly{% endif %} />
@@ -296,7 +297,7 @@
         var isEditFlg = false;
         // コード対応カラー
         var COLORMAPPING = {
-            "1": "blue",
+            "1": "purple",
             "2": "green",
             "3": "red",
             "4": "red",
@@ -473,30 +474,22 @@
                 isEditFlg = false;
                 window.opener.search();
                 if (isClose) {
-                    window.location.href = data.url;
+                    closeCheck();
                 } else {
-                    window.detail_url = data.url;
                     showSaveMsg();
                 }
             }).fail(function () {
                 hideCover();
                 alert('save faild!');
             })
+
         }
 
         function closeCheck() {
             if ((isEditFlg == true) && (!window.confirm('Are you sure to close without save data?'))) {
                 return false;
             }
-            if ('{{ form.teiken_id.data }}') {
-                show_outage_schedule_detail();
-            } else {
-                if (window.detail_url) {
-                    window.location.href = window.detail_url;
-                } else {
-                    window.close();
-                }
-            }
+            window.close();
         }
 
         function show_outage_schedule_detail() {

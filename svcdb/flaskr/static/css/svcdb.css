@@ -945,6 +945,9 @@ table.psprimis-list-table th {
 .blue{
     background-image: url("/static/images/blue.png");
 }
+.purple{
+    background-image: url("/static/images/purple.png");
+}
 .green{
     background-image: url("/static/images/green.png");
 }

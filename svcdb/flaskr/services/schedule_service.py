@@ -15,7 +15,7 @@ from flaskr.sql import scheduleSql
 
 # コード対応カラー
 COLORMAPPING = {
-    "1": "blue",
+    "1": "purple",
     "2": "green",
     "3": "red",
     "4": "red",
@@ -205,13 +205,7 @@ def open_outage_schedule_edit(request):
         outage.representive_name = form.representive_name or None
         db.session.add(outage)
         db.session.commit()
-        target_url = url_for("outage_schedule_detail",
-                             teiken_id=outage.teiken_id,
-                             turbine_id=outage.turbine_id,
-                             date_start=form.date_start.data,
-                             date_end=form.date_end.data,
-                             )
-        return jsonify({'url': target_url})
+        return jsonify({})
     else:
         teiken_id = request.args.get('teiken_id')
         outage = OutageSchedule.query.filter_by(teiken_id=teiken_id).first()
@@ -246,13 +240,7 @@ def open_outage_schedule_add(request):
                                       )
         db.session.add(outage_model)
         db.session.commit()
-        target_url = url_for("outage_schedule_detail",
-                             teiken_id=outage_model.teiken_id,
-                             turbine_id=outage_model.turbine_id,
-                             date_start=form.date_start.data,
-                             date_end=form.date_end.data,
-                             )
-        return jsonify({'url': target_url})
+        return jsonify({})
 
     else:
         form = OutageEditForm(request.args)
