@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}" />
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSFixedHeaderTable3.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+        html { overflow: hidden; }
+        body {
+            overflow: hidden;
+            margin: 10px !important;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+        .dataTable th {
+            background: #bbbbff;
+            text-align: left;
+        }
+        .searchResult {
+            padding-top: 10px;
+        }
+        .selectBtn {
+            position: absolute;
+            top: 270px;
+            text-align: center;
+            width: 100%;
+        }
+        .privsDeptBtn {
+            width: 80px;
+            height: 25px;
+            border: 0;
+            border-width: 1px;
+            background: #4BB0E0;
+            color: white;
+        }
+        .privsDeptBtn:hover {
+            color: #039;
+            cursor: pointer;
+            background: #4295BD;
+        }
+        .privsDeptInput {
+            width: 200px;
+            border:0 solid #4BB0E0;
+            border-width:1px;
+        }
+        .privsDeptSelect {
+            width: 205px;
+            border:0 solid #4BB0E0;
+            border-width:1px;
+        }
+        .privsDeptLable {
+            padding-top: 20px;
+            width: 80px;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="condtion">
+        <form name="searchForm" id="searchForm" action="{{ url_for('privs_corp_select') }}" method="post">
+            <label for="corp_txt">Corp:</label>
+            <input type="input" class="privsDeptInput" id="corp_txt" name="corp_txt" value="{{ form['corp_txt'] }}" onkeydown="chkEnter()" />
+            <span class="btn-group" style="padding-left: 10px;">
+                <button class="btn privsDeptBtn" onclick="doSearch();" type="button">Search</button>
+            </span>
+            <center>
+                <font color="#ff0000">
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        <p style="padding-top: 10px;">{{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </font>
+            </center>
+            <input type="hidden" name="db_id" id="db_id" value="{{ form['db_id'] }}" />
+        </form>
+    </div>
+    {% if corp_list %}
+    <div class="searchResult">
+        <div>
+            <div id="tableDiv" class="TlibTableC">
+                <table id="datalist" class="dataTable dataListC selectedTable">
+                    <tr>
+                        <th>Corp Cd</th>
+                        <th>Corp Name</th>
+                    </tr>
+                    {% for data in corp_list %}
+                        <tr>
+                            <td id="selCorpCd">{{ data.corp_cd }}</td>
+                            <td id="selCorpNm">{{ data.corp_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="selectBtn">
+            <div style="text-align: center;">
+                <span class="btn-group">
+                    <button class="btn privsDeptBtn" onclick="setCorp();" type="button">Select</button>
+                </span>
+                <span class="btn-group" style="padding-left: 100px;">
+                    <button class="btn privsDeptBtn" onclick="window.close();" type="button">Cancel</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <script>
+        //<![CDATA[
+        var db_id = "{{ form['db_id'] }}";
+        var waitMsg = "{{ form['wait_msg'] }}";
+        var selectCorpMsg = "{{ form['select_corp_msg'] }}";
+        var zeroListMsg = "{{ form['zero_list_msg'] }}";
+
+        $(function(){
+            if ({{ result_cnt }} > 0) {
+                initTlibJSFixedHeaderTable(
+                    {   header_rows: 1,
+                        header_cols: 0,
+                        table_div: 'tableDiv',
+                        table_height: 200,
+                        table_header_div: 'TlibFixedTableHeader_condition'
+                    }
+                );
+                // 行選択処理
+                selectedTableTr();
+                hideCover();
+            } else {
+                destroyTlibJSFixedHeaderTable('tableDiv');
+            }
+        });
+
+        function setCorp() {
+            if (!window.opener || window.opener.closed) {
+                // メインウィンドウの存在をチェック
+                alert('メインウィンドウがありません。'); // 存在しない場合は警告ダイアログを表示
+                return;
+            }
+
+            var output = [];
+            var selectedCorpTr = getSelectedTr($("#datalist"));
+            if (selectedCorpTr === null || selectedCorpTr.length == 0) {
+                if ({{ result_cnt }} > 0) {
+                    alert(selectCorpMsg);
+                } else {
+                    alert(zeroListMsg);
+                }
+                return;
+            } else {
+                var selectCorpCd = selectedCorpTr.find("td[id='selCorpCd']").text();
+                if (typeof(selectCorpCd) != "undefined" && selectCorpCd != "") {
+                    var selectCorpNm = selectedCorpTr.find("td[id='selCorpNm']").text();
+                    output['corpCd'] = selectCorpCd;
+                    output['corpNm'] = selectCorpNm;
+                    // 親画面へ返却
+                    opener.popupSetCorp(output);
+                    window.close();
+                }
+            }
+        }
+
+        function chkEnter() {
+            if (window.event.keyCode == 13) {
+                $("#searchButton").click();
+            }
+        }
+
+        function dispWaitMsg() {
+            showCover(waitMsg);
+            return true;
+        }
+
+        // 検索
+        function doSearch() {
+            dispWaitMsg();
+            $("#searchForm").submit();
+        }
+        //]]>
+    </script>
+    <div class="jqmWindow" id="jqmWindow"></div>
+</body>
+</html>

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}ログイン画面{% endblock %}
+
+{% block header_name %}情報共有ＤＢシステム（ＤＢシステム管理）{% endblock %}
+
+<!-- CSS STYLE -->
+{% block style_content %}
+<style type="text/css">
+    <!--
+    h2 {
+        font-size: 1.5em !important;
+        font-family: 'MS Gothic', Sans-serif !important;
+        font-weight: bold !important;
+    }
+    h3 {
+        font-size: 1.17em;
+        font-weight: bold;
+        font-family: 'MS Gothic', Sans-serif !important;
+    }
+    .xtop, .xbottom {
+        display:block;
+        background:transparent;
+        font-size:1px;
+    }
+    .xb1, .xb2, .xb3, .xb4 { display:block; overflow:hidden; }
+    .xb1, .xb2, .xb3 { height:1px; }
+    .xb2, .xb3, .xb4 {
+        background:#ffffff;
+        border-left:1px solid #333399;
+        border-right:1px solid #333399;
+    }
+    .xb1 {margin:0 5px; background:#333399;}
+    .xb2 {margin:0 3px; border-width:0 2px;}
+    .xb3 {margin:0 2px;}
+    .xb4 {height:2px; margin:0 1px;}
+    .xboxcontent {
+        display:block; background:#ffffff;
+        border:0 solid #333399;
+        border-width:0 1px;
+        padding: 0.5em 1em;
+    }
+    #system_message {
+        background: transparent;
+        margin: 1em 5em;
+        font-size: 11pt;
+    }
+    -->
+</style>
+{% endblock %}
+
+{% block container_content %}
+<center>
+ <h2 class="h3 mb-3 font-weight-normal">CMS : {{ db_name }}</h2>
+ <h3><font color="green">System administration tools</font></h3>
+</center>
+<div class="border"></div>
+<center>
+    <font color="#ff0000">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <p style="margin: 0px;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </font>
+</center>
+<br>
+<center>
+    <form action="" method="post" class="form-signin">
+        <input type="hidden" name="db_id" value="{{ db_id }}" />
+        <input type="hidden" name="next_url" value="{{ next_url }}" />
+        <table id="login_table" border="0">
+            <tbody>
+                <tr>
+                    <td class="AL">User ID :</td>
+                    <td class="AL">{{ form.user_id(maxlength="100") }}</td>
+                </tr>
+                <tr>
+                    <td class="AL">Password :</td>
+                    <td class="AL">{{ form.password(maxlength="20") }}</td>
+                </tr>
+                <tr>
+                    <td class="AC" colspan="2">
+                        <button class="btn btn-lg btn-outline-primary" type="submit">Login</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </form>
+<table width="98%" border="0" cellspacing="2" cellpadding="0">
+  <tbody><tr align="right">
+    <td align="right">{{ systemVersion }}</td>
+  </tr>
+</tbody></table>
+</center>
+<div class="border"></div>
+<center>
+    <table width="98%" border="0" cellspacing="2" cellpadding="0">
+        <tbody>
+            <tr>
+                <td align="left">
+                </td>
+                <td align="right">(C)2020- Toshiba Energy Systems & Solutions Corporation, All Rights Reserved.</td>
+            </tr>
+        </tbody>
+    </table>
+</center>
+<script>
+    window.onload = function(){
+        // ページ読み込み時に実行したい処理
+        init();
+    }
+
+	function init() {
+		if(document.login.user_id.value.length == 0) {
+			document.login.user_id.focus();
+		} else {
+			document.login.password.focus();
+		}
+	}
+
+	function getKEYCODE(e){
+		if(document.layers) return e.which
+		if(document.all)    return event.keyCode
+	}
+
+	function KeyDownUserId(e) {
+		var keyChar = String.fromCharCode(getKEYCODE(e));
+		if (keyChar.charCodeAt(0) == 13) {
+			document.login.password.focus();
+			return false;
+		}
+		return true;
+	}
+
+	function KeyDownPassword(e) {
+		var keyChar = String.fromCharCode(getKEYCODE(e));
+		if (keyChar.charCodeAt(0) == 13) {
+			document.login.submit();
+			return false;
+		}
+		return true;
+	}
+
+	document.login.user_id.onkeypress = KeyDownUserId;
+	document.login.password.onkeypress = KeyDownPassword;
+</script>
+{% endblock %}

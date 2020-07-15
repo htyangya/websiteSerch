@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <body>
+       <contents>
+            <column>operation_date</column>
+       </contents>
+       <contents>
+            <column>time</column>
+       </contents>
+       <contents>
+            <column>operation_cd</column>
+       </contents>
+       <contents>
+            <column>company_name_jp</column>
+       </contents>
+       <contents>
+            <column>dept_name_jp</column>
+       </contents>
+       <contents>
+            <column>user_name_jp</column>
+       </contents>
+	   <contents>
+            <column>note</column>
+       </contents>
+	   <contents>
+            <column>ip_addr</column>
+       </contents>
+    </body>
+</root>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}" />
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSFixedHeaderTable3.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSTableFilter.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.highlight-3a.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+        html { overflow: hidden; }
+        body {
+            overflow: hidden;
+            margin: 10px !important;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+        .dataTable th {
+            background: #bbbbff;
+            text-align: left;
+        }
+        .highlight { background-color: yellow; }
+        .jqmWindow {
+            width: 420px !important;
+            height: 400px !important;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="condtion">
+        <div class="border"></div>
+        <center>
+            <h2>CMS : {{ form["db_name"] }}</h2>
+            <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+        </center>
+        <div class="border"></div>
+        &nbsp;&gt;&nbsp;<a href="{{url_for('db_adm_index')}}?db_id={{ form['db_id'] }}">Main Menu</a>&nbsp;&gt;Privilege (Department)
+        <div class="border"></div>
+        <br>
+    </div>
+    <div>
+        <center>
+            <table id="datalist_header" class="datalist_headerC">
+                <tr>
+                    <th class="title">Privilege (Department)</th>
+                    <th class="title" style="float:right;"><a href="#" onclick="privsDept('{{ form['add_privs_dept'] }}')">Add</a></th>
+                    <th style="float:right;">
+                        <span><input style="height: 22px;" type="text" id="search_txt"/></span>
+                        <input type="button" id="search_btn" value="Search">
+                    </th>
+                </tr>
+            </table>
+            <div>
+                <div id="tableDiv" class="TlibTableC">
+                    <table id="datalist" class="dataTable dataListC">
+                        <tr>
+                            <th class="no_border no_border_left"></th>
+                            {% for cnt in range(1, 10) %}
+                            <th class="no_border"></th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <th>Corp Cd</th>
+                            <th>Corp Name</th>
+                            <th>Div Cd</th>
+                            <th>Dept Cd</th>
+                            <th>Emp Type Cd</th>
+                            <th>Emp Type Name</th>
+                            <th>Working Type Cd</th>
+                            <th>Working Type Name</th>
+                            <th>Privs Type</th>
+                            <th></th>
+                        </tr>
+                        {% for data in privsDeptList %}
+                            <tr>
+                                <td>{{ data.corp_cd }}</td>
+                                <td>{{ data.corp_name }}</td>
+                                <td>{{ data.div_cd }}</td>
+                                {% if data.dept_cd == '%' %}
+                                    <td>{{ data.dept_cd }}</td>
+                                {% else %}
+                                    <td><a href="#" onclick="openWindow('{{ url_for('privs_dept_detail') }}?db_id={{ db_id }}&corp_cd={{ data.corp_cd }}&div_cd={{ data.div_cd }}&dept_cd={{ data.dept_cd }}', 'privs_dept_detail');">{{ data.dept_cd }}</a></td>
+                                {% endif %}
+                                <td>{{ data.emp_type_cd }}</td>
+                                <td>{{ data.emp_type_name }}</td>
+                                <td>{{ data.working_type_cd }}</td>
+                                <td>{{ data.working_type_name }}</td>
+                                <td>{{ data.privs_type }}</td>
+                                <td>
+                                    <a href="#" onclick="privsDept('{{ form['update_privs_dept'] }}', '{{ data.corp_cd }}', '{{ data.div_cd }}', '{{ data.dept_cd }}', '{{ data.emp_type_cd }}', '{{ data.working_type_cd }}', '{{ data.privs_type }}')">Modify</a>
+                                    <a href="#" onclick="privsDept('{{ form['delete_privs_dept'] }}', '{{ data.corp_cd }}', '{{ data.div_cd }}', '{{ data.dept_cd }}', '{{ data.emp_type_cd }}', '{{ data.working_type_cd }}', '{{ data.privs_type }}')">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </center>
+    </div>
+    <script>
+        var db_id = "{{ form['db_id'] }}";
+        var privsDeptJqUrl = '{{ url_for('privs_dept_jqmodal') }}';
+        var privsCorpSelectUrl = '{{ url_for('privs_corp_select') }}';
+        var fixed_table = new TlibHeaderFixedTable();
+        fixed_table._table_div = 'tableDiv';
+        fixed_table._table_header_div = 'TlibTableHeaderfixed_table';
+        fixed_table._table_height = 0;
+        fixed_table._header_cols = 0;
+        fixed_table._no_resize_bind = 0;
+        fixed_table._use_get_bounding_client_rect_on_ie11 = 1;
+        fixed_table._use_get_bounding_client_rect = 1;
+        fixed_table.init();
+
+        $(function() {
+            $("#search_txt").keydown(function(event) {
+                if (event.keyCode == 13) {
+                    $("#search_btn").click();
+                }
+            })
+        });
+
+        initTlibTableFilter('datalist');
+        function privsDept(func, corp_cd, div_cd, dept_cd, emp_type_cd, working_type_cd, privs_type) {
+            popupPrivsDept(db_id, func, corp_cd, div_cd, dept_cd, emp_type_cd, working_type_cd, privs_type);
+        }
+
+        function reload() {
+            window.location.reload();
+        }
+
+    </script>
+    <div class="jqmWindow" id="jqmWindow"></div>
+</body>
+</html>

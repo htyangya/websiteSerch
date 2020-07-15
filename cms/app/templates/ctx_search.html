@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}全文検索画面{% endblock %}
+
+{% block header_name %}情報共有ＤＢシステム{% endblock %}
+
+<!-- CSS STYLE -->
+{% block style_content %}
+<style type="text/css">
+    html {
+        overflow: hidden;
+    }
+    <!--
+    h2 {
+        font-size: 1.5em !important;
+        font-family: 'MS Gothic', Sans-serif !important;
+        font-weight: bold !important;
+    }
+    div.ctx_desp {
+        padding-left: 20px;
+        color: #555;
+        padding-bottom: 10px;
+    }
+    -->
+</style>
+{% endblock %}
+
+{% block container_content %}
+<center>
+ <h2 class="h3 mb-3 font-weight-normal">{{ db_name }}</h2>
+</center>
+<div class="border"></div>
+<center>
+    <font color="#ff0000">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <p style="margin: 0px;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </font>
+</center>
+<br>
+<center>
+    <form action="ctx_search" method="post" name="ctx_search_form">
+        <input type="hidden" name="db_id" value="{{ db_id }}" />
+        <table id="ctx_search_table" border="0">
+            <tbody>
+                <tr>
+                    <td class="AL"><input type="text" style="vertical-align: middle" name="ctx_search_text" id="ctx_search_text" value="{{ ctx_search_text }}"/></td>
+                    <td class="AL"><button class="btn btn-default" type="submit" id="ctx_search_btn">検索</button></td>
+                </tr>
+            </tbody>
+        </table>
+        {% if ctx_search_list %}
+        <div id="ctxResultTable" style="padding-top: 10px; width: 98%; overflow-y: auto;">
+            <table>
+                <tbody>
+                    {% for ctx_search in ctx_search_list %}
+                    <tr>
+                        <td>
+                            <div><a href="{{ ctx_search.ctx_url }}" target="_blank">{{ ctx_search.ctx_title }}</a></div>
+                            <div class="ctx_desp">
+                                Score&nbsp;&nbsp;&nbsp;&nbsp;: {{ ctx_search.score_cnt }}<br>
+                                Update At: {{ ctx_search.object_updated_at }}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </form>
+</center>
+
+<script>
+	$(function() {
+	    $(window).bind('resize', resize_ctx_window);
+	    resize_ctx_window();
+	});
+
+	function resize_ctx_window(e) {
+        var winHeight;
+        if(typeof(window.innerHeight) != "undefined") {
+            winHeight = window.innerHeight;
+        } else {
+            winHeight = document.documentElement.clientHeight ||
+                document.body.clientHeight;
+        }
+        $("#ctxResultTable").height(winHeight - $("#ctx_search_table").offset().top - 40);
+    }
+</script>
+{% endblock %}

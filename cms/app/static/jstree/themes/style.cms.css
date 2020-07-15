@@ -1,0 +1,6 @@
+.view_list .folder { background:url('file_sprite.png') right bottom no-repeat; }
+.view_list .file { background:url('file_sprite.png') 0 0 no-repeat; }
+.keyword_tree .folder { background:url('file_sprite.png') right bottom no-repeat; }
+.keyword_tree .file { background:url('file_sprite.png') 0 0 no-repeat; }
+.folder_list .folder { background:url('file_sprite.png') right bottom no-repeat; }
+.folder_list .file { background:url('file_sprite.png') 0 0 no-repeat; }

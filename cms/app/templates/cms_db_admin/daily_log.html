@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/tjslib/TlibJSCalendar.css?q={{appVer}}" />
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSFixedHeaderTable3.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSTableFilter.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSCalendar.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+        html { overflow: hidden; }
+        body {
+            overflow: hidden;
+            margin: 10px !important;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+        .dataTable th {
+            background: #bbbbff;
+            text-align: left;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="condtion">
+        <div class="border"></div>
+        <center>
+            <h2>CMS : {{ form["db_name"] }}</h2>
+            <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+        </center>
+        <div class="border"></div>
+        &nbsp;&gt;&nbsp;<a href="{{url_for('db_adm_index')}}?db_id={{ form['db_id'] }}">Main Menu</a>&nbsp;&gt;&nbsp;Operation Log
+        <div class="border"></div>
+        <!-- new print_dataset_list_ex -->
+        <br>
+        <center>
+            <form action="{{url_for('daily_log_search')}}" name="daily_log_form"  method="post">
+               <span style="color: red;" ></span>
+                <center>
+                    <table id="property">
+                        <tr>
+                          <th colspan="2">Daily Log</th>
+                        </tr>
+                    <tr class="even">
+                        <td class="name">Date</td>
+                        <td class="value">
+                            <input type="text" name="log_date1" id="log_date1" size="25" maxlength="20" value="{{ form['log_date1'] }}">
+                            <a href="javascript:void(0)" onclick="calendar.show('daily_log_form', 'log_date1');"><img src="/static/images/calendar.gif?q={{appVer}}" border="0"></a>
+                            &nbsp;-&nbsp;
+                            <input type="text" name="log_date2" id="log_date2" size="25" maxlength="20" value="{{ form['log_date2'] }}">
+                            <a href="javascript:void(0)" onclick="calendar.show('daily_log_form', 'log_date2');"><img src="/static/images/calendar.gif?q={{appVer}}" border="0"></a>
+                        </td>
+                    </tr>
+
+                <!-- 後で追加
+                     <tr class="odd"><td class="name">Database</td><td class="value">    <input type="text" name="project_name" value=""
+                            size="80" readonly class="read_only">
+                        <input type="button" name="project_select_btn" value="Select ..."
+                            onclick="show_project_select_dlg()">
+                        <input type="button" name="project_clear_btn" value="Clear"
+                            onclick="clear_project_name()">
+                    </td></tr>
+                    <tr class="even"><td class="name">Option</td><td class="value"><select name="option" id="option"  size="1" ><option value=""  selected>
+                    <option value="EXCLUDE_SYSTEM" >Exclude SYSTEM
+                    </select>
+                    </td></tr>
+                -->
+                    </table>
+                </center>
+                <input type="hidden" name="func" id="func" value="">
+                <input type="hidden" name="project_id" id="project_id" value="">
+                <input type="hidden" name="db_id" id="db_id" value="{{ form['db_id'] }}">
+                <input type="hidden" name="db_name" id="db_name" value="{{ form['db_name'] }}">
+                <input type="button" name="submit_btn" value="Submit" onclick="submit_func()">
+            </form>
+        </center>
+    </div>
+    <div class="jqmWindow" id="project_select_dlg" style="overflow:hidden"></div>
+    <div id="TlibJSCalendarInternalDiv" class="TlibJSCalendarInternalDivC"></div>
+    <div id="TlibJSCalendarBkLayer" class="TlibJSCalendarBkLayerDivC"></div>
+    <iframe id="TlibJSCalendarShim" class="TlibJSCalendarShimC" src="javascript:false;"></iframe>
+
+    <!-- 初期化の時、一覧非表示 -->
+    {% if static != 'init' %}
+    <div class="searchList">
+        <center>
+            <table id="datalist_header" class="datalist_headerC">
+                <tr>
+                  <th class="title">Operation Log</th>
+                  <td class="function"><a href="javascript:void(0);" onclick="downloadDailyLogFile()">Download</a></td>
+                </tr>
+            </table>
+
+            <div style="margin-left:10px;">
+                <div id="tableDiv" class="TlibTableC">
+                    <table id="datalist" class="dataTable dataListC">
+                        <!-- 基準行 -->
+                        <tr>
+                            <th class="no_border no_border_left"></th>
+                            {% for cnt in range(1, 8) %}
+                            <th class="no_border"></th>
+                            {% endfor %}
+                        </tr>
+                        <!-- ヘーダー行 -->
+                        <tr>
+                            <th>Operation Date</th>
+                            <th>Time</th>
+                            <th>Operation</th>
+                            <th>Company Name</th>
+                            <th>Dept Name</th>
+                            <th>User Name</th>
+                            <th>Note</th>
+                            <th>IP Address</th>
+                        </tr>
+                        <!-- 明細行 -->
+                        {% for data in dailyLogList %}
+                            <tr>
+                                <td>{{ data.operation_date }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.operation_cd }}</td>
+                                <td>{{ data.company_name_jp }}</td>
+                                <td>{{ data.dept_name_jp }}</td>
+                                <td>{{ data.user_name_jp }}</td>
+                                {% if data.note is not none %}
+                                <td>{{ data.note }}</td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}
+                                <td>{{ data.ip_addr }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div><!-- -->
+            </div>
+        </center>
+    </div>
+    {% endif %}
+    <br><div class="border"></div>
+    <form id="downloadForm" name="downloadForm" action="{{url_for('daily_log_dl')}}" method="post">
+        <input type="hidden" name="db_id" value="{{form['db_id']}}" />
+        <input type="hidden" name="log_date1" value="{{form['log_date1']}}" />
+        <input type="hidden" name="log_date2" value="{{form['log_date2']}}" />
+    </form>
+    <script>
+    //<![CDATA[
+    var submit_flg = 0;
+    var submit_timeout = 0;
+    var prev_submit_time = 0;
+    var confirm_msg = '';
+
+    <!-- 初期化の時、一覧非表示 -->
+    {% if static != 'init' %}
+    var fixed_table = new TlibHeaderFixedTable();
+    fixed_table._table_div = 'tableDiv';
+    fixed_table._table_header_div = 'TlibTableHeaderfixed_table';
+    fixed_table._table_height = 0;
+    fixed_table._header_cols = 0;
+    fixed_table._no_resize_bind = 0;
+    fixed_table._use_get_bounding_client_rect_on_ie11 = 1;
+    fixed_table._use_get_bounding_client_rect = 1;
+    fixed_table.init();
+
+    var fixed_table_resize = function() {
+        fixed_table._onResizeWindow();
+    };
+    {% endif %}
+
+    function submit_func(func) {
+        if(submit_timeout == 0) {
+            if(submit_flg != 0) return;
+        } else {
+            now = new Date();
+            if(prev_submit_time != 0 &&
+                now.getTime() - prev_submit_time < submit_timeout) return;
+            prev_submit_time = now.getTime();
+        }
+        submit_flg = 1;
+
+        if(confirm_msg == '' || confirm(confirm_msg)) {
+            if(!func) {
+                document.daily_log_form.func.value = 'show_daily_log';
+            } else {
+                document.daily_log_form.func.value = func;
+            }
+            document.daily_log_form.submit();
+        } else {
+            submit_flg = 0;
+        }
+    }
+
+    function cancel_func() {
+        document.daily_log_form.func.value = '';
+        document.daily_log_form.submit();
+    }
+
+    $(function() {
+        $("tr:not(:has(th)):odd").addClass("odd");
+        $("tr:not(:has(th)):even").addClass("even");
+    });
+
+	var calendar = new TlibJSCalendar();
+	calendar.date_format = 'YYYY-MM-DD';
+	calendar.header_format = 'YYYY-MM';
+
+    function show_project_select_dlg()
+    {
+        $('html,body').css('overflow', 'hidden');
+        var href = 'daily_log.cgi?func=show_project_select_dlg';
+        $('#project_select_dlg').jqm({ajax:href, modal:true}).jqmShow();
+    }
+
+    function hide_project_select_dlg()
+    {
+        $('html,body').css('overflow', 'auto');
+        $('body').css('overflow', 'auto');
+        $('#project_select_dlg').jqmHide();
+    }
+
+    function select_project(project_id, project_name)
+    {
+        document.daily_log_form.project_id.value = project_id;
+        document.daily_log_form.project_name.value = project_name;
+        hide_project_select_dlg();
+    }
+
+    function clear_project_name()
+    {
+        document.daily_log_form.project_id.value = '';
+        document.daily_log_form.project_name.value = '';
+    }
+
+    // DailyLogList
+    function downloadDailyLogFile() {
+        var url = $("#downloadForm").attr("action");
+        var sendOption = $("#downloadForm").serialize();
+        msSaveOrOpenBlob(url, "POST", "しばらくお待ちください", "", "application/x-www-form-urlencoded", sendOption);
+    }
+    //]]>
+    </script>
+</body>
+</html>

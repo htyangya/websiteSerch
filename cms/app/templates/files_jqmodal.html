@@ -1,0 +1,87 @@
+    <div class="jqDnRHandle">{{ jqmTitle }}</div>
+    <div class="jqmBody" id="jqmBody" style="overflow: hidden;">
+        <form id="editform" name="editform" method="post" action="./del_risk_attached_files" class="main-form" enctype="multipart/form-data">
+            <input type="hidden" id="editform-editMode" name="editform-editMode" value="1" />
+            <div class="header-content" id="editform-headerContents">
+                <!-- キャンセル -->
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="close_jqmodal_dlg();" type="button">閉じる</button>
+                </div>
+            </div>
+            <div class="main-content" style="overflow: hidden;">
+                <div class="pjbase-content">
+                    <div id="attach_list" class="file-content sub-container" style="min-width: 765px;">
+                        <div class="attach_list_div" id="editform-relationAttachTable">
+                            <input name="editform-downloadSaveFlg" id="editform-downloadSaveFlg" type="hidden" />
+                            <table id="editform-relationAttachList" class="table-bordered psprimis-list-table">
+                                <tr>
+                                    <th class="NW" style="width:725px;">添付ファイル名</th>
+                                    <th class="NW" style="width:230px;">ファイルサイズ</th>
+                                    <th class="NW" style="width:230px;">登録日</th>
+                                </tr>
+                                {% for attacheFile in attacheFileList %}
+                                <tr>
+                                    <td class="NW AT AL">
+                                        <a onclick="downloadFile('{{attacheFile.file_id}}')" href="javascript:void(0);">{{attacheFile.file_name}}</a>
+                                    </td><!-- 添付ファイル名 -->
+                                    <td class="NW AT AL">{{attacheFile.file_size_disp}}</td><!-- 添付ファイルサイズ -->
+                                    <td class="NW AT AL">{{attacheFile.created_at_str}}</td><!-- 最終更新日 -->
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    <br>
+                </div> <!-- pjbase-content -->
+            </div> <!-- main-content -->
+        </form>
+    </div>
+
+    <script>
+    //<![CDATA[
+        var db_id = "{{ db_id }}";
+        $("input").keypress(function(ev) {
+            if ((ev.which && ev.which === 13) || (ev.keyCode && ev.keyCode === 13)) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+
+        // ファイルダウンロード
+        function downloadFile(fileId) {
+
+            // ファイル存在チェック
+            var url = getDownloadFileUrl(db_id, fileId);
+            msSaveOrOpenBlob(url, "GET", "しばらくお待ちください", "", "application/x-www-form-urlencoded", "");
+        }
+
+        var editMode = "1";
+        var fileId = "{{ file_id }}"
+        var objectId = "{{ object_id }}"
+
+        $(document).ready(function() {
+            initFixedResultTable();
+        });
+
+        function initFixedResultTable() {
+
+            var fixedHeaderCols = 0;
+
+            initTlibJSFixedHeaderTable(
+                {table_div: 'editform-relationAttachTable',
+                    table_header_div: 'TlibTableHeaderfixed_table',
+                    table_height: -1,
+                    header_cols: 0,
+                    header_rows: 0,
+                    table_height: 380,
+                    no_resize_bind: 1,
+                    bg_color: '',
+                    header_cols: fixedHeaderCols,
+                    bg_color: ''
+                });
+            initResultListClick();
+            adjustFixedHeaderTable();
+        }
+    //]]>
+    </script>

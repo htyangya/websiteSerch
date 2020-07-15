@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-dist/css/bootstrap.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/min/main_frame_all.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/main_frame.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jstree/themes/style.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jstree/themes/style.cms.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/tjslib/TlibJSCalendar.css?q={{appVer}}" />
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/bootstrap-dist/js/bootstrap.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/min/main_frame_all.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms_main_frame.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jstree/jstree.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/TlibDragAndDropUpload.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSCalendar.js?q={{appVer}}" type="text/javascript"></script>
+
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <style type="text/css">
+        #info_msg { height: auto; width: 100%; margin-top: 5px; text-align: center; border-bottom: 1px solid #dddddd; }
+        #title_msg { height: auto; width: 100%; margin-top: 5px; text-align: center;}
+        .container { width: 100% !important; }
+        .view_list {font-size:11pt;}
+
+        /* jqModal用CSS */
+        .jqmWindow {
+            width: 800px !important;
+            min-height: 500px !important;
+            max-height: 80% !important;
+        }
+        .main-form{
+            height: 100%;
+        }
+        .header-content{
+            padding-bottom: 10px;
+            overflow: hidden;
+        }
+        .main-content{
+            /* padding-top: 35px; */
+            height: 100%;
+            width: 100%;
+        }
+        #relationAttachDnDArea {
+            padding: 10px;
+            border: 3px dashed #000080;
+            virtical-align: middle;
+            text-align: center;
+            width: 315px !important;
+        }
+        .container {
+            padding-top: 0px;
+        }
+        .float_none { float: none !important; }
+        .width_170 { width: 170px !important; }
+        .head_menu a {
+            color: #fff;
+            border-radius: 3px;
+            transition: .4s;
+            margin-left: 3px;
+        }
+        .msg_title { font-size: 11pt; }
+        /* ヘッダの背景とテキスト */
+        div#headerArea {
+            background-color: {% if is_edit_mode %} #363; {% else %} {{colorSettingDic.get('main_header_bg_color')}}; {% endif %}
+            border-bottom-color: {% if is_edit_mode %} #363; {% else %} {{colorSettingDic.get('main_header_bg_color')}}; {% endif %}
+            height: 4.05em;
+        }
+        div#headerArea, div#headerArea a, #headerTable {
+            color: {% if is_edit_mode %} #fff; {% else %} {{colorSettingDic.get('main_header_txt_color')}}; {% endif %}
+        }
+        /* タブの背景とテキスト */
+        .cms-tabs > li > a,
+        .cms-tabs > li > a:focus {
+            background-color: {% if is_edit_mode %} #ccc; {% else %} {{colorSettingDic.get('inactive_tab_bg_color')}}; {% endif %}
+            color: {% if is_edit_mode %} #333; {% else %} {{colorSettingDic.get('inactive_tab_txt_color')}}; {% endif %}
+        }
+        .cms-tabs > li > a:hover {
+            background-color: {% if is_edit_mode %} #393f4c; {% else %} {{colorSettingDic.get('active_tab_bg_color')}}; {% endif %}
+            color: {% if is_edit_mode %} #fff; {% else %} {{colorSettingDic.get('active_tab_txt_color')}}; {% endif %}
+        }
+        .cms-tabs > li.active > a,
+        .cms-tabs > li.active > a:hover,
+        .cms-tabs > li.active > a:focus {
+            background-color: {% if is_edit_mode %} #393f4c; {% else %} {{colorSettingDic.get('active_tab_bg_color')}}; {% endif %}
+            color: {% if is_edit_mode %} #fff; {% else %} {{colorSettingDic.get('active_tab_txt_color')}}; {% endif %}
+        }
+        /* リストヘッダの背景とテキスト */
+        table.datalistC th,
+        table.datalistC th.td_link,
+        table.datalistC th.td_link:hover,
+        table.datalistC th.td_link:hover a {
+            background-color: {% if is_edit_mode %} #363; {% else %} {{colorSettingDic.get('list_header_bg_color')}}; {% endif %}
+            color: {% if is_edit_mode %} #fff !important; {% else %} {{colorSettingDic.get('list_header_txt_color')}}; {% endif %}
+        }
+        table.datalistC th.td_link {
+            cursor: pointer;
+        }
+        table.datalistC th.td_link:hover {
+            color: orange;
+            text-decoration: underline;
+        }
+        table.datalistC th.td_link:hover a {
+            color: orange;
+            text-decoration: underline;
+        }
+        table.datalistC th.td_link a {
+            color: {% if is_edit_mode %} #fff !important; {% else %} {{colorSettingDic.get('list_header_txt_color')}}; {% endif %}
+        }
+        .inputText {
+            width: 100%;
+            min-width: 150px;
+            font-family: 'MS Gothic', Sans-serif;
+        }
+        .datalistC td .calendar-a { display:inline; }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div id="main_window">
+        <div id="headerArea">
+            <table id="headerTable">
+                <tr>
+                    <td rowspan="2">
+                        <div id="project_name"><a href="{{url_for('index')}}?db_id={{ db_id }}" target="_self">{{ db_name }}</a></div>
+                    </td>
+                    <td rowspan="2">
+                        <div align="right">
+                            <div style="display:inline">
+                                {% if searchSetting and searchSetting.search_setting_id %}
+                                <button class="btn btn-default btn-header" type="button" onclick="popupSearchMain({{ db_id }}, {{searchSetting.search_setting_id}});">
+                                    {{ searchSetting.search_menu_title }}</button> |
+                                {% endif %}
+
+                                <input type="text" style="vertical-align: middle" id="ctx_search_text" value="{{ ctx_search_text }}"/>
+                                <button class="btn btn-default btn-header" type="button" id="ctx_search_btn" onclick="ctx_search();">Search</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td align="right" style="width: 200px;">
+                        {{current_user.get_user_name()}}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <span>
+                            {% if is_db_admin_user %}
+                            <a href="{{url_for('redirect_db_admin')}}?db_id={{ db_id }}" target="_blank">システム管理</a> |
+                            {% endif %}
+
+                            {% if is_db_editable and is_edit_mode %}
+                            <a href="{{url_for('swh_edit_mode')}}?db_id={{ db_id }}" style="font-size:10pt;">編集中</a>
+                            {% elif is_db_editable %}
+                            <a href="{{url_for('swh_edit_mode')}}?db_id={{ db_id }}" style="font-size:10pt;">編集</a>
+                            {% endif %}
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="middleArea">
+            <div id="navigationArea" style="overflow: auto;">
+                <div class="container" style="margin-left: 0px; margin-top: 8px; padding-bottom: 0px;">
+                    <div id="condition_tab">
+                        <ul class="nav nav-tabs cms-tabs" style="width: 100%;">
+                            {% for tabInfo in tabList %}
+                            {%if tabInfo.view_type == view_type %}
+                            <li id="{{ 'tab'+loop.index|string }}" class="active">
+                            {% else %}
+                            <li id="{{ 'tab'+loop.index|string }}">
+                            {% endif %}
+                                <a href="javascript:void(0);" onclick="switchView('{{tabInfo.view_type}}', '{{tabInfo.display_order}}');">{{tabInfo.tab_name}}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="container" style="margin-left: 0px;">
+                    <div id="view_list" class="view_list">
+                    </div>
+                </div>
+            </div>
+            <div id="mainArea">
+                <div id="title_msg"></div>
+                <div id="treeListArea">
+                    <!-- 初期化のとき、表示情報 -->
+                    <div id="info_msg" style="display: none;">
+                        {{ information_message | safe }}
+                    </div>
+                    <div id="edit_btn_group" style="margin-bottom: 5px; padding-left:10px; display: none;">
+                        <div class="btn-group">
+                            <button class="btn btn-default" onclick="newProperty();" type="button">新規</button>
+                        </div>
+                    </div>
+                    <div id="folder_title_msg_div" style="padding-left:10px;">
+                        <div id="folder_keyword_path_div" class="msg_title"></div>
+                        <div id="folder_msg_div" class="msg_title" style="display: none;"></div>
+                    </div>
+                    <div id="listArea" style="display: none;"></div>
+                </div>
+                <div id="contentsViewArea" style="display: none;">
+                    <div id="contentsView"></div>
+                </div>
+            </div><!-- mainArea -->
+        </div><!-- middleArea -->
+        <input type="hidden" id="db_id" name="db_id" value="{{ db_id }}"/>
+        <input type="hidden" id="nodeId" name="nodeId" value=""/>
+        <input type="hidden" id="viewType" name="viewType" value="{{ view_type }}"/>
+        <input type="hidden" id="displayOrder" name="displayOrder" value="1" />
+        <input type="hidden" id="treeOpenFlg" name="treeOpenFlg" value="{{ tree_open_flg }}"/>
+        <input type="hidden" id="selectFolderIds" name="selectFolderIds"/>
+        <input type="hidden" id="child_object_type_id" name="child_object_type_id"/>
+    </div><!--main_window end-->
+    <script>
+    //<![CDATA[
+    var db_id = "{{ db_id }}";
+    var isEditMode = '{{is_edit_mode}}';
+    var viewType = $("#viewType").val();
+    var treeOpenFlg = $("#treeOpenFlg").val();
+    var cms_obj;
+    var ContentsList;
+    var ContentsList_resize;
+    var selected_node_id = '{{selected_node_id}}';
+    $(function() {
+        cms_obj = cms_main_frame("{{ view_type }}");
+        cms_obj.on_ready();
+
+        if ('keep' !== '{{jtree_store}}') {
+            $('#info_msg').show();
+            localStorage.removeItem('jstree');
+        }
+
+        // タブタイプよりツリーをロードする
+        loadTree();
+
+        $("#navigationArea").scrollLeft(0);
+    });
+
+    function refresh() {
+        window.location.href = getIndexUrl(db_id, '', selected_node_id);
+    }
+
+    function getFileList() {
+        $('#info_msg').hide();
+        $('#folder_msg_div').hide();
+        $("#listArea").show();
+        $('#edit_btn_group').hide();
+        $('#listArea').css('top', '25px');
+
+        var id = $("#nodeId").val();
+        var ids = id.split("_");
+        if ('KEYWORD' == viewType) {
+            if ('_L' != id.slice(-2)) {
+                $("#listArea").empty();
+                return;
+            } else {
+                id = ids[ids.length - 2]
+            }
+        } else {
+            var child_object_type_id = $("#child_object_type_id").val();
+            if (isEditMode == 'True' && ids[1].length != 0
+                && child_object_type_id !== null && child_object_type_id !== '' ) {
+                $('#edit_btn_group').show();
+                $('#listArea').css('top', '60px');
+            }
+
+            // formatId が設定されていない場合
+            if (ids.length !== 2 || ids[1].length == 0) {
+                $("#listArea").empty();
+                return;
+            }
+        }
+        cms_obj.set_page_hash_reload('#!l&id=' + id);
+    }
+
+    function loadTree() {
+        var url = "{{url_for('folder')}}";
+        if ('KEYWORD' == viewType) {
+            url = "{{url_for('keyword', show_obj_cnt_flg=1)}}";
+        }
+
+        $('#view_list').jstree({
+                "core" : {
+                    'multiple' : false,
+                    "themes": {
+                        "responsive": false,
+                        "variant": "small"
+                    },
+                    "data" : {
+                        "url": url,
+                        "type" : "POST",
+                        "dataType": "json",
+                        "data": function (node) {
+                             return { "id" : node.id, "db_id" : db_id, "show_obj_cnt_flg" : 1 };
+                        }
+                    }
+                },
+                'sort' : function(a, b) {
+                    a1 = this.get_node(a);
+                    b1 = this.get_node(b);
+                    if (a1.icon == b1.icon) {
+                        return (a1.original.disp_order > b1.original.disp_order) ? 1 : -1;
+                    } else {
+                        return (a1.icon > b1.icon) ? 1 : -1;
+                    }
+                },
+                "types": {
+                    "default": {
+                        "icon": "folder"
+                    },
+                    "file": {
+                        "valid_children": [],
+                        "icon": "file"
+                    }
+                },
+                "plugins": ["state", "dnd", "sort", "types"]
+            }).on("changed.jstree", function (e, data) {
+                if(data.selected.length) {
+                    var node = data.instance.get_node(data.selected[0]);
+                    var folderKeywordPath = "";
+                    node.parents.reverse().forEach(function(value, index) {
+                        if (value == "#") return true;
+                        var eachData = data.instance.get_node(value).text;
+                        folderKeywordPath += eachData + " > ";
+                    });
+                    // リスト表示の赤枠の部分に、表示中のフォルダやキーワードのPATH表示
+                    folderKeywordPath = folderKeywordPath + node.text;
+                    $("#child_object_type_id").val(node.original.child_object_type_id);
+                    $("#nodeId").val(node.id);
+                    getFileList();
+                    $("#selectFolderIds").val(node.id);
+
+                    $("#folder_keyword_path_div").text(folderKeywordPath);
+                    selected_node_id = node.id;
+                }
+            }).on('loaded.jstree', function() {
+                if (treeOpenFlg == '1') {
+                    $('#view_list').jstree('open_all');
+                }
+            }).on('ready.jstree', function() {
+                if (selected_node_id !== '') {
+                    $("#view_list").jstree().deselect_all(true);
+                    // 初期のフォルダを選択
+                    $('#view_list').jstree('select_node', selected_node_id);
+                }
+            });
+    }
+
+    function switchView(viewType, displayOrder) {
+        // タブの表示順
+        $("#displayOrder").val(displayOrder);
+        switchTab(viewType, 'しばらくお待ちください');
+        return true;
+    }
+
+    // ファイル詳細表示画面「jqModal」
+    function fileDetail(objectId, fileId, fileTypeId) {
+        popupFileDetail(db_id, objectId, fileId, fileTypeId);
+    }
+
+    // ファイルダウンロード
+    function downloadFile(fileId) {
+
+        // ファイル存在チェック
+        var url = getDownloadFileUrl(db_id, fileId);
+        msSaveOrOpenBlob(url, "GET", "しばらくお待ちください", "", "application/x-www-form-urlencoded", "");
+    }
+
+/*
+    function downloadFile(modelNum) {
+        var url = getDownloadCheckUrl(fileId);
+        $.ajax({
+            type: "POST",
+            url: url,
+            success: function(data) {
+                if("error" == data){
+                    alert("ファイルが存在しません");
+                } else {
+                    window.location.href = getDownloadFileUrl(db_id, fileId);
+                }
+            },
+            error:function(){
+                alert("ダウンロードできません");
+            }
+        });
+    }
+*/
+
+    // 新規
+    function newProperty() {
+        var selectFolderIds = $("#selectFolderIds").val();
+        var displayOrder = $("#displayOrder").val();
+        if (selectFolderIds == null || selectFolderIds == '') {
+            alter('フォルダーを選択してください。');
+            return;
+        }
+
+        openNewPropertyPage(db_id, selectFolderIds, displayOrder);
+    }
+
+    // 全文検索
+    function ctx_search() {
+        ctx_search_text = encodeURI($("#ctx_search_text").val());
+        openCtxSearchPage(ctx_search_text);
+    }
+
+    function onSort(column, column_type, sort_type) {
+        var id = $("#nodeId").val();
+        //$("#view_list").jstree('select_node', "#" + id );
+
+        var sortType = "asc";
+        if(sort_type === "asc") {
+           sortType = "desc";
+       }
+       cms_obj.set_page_hash_reload('#!l&id=' + id, column, column_type, sortType);
+    }
+    //]]>
+    </script>
+    <div class="jqmWindow" id="jqmWindow"></div>
+    <div id="confirm">
+        <div class="header"><span>Confirm</span></div>
+        <div class="message"></div>
+        <div class="buttons middleBtnArea float_none width_170">
+            <div class="btn btn-default yes float_none">Yes</div>
+            <div class="btn btn-default no simplemodal-close float_none">No</div>
+        </div>
+    </div>
+    <div id="alert">
+        <div class="header"><span>Alert</span></div>
+        <div class="message"></div>
+        <div class="buttons middleBtnArea"><div class="btn btn-default no simplemodal-close">OK</div></div>
+    </div>
+</body>
+</html>

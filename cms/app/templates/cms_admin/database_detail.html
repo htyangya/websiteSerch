@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}">
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+        body {
+            margin: 10px !important;
+            overflow: hidden;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+        .disp_content {
+            white-space: pre;
+            word-wrap: break-word;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="border"></div>
+    <center>
+        <h2>TOSHIBA CMS</h2>
+        <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+    </center>
+<!--
+    <script type="text/javascript" src="/dms/jquery/jquery.highlightFade.js?q=100"></script>
+    <script type="text/javascript" src="/dms/jquery/jquery.scrollTo-min.js?q=100"></script>
+-->
+    <div class="border"></div>
+    &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('database_admin')}}">Database</a>&nbsp;&gt;&nbsp;{{cmsDb.db_name}}
+    <div class="border"></div>
+    <center>
+        <table id="property_header">
+            <tbody>
+                <tr>
+                    <td class="function">
+                        Database Function:
+                        <span class="object_menu"><a href="{{ url_for('database', func='database_edit', db_id = cmsDb['db_id'])}}" target="_self">Modify</a></span>
+                        <span class="object_menu"><a href="javascript:void(0);" onclick="deleteDb()">Delete</a></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <center>
+        {% for err_msg in err_msgs %}
+            <div class="required">{{ err_msg }}</div>
+        {% endfor %}
+        <table id="property">
+            <tbody>
+                <tr>
+                    <th colspan="2">Database Property</th>
+                </tr>
+                {% for key, value in cmsDb.items() %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td class="disp_content">{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </center>
+    <div class="border"></div>
+
+    <center>
+        <table id="datalist_header" class="datalist_headerC">
+            <tbody>
+                <tr><th class="title">Keyword List</th><td class="function"></td></tr>
+            </tbody>
+        </table>
+        <table id="datalist" class="datalistC">
+            <tbody>
+                <tr>
+                    <th>Keyword Name</th>
+                    <th>Multi Set Flg</th>
+                    <th>Not Null Flg</th>
+                    <th>Tree Separator</th>
+                    <th>Keyword Data</th>
+                    <th>Menu</th>
+                </tr>
+                {% for data in keywordList %}
+                <tr>
+                    <td>{{ data.keyword_name }}</td>
+                    <td>{{ data.multiSetFlg }}</td>
+                    <td>{{ data.notNullFlg }}</td>
+                    <td>{{ data.tree_separator }}</td>
+                    <td>
+                        {% for keyword in data.keywords %}
+                        {{ keyword }}<br>
+                        {% endfor %}
+                    </td>
+                    <td><a href="{{url_for('adm_keyword', func='keyword_edit', db_id=cmsDb.db_id, keyword_mst_id=data.keyword_mst_id)}}">変更</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </center>
+
+    <form id="databaseDeleteForm" action="{{url_for('database')}}" method="post">
+        <input type="hidden" name="func" value="database_delete" />
+        <input type="hidden" name="db_id" value="{{cmsDb['db_id']}}" />
+    </form>
+    <script>
+        //<![CDATA[
+        $(function() {
+            $("#property tr:not(:has(th)):odd").addClass("odd");
+            $("#property tr:not(:has(th)):even").addClass("even");
+        });
+
+        function deleteDb() {
+            if (window.confirm('Are you sure to delete?')) {
+                $("#databaseDeleteForm").submit();
+            }
+            return false;
+        }
+        //]]>
+    </script>
+</body>
+</html>

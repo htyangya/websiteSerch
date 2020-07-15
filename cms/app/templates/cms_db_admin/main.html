@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}">
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+        body {
+            margin: 10px !important;
+        }
+    </style>
+    <title>CMS : {{ db_name }}</title>
+</head>
+<body>
+    <div class="border"></div>
+    <center>
+        <h2>CMS : {{ db_name }}</h2>
+        <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+    </center>
+    <div class="border"></div>
+    &nbsp;&gt;&nbsp;<a href="{{url_for('db_adm_index')}}?db_id={{ db_id }}">Main Menu</a>
+    <div class="border"></div>
+    <center>
+        <table class="menu_list">
+            <tbody>
+                <tr>
+                    <th>Operation Log：Daily Log</th>
+                </tr>
+                <tr class="even">
+                    <td class="TL" onclick="openWindow('{{ url_for('daily_log') }}?db_id={{ db_id }}', 'daily_log');">Daily log</td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <div class="border" style="margin-bottom: 10px;"></div>
+    <center>
+        <table class="menu_list">
+            <tbody>
+                <tr>
+                    <th>Security Settings</th>
+                </tr>
+                <tr class="even">
+                    <td class="TL" onclick="openWindow('{{ url_for('privs_dept') }}?db_id={{ db_id }}', 'privs_dept');">Privilege (Department)</td>
+                </tr>
+                <tr class="odd">
+                    <td class="TL" onclick="openWindow('{{ url_for('privs_user') }}?db_id={{ db_id }}', 'privs_user');">Privilege (User)</td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <div class="border"></div>
+    <!-- TODO
+    <center>
+        <table class="menu_list">
+            <tbody>
+                <tr>
+                    <th>Data Management</th>
+                </tr>
+                {% for data in objectTypeList %}
+                    <tr class="even">
+                        <td class="TL" onclick="openWindow('{{ url_for('object_batch_upload') }}?db_id={{ db_id }}&object_type_id={{ data.object_type_id }}', 'object_batch_upload');">Batch Insert ({{ data.object_type_name }})</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </center>
+    <div class="border"></div>
+    -->
+    <script>
+    //<![CDATA[
+    $(function() {
+
+    });
+    //]]>
+    </script>
+</body>
+</html>

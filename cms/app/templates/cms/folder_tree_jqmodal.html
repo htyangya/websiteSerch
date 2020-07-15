@@ -1,0 +1,123 @@
+    <div class="jqDnRHandle">{{ jqmTitle }}</div>
+    <div class="jqmBody" id="jqmBody" style="overflow:hidden;">
+        <input type="hidden" name="sel_folder_id" id="sel_folder_id" value="{{folder_id}}" />
+        <input type="hidden" name="sel_ids" id="sel_ids" />
+        <input type="hidden" name="sel_folder_path" id="sel_folder_path" />
+        <div class="tree-content" style="height: 450px; overflow:auto;">
+            <div id="folder_list" class="folder_list">
+            </div>
+        </div> <!-- tree-content -->
+        <div class="footer-content" style="padding-top:5px;">
+            <center>
+                <!-- 検索 -->
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="changeFolder();" type="button">確認</button>
+                </div>
+                <!-- キャンセル -->
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="close_jqmodal_dlg();" type="button">キャンセル</button>
+                </div>
+            </center>
+        </div>
+    </div><!-- jqmBody -->
+
+    <script>
+    //<![CDATA[
+        var db_id = '{{ db_id }}';
+        var treeOpenFlg = '{{ treeOpenFlg }}';
+        $("input").keypress(function(ev) {
+            if ((ev.which && ev.which === 13) || (ev.keyCode && ev.keyCode === 13)) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+
+        $(document).ready(function() {
+            loadTree();
+            console.log('select_node');
+        });
+
+        function loadTree() {
+            $('#folder_list').jstree({
+                    "core" : {
+                        'multiple' : false,
+                        "themes": {
+                            "responsive": false,
+                            "variant": "small"
+                        },
+                        "data" : {
+                            "url": "{{url_for('folder')}}",
+                            "type" : "POST",
+                            "dataType": "json",
+                            "data": function (node) {
+                                 return { "id" : node.id, "db_id" : db_id, "show_obj_cnt_flg" : 0 };
+                            }
+                        }
+                    },
+                    'sort' : function(a, b) {
+                        a1 = this.get_node(a);
+                        b1 = this.get_node(b);
+                        if (a1.icon == b1.icon) {
+                            return (a1.original.disp_order > b1.original.disp_order) ? 1 : -1;
+                        } else {
+                            return (a1.icon > b1.icon) ? 1 : -1;
+                        }
+                    },
+                    "types": {
+                        "default": {
+                            "icon": "folder"
+                        },
+                        "file": {
+                            "valid_children": [],
+                            "icon": "file"
+                        }
+                    },
+                    "plugins": ["state", "dnd", "sort", "types"]
+                }).on("changed.jstree", function (e, data) {
+                    if(data.selected.length) {
+                        var node = data.instance.get_node(data.selected[0]);
+
+                        // リスト表示の赤枠の部分に、表示中のフォルダやキーワードのPATH表示
+                        var folderKeywordPath = "";
+                        node.parents.reverse().forEach(function(value, index) {
+                            if (value == "#") return true;
+                            var eachData = data.instance.get_node(value).text;
+                            folderKeywordPath += eachData + " > ";
+                        });
+                        folderKeywordPath = folderKeywordPath + node.text;
+                        $("#sel_folder_path").val(folderKeywordPath);
+                        // フォルダIDを設定
+                        $("#sel_folder_id").val(node.id.split("_")[0]);
+                        $("#sel_ids").val(node.id);
+                    }
+                }).on('loaded.jstree', function() {
+                    if (treeOpenFlg == '1') {
+                        $('#folder_list').jstree('open_all');
+                    }
+                }).on('ready.jstree', function() {
+                    $("#folder_list").jstree().deselect_all(true);
+                    // 初期のフォルダを選択
+                    $('#folder_list').jstree('select_node', '{{selected_node_id}}');
+                });
+        }
+
+
+        function changeFolder() {
+            if ($("#sel_folder_id").val() !== $("#folder_id").val()) {
+                // フォルダのフォーマットチェック
+                var idArray = $("#sel_ids").val().split("_");
+                if (idArray.length < 2 || idArray[1] == "") {
+                    alert("変更先フォルダのフォーマットが設定されていないため、変更できません。");
+                    return;
+                }
+                $("#folder_id").val($("#sel_folder_id").val());
+                $("#ids").val($("#sel_ids").val());
+                $("#folder_path").text($("#sel_folder_path").val());
+
+                changePropertyFolder();
+            }
+            close_jqmodal_dlg();
+        }
+    //]]>
+    </script>

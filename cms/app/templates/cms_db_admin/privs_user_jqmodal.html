@@ -1,0 +1,204 @@
+    <div class="jqDnRHandle">{{ jqmTitle }}</div>
+    <div class="jqmBody" id="jqmBody" style="overflow: hidden;">
+        <form id="privs_user_form" name="privs_user_form" method="post" action="{{ url_for('privs_user_save') }}">
+            <div>
+                <label class="privsUserLable" for="user_id">User ID&nbsp;&nbsp;&nbsp;:</label>
+                {% if func == const.ADD_PRIVS_USER %}
+                <input type="input" class="privsUserInput" id="user_id" name="user_id" />
+                {% elif func == const.UPDATE_PRIVS_USER or func == const.DELETE_PRIVS_USER %}
+                    {{ privsUser.tuid or '' }}<br>
+                {% endif %}
+
+                {% if func == const.ADD_PRIVS_USER %}
+                <div class="btn-group" style="padding-top: 20px; padding-left: 130px;">
+                    <button class="btn privsUserBtn" onclick="privsUserSearch();" type="button">Search</button>
+                </div>
+                {% endif %}
+                <label class="privsUserLable" for="user_name">User Name&nbsp;:</label>
+
+                {% if func == const.ADD_PRIVS_USER %}
+                <input type="input" class="privsUserInput bg_gray" id="user_name" name="user_name" readonly/>
+                {% elif func == const.UPDATE_PRIVS_USER or func == const.DELETE_PRIVS_USER %}
+                    {{ privsUser.user_name or '' }}<br>
+                {% endif %}
+                <label class="privsUserLable">Department:</label>
+
+                {% if func == const.ADD_PRIVS_USER or func == const.UPDATE_PRIVS_USER %}
+                <select class="privsUserSelect" id="corp_dept_cd" name="corp_dept_cd">
+                </select>
+                {% elif func == const.DELETE_PRIVS_USER %}
+                    {{ privsUser.dept_name or '' }}<br>
+                {% endif %}
+
+                <label class="privsUserLable">Privs Type:</label>
+
+                {% if func == const.ADD_PRIVS_USER %}
+                <select class="privsUserSelect" id="privs_type" name="privs_type">
+                    <option value="READ" {% if privsUser and privsUser.privs_type == 'READ' %} SELECTED {% endif %}>READ</option>
+                    <option value="WRITE" {% if privsUser and privsUser.privs_type == 'WRITE' %} SELECTED {% endif %}>WRITE</option>
+                    <option value="ADMIN" {% if privsUser and privsUser.privs_type == 'ADMIN' %} SELECTED {% endif %}>ADMIN</option>
+                </select>
+                {% elif func == const.UPDATE_PRIVS_USER or func == const.DELETE_PRIVS_USER %}
+                    {{ privsUser.privs_type or '' }}
+                {% endif %}
+                {% if func == const.DELETE_PRIVS_USER %}
+                <div class="required" style="padding-top: 10px; text-align: center;">Are you sure to delete this user?</div>
+                {% endif %}
+                <div class="btn-group" style="padding-top: 20px; padding-left: 80px;">
+                    <button class="btn privsUserBtn" onclick="privsUserSave();" type="button">Submit</button>
+                    <button style="folat: right;" class="btn privsUserBtn" onclick="close_jqmodal_dlg();" type="button">Cancel</button>
+                </div>
+            </div>
+            <input id="func" name="func" type="hidden" value="{{ func }}" />
+        </form>
+    </div>
+    <script>
+    //<![CDATA[
+        var db_id = "{{ db_id }}";
+        var isAddableFlg = false;
+        var searchUserRequiredRequiredErrMsg = '{{ const.SEARCH_USER_REQUIRED_ERR_MSG }}';
+        var userIdNotExistErrMsg = '{{ const.USER_ID_NOT_EXIST_ERR_MSG }}';
+        var userIdErrMsg = '{{ const.USER_ID_ERR_MSG }}';
+        var userNameErrMsg = '{{ const.USER_NAME_ERR_MSG }}';
+        var notExistErrFlg = false;
+
+        $(function() {
+            initCorpDeptCd(false);
+        });
+        $("#user_id").change(function(){
+            isAddableFlg = false;
+            $("#user_name").val("");
+            initCorpDeptCd(true);
+        });
+        function initCorpDeptCd(reset_flg) {
+            {% if func == const.ADD_PRIVS_USER or func == const.UPDATE_PRIVS_USER %}
+            var corp_dept_cd = $("#corp_dept_cd");
+            corp_dept_cd[0].innerHTML = "";
+            corp_dept_cd.append($("<option>").val("%:%").text('ALL'));
+            if (reset_flg) return;
+                {% if func == const.UPDATE_PRIVS_USER %}
+                    {% for userDept in userDeptList %}
+                        corp_dept_cd.append($("<option>").val("{{ userDept.corp_cd }}:{{ userDept.dept_cd }}").text("{{ userDept.dept_name }}"));
+                    {% endfor %}
+                    $("#corp_dept_cd").val('{{ privsUser.corp_dept_cd }}');
+                {% endif %}
+            {% endif %}
+        }
+
+        function privsUserSearch(type) {
+            var user_id = $("#user_id").val();
+            if(user_id == '') {
+                alert(userIdErrMsg);
+                return false;
+            }
+            $.ajax({
+                type: 'post',
+                url: '{{url_for("privs_user_search")}}',
+                data: {
+                    'db_id' : db_id,
+                    'user_id' : user_id
+                },
+                success: function(data) {
+                    notExistErrFlg = false;
+                    var result = $.parseJSON(data);
+                    // 返却メッセージ
+                    if (result.msg !== "OK") {
+                        notExistErrFlg = true;
+                        isAddableFlg = false;
+                        alert(result.msg);
+                        return;
+                    }
+                    isAddableFlg = true;
+                    $("#user_name").val(result.user_name);
+                    user_dept_list = result.user_dept_list;
+                    $.each(user_dept_list, function(index, entity) {
+                        var option = $("<option>").val(entity["corp_cd"] + ":" + entity["dept_cd"]).text(entity["dept_name"]);
+                        $("#corp_dept_cd").append(option);
+                    });
+                },
+                error: function (xmlhttprequest, textstatus, errorThrown) {
+                    isAddableFlg = false;
+                }
+            });
+        }
+
+        function privsUserSave() {
+            var user_id, user_name, corp_dept_cd, old_corp_cd, old_dept_cd, old_privs_type, corp_cd, dept_cd, privs_type;
+
+        {% if func == const.ADD_PRIVS_USER %}
+            user_id = $("#user_id").val();
+            if(jQuery.trim(user_id) == '') {
+                alert(userIdErrMsg);
+                return false;
+            }
+            if (!isAddableFlg) {
+                alert(searchUserRequiredRequiredErrMsg);
+                return false;
+            }
+            if (notExistErrFlg) {
+                alert(userIdNotExistErrMsg);
+                return false;
+            }
+            user_name = $("#user_name").val();
+            if(jQuery.trim(user_name) == '') {
+                alert(userNameErrMsg);
+                return false;
+            }
+            corp_dept_cd = $("#corp_dept_cd").val();
+            privs_type = $("#privs_type").val();
+        {% elif func == const.UPDATE_PRIVS_USER %}
+            user_id = '{{ privsUser.tuid }}';
+            user_name = '{{ privsUser.user_name }}';
+            old_corp_cd = '{{ privsUser.corp_cd }}';
+            old_dept_cd = '{{ privsUser.dept_cd }}';
+            old_privs_type = '{{ privsUser.privs_type }}';
+            corp_dept_cd = $("#corp_dept_cd").val();
+            privs_type = '{{ privsUser.privs_type }}';
+        {% elif func == const.DELETE_PRIVS_USER %}
+            user_id = '{{ privsUser.tuid }}';
+            user_name = '{{ privsUser.user_name }}';
+            corp_dept_cd = '{{ privsUser.corp_dept_cd }}';
+            privs_type = '{{ privsUser.privs_type }}';
+        {% endif %}
+
+            corp_dept_arr = corp_dept_cd.split(':');
+            if (typeof(corp_dept_arr) != "undefined" && corp_dept_arr.length > 1) {
+                corp_cd = corp_dept_arr[0];
+                dept_cd = corp_dept_arr[1];
+            }
+
+            $.ajax({
+                type: 'post',
+                url: '{{url_for("privs_user_save")}}',
+                data: {
+                    'func' : '{{ func }}',
+                    'db_id' : db_id,
+                    'user_id' : user_id,
+                    'user_name' : user_name,
+                    'old_corp_cd' : old_corp_cd,
+                    'old_dept_cd' : old_dept_cd,
+                    'old_privs_type' : old_privs_type,
+                    'corp_cd' : corp_cd,
+                    'dept_cd' : dept_cd,
+                    'privs_type' : privs_type,
+                },
+                success: function(data) {
+                    var result = $.parseJSON(data);
+                    // 返却メッセージ
+                    if (typeof(result.err_msgs) != "undefined" && result.err_msgs.length > 0) {
+                        var errMsg = '';
+                        for (var i = 0; i < result.err_msgs.length; i++) {
+                            if (i > 0) { errMsg += '\n'; }
+                            errMsg += result.err_msgs[i];
+                        }
+                        alert(errMsg);
+                        return;
+                    }
+                    close_jqmodal_dlg();
+                    reload();
+                },
+                error: function (xmlhttprequest, textstatus, errorThrown) {}
+            });
+        }
+    //]]>
+    </script>

@@ -1,0 +1,156 @@
+    <div class="jqDnRHandle">{{ jqmTitle }}</div>
+    <div class="jqmBody" id="jqmBody" style="overflow: hidden;">
+        <form id="searchform" name="searchform" method="post" action="{{ url_for('save_property') }}" class="main-form" enctype="multipart/form-data">
+            <input type="hidden" id="searchform-editMode" name="searchform-editMode" value="1" />
+            <div class="main-content" style="overflow: hidden; height: 90%;">
+                <center>
+                    {% for err_msg in err_msgs %}
+                        <div class="required">{{ err_msg }}</div>
+                    {% endfor %}
+                    <table class="datalistC" style="font-size: 9pt;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">検索条件</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pro in proList %}
+                            {% set column_name = pro.get('db_column_name')|lower() %}
+                            {% set pro_index= (loop.index-1)|string %}
+                            {% if 'TEXT' == pro.get('property_type') %}
+                            <tr>
+                                <td class="propertyLabel">{{ pro.get('property_name') }}</td>
+                                <td>
+                                    <input type="text" name="{{ column_name }}" class="inputText" />
+                                </td>
+                            </tr>
+                            {% elif 'SELECT' == pro.get('property_type') %}
+                            <tr>
+                                <td class="propertyLabel">{{ pro.get('property_name') }}</td>
+                                <td>
+                                    <select name="{{ column_name }}" class="inputText">
+                                        <option value=""></option>
+                                        {% for selection in selectionMstDic.get(pro.get('selection_mst_id')) %}
+                                            <option value="{{selection.get('value')}}">{{selection.get('label')}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            {% elif 'DATE' == pro.get('property_type') %}
+                            <tr>
+                                <td class="propertyLabel">{{ pro.get('property_name') }}</td>
+                                <td>
+                                    <input id="{{ column_name }}_start" type="text" name="{{ column_name }}_start" size="25" maxlength="20" onchange="dateChange(this);"/>
+                                    <a class="calendar-a" href="javascript:void(0)" onclick="calendar.show('searchform', '{{ column_name }}_start');"><img src="/static/images/calendar.gif?q={{appVer}}" border="0"></a>
+                                    <input type="hidden" id="{{ column_name }}_start_org" />
+                                    -
+                                    <input id="{{ column_name }}_end" type="text" name="{{ column_name }}_end" size="25" maxlength="20" onchange="dateChange(this);"/>
+                                    <a class="calendar-a" href="javascript:void(0)" onclick="calendar.show('searchform', '{{ column_name }}_end');"><img src="/static/images/calendar.gif?q={{appVer}}" border="0"></a>
+                                    <input type="hidden" id="{{ column_name }}_end_org" />
+                                    <div id="{{ column_name }}_msg" style="display: none;">
+                                        <span class="required"></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </center>
+            </div> <!-- main-content -->
+            <div class="footer-content">
+                <center>
+                    <!-- 検索 -->
+                    <div class="btn-group">
+                        <button class="btn btn-default" onclick="search();" type="button">検索</button>
+                    </div>
+                    <!-- キャンセル -->
+                    <div class="btn-group">
+                        <button class="btn btn-default" onclick="close_jqmodal_dlg();" type="button">キャンセル</button>
+                    </div>
+                </center>
+            </div>
+        </form>
+    </div><!-- jqmBody -->
+    <div id="TlibJSCalendarInternalDiv" class="TlibJSCalendarInternalDivC"></div>
+    <div id="TlibJSCalendarBkLayer" class="TlibJSCalendarBkLayerDivC"></div>
+    <iframe id="TlibJSCalendarShim" class="TlibJSCalendarShimC" src="javascript:false;"></iframe>
+
+    <script>
+    //<![CDATA[
+        var calendar = new TlibJSCalendar();
+        calendar.date_format = 'YYYY/MM/DD';
+        calendar.header_format = 'YYYY/MM';
+        calendar.date_changed　= dateChange;
+        calendar.top_div_name = 'jqmWindow';
+
+        $("input").keypress(function(ev) {
+            if ((ev.which && ev.which === 13) || (ev.keyCode && ev.keyCode === 13)) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+
+        function search() {
+            var urls = "search?db_id=" + db_id + "&search_setting_id=" + {{ searchSetting.search_setting_id }};
+            {% for pro in proList %}
+                {% set column_name = pro.get('db_column_name')|lower() %}
+                {% if 'TEXT' == pro.get('property_type') %}
+                urls += "&{{ column_name }}=" + encodeURI($("input[name={{ column_name }}]").val());
+                {% elif 'SELECT' == pro.get('property_type') %}
+                urls += "&{{ column_name }}=" + $("select[name={{ column_name }}]").val();
+                {% elif 'DATE' == pro.get('property_type') %}
+                urls += "&{{ column_name }}_start=" + $("input[name={{ column_name }}_start]").val();
+                urls += "&{{ column_name }}_end=" + $("input[name={{ column_name }}_end]").val();
+                {% endif %}
+            {% endfor %}
+            console.log("urls: " + urls)
+            $('#info_msg').hide();
+            $('#folder_msg_div').hide();
+            $("#listArea").show();
+            // 選択解除
+            $('#view_list').jstree('deselect_all');
+
+            cms_obj.search_data_list(urls)
+            close_jqmodal_dlg();
+        }
+
+        function dateChange(elm) {
+
+            // 日付フォーマット
+            fmtDate($(elm).val(), elm);
+
+            var errorFlg = false;
+            var elm_id = $(elm).attr("id");
+            var col_name = elm_id.replace('start', '').replace('end', '');
+
+            // msgBox display
+            $("#" + col_name + "msg").hide();
+
+            // 日付チェック
+            if (!checkDate($("#" + elm_id), "")) {
+                errorFlg = true;
+                $("#" + col_name + "msg").children("span").text("正確な日付を入力してください({YYYY/MM/DD})");
+                $("#" + col_name + "msg").show();
+            }
+
+            var start_elm_id = col_name + "start";
+            var end_elm_id = col_name + "end";
+            // 表示期間チェック
+            if (!errorFlg && $("#" + start_elm_id).val() != "" && $("#" + end_elm_id).val() != "") {
+                if ($("#" + start_elm_id).val() > $("#" + end_elm_id).val()) {
+                    $("#" + col_name + "msg").children("span").text("終了日には開始日以降の日付を指定して下さい。");
+                    $("#" + col_name + "msg").show();
+                    errorFlg = false;
+                }
+            }
+            // エラー時、データ直す
+            if (errorFlg) {
+                $(elm).val($("#" + elm_id + "_org").val());
+                return;
+            }
+            $("#" + elm_id + "_org").val($(elm).val());
+        }
+    //]]>
+    </script>

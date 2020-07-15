@@ -1,0 +1,55 @@
+/*
+ * SimpleModal Confirm Modal Dialog
+ * http://simplemodal.com
+ *
+ * Copyright (c) 2013 Eric Martin - http://ericmmartin.com
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ */
+
+#alert {display:none;}
+#confirm {display:none;}
+
+/* Overlay */
+#confirm-overlay {background-color:#999;}
+
+/* Container */
+#confirm-container {height:140px; width:520px; font: 16px/22px; text-align:left; background:#fff; border:2px solid #333;}
+#confirm-container .header {height:30px; line-height:30px; width:100%; background:#56a; color:#fff; font-weight:bold;}
+#confirm-container .header span {padding-left:8px;}
+#confirm-container .message {color:#333; font-size:14px; margin:0; padding:12px 4px 12px 8px;}
+#confirm-container .buttons {
+	line-height:22px;
+	width:140px;
+	/*float:right;*/
+	padding:10px 8px;
+} 
+/*
+#confirm-container .buttons div {
+	float:right;
+	margin-left:4px;
+	width:70px;
+	height:22px;
+	color:#333;
+	font-weight:bold;
+	text-align:center;
+	background:#fff;
+	border:1px solid #ccc;
+	cursor:pointer;
+} 
+#confirm-container .buttons div:hover {
+	background:-webkit-gradient( linear, left top, left bottom,
+		color-stop(5%, #bec5d1), color-stop(100%, #707178) );
+	background:-moz-linear-gradient( center top, #bec5d1 5%, #707178 100% );
+	background:-ms-linear-gradient( top, #bec5d1 5%, #707178 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(
+		startColorstr='#bec5d1', endColorstr='#707178');
+	background-color:#bec5d1;
+	color: #222;
+}*/
+#confirm-container a.modal-close,
+#confirm-container a.modal-close:link,
+#confirm-container a.modal-close:active,
+#confirm-container a.modal-close:visited {text-decoration:none; font-weight:bold; position:absolute; right:10px; top:2px; color:#fff;}
+#confirm-container a.modal-close:hover {color:#ccc;}

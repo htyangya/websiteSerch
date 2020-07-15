@@ -1,0 +1,122 @@
+
+.TlibJSCalendarInternalDivC {
+	display: none;
+	position: absolute;
+	width: auto;
+	height: auto;
+	color: #000000;
+	background-color: #ffffff;
+	border: 1px solid #222222;
+	overflow-y: auto;
+	font-family: Courier New, monospace;
+	font-size: 11pt;
+	text-align: center;
+	z-index: 501;
+}
+
+.TlibJSCalendarShimC {
+	display: none;
+	position: absolute;
+	border: 0px;
+	z-index: 500;
+}
+
+.TlibJSCalendarBkLayerDivC {
+    display: none;
+    position:absolute;
+    z-index: 1;
+    top:0;
+    left:0;
+    background-color: #222222;
+    filter:alpha(opacity=35); /* IE */
+    opacity:0.35;
+}
+
+#TlibJSCalendarHeader {
+	color: #404040;
+	background-color: #e6e6fa;
+	font-weight: bold;
+	padding-top: 5px;
+	padding-bottom: 3px;
+	border-bottom: 1px solid #808080;
+}
+
+.TlibJSCalendarBtn {
+	position: absolute;
+	float: left;
+	top: 2px;
+	cursor: pointer;
+	color: #808080;
+	background-color: #e6e6fa;
+	width: 20px;
+	padding-top: 2px;
+	border: 1px solid #b0b0b0;
+}
+.TlibJSCalendarBtn_Hover {
+	position: absolute;
+	float: left;
+	top: 2px;
+	cursor: pointer;
+	color: #000000;
+	background-color: #e6e6fa;
+	width: 20px;
+	padding-top: 2px;
+	border: 1px solid #000000;
+}
+#TlibJSCalendarPrevYear {
+	left: 2px;
+}
+#TlibJSCalendarPrevMonth {
+	left: 25px;
+}
+#TlibJSCalendarNextMonth {
+	right: 25px;
+}
+#TlibJSCalendarNextYear {
+	right: 2px;
+}
+
+#TlibJSCalendarTable {
+	font-family: Courier New, monospace;
+	font-size: 11pt;
+	text-align: center;
+}
+#TlibJSCalendarTable th {
+	color: #7799bb;
+}
+
+.TlibJSCalendarDate {
+	color: #404040;
+	background-color: #eeeeee;
+	cursor: pointer;
+}
+.TlibJSCalendarDate_Hover {
+	color: #000000;
+	background-color: #cccccc;
+	cursor: pointer;
+}
+.TlibJSCalendarSun {
+	color: #dd0000;
+	background: #ffdddd;
+	cursor: pointer;
+}
+.TlibJSCalendarSun_Hover {
+	color: #ff0000;
+	background-color: #cccccc;
+	cursor: pointer;
+}
+.TlibJSCalendarSat {
+	color: #0000dd;
+	background: #ddddff;
+	cursor: pointer;
+}
+.TlibJSCalendarSat_Hover {
+	color: #0000ff;
+	background-color: #cccccc;
+	cursor: pointer;
+}
+.TlibJSCalendarNull {
+	color: #ffffff;
+	background-color: #ffffff;
+}
+

@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-dist/css/bootstrap.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jstree/themes/style.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jstree/themes/style.cms.css?q={{appVer}}">
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/bootstrap-dist/js/bootstrap.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/TlibDragAndDropUploadCms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jstree/jstree.min.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+        html,body { margin: 0px; padding: 0px; }
+        html { overflow: hidden; }
+        body { overflow: hidden; }
+        .main-content {
+            overflow: auto;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+        table#headerTable {
+            height: 100%;
+        }
+        .inputText {
+            width: 100%;
+            min-width: 150px;
+            font-family: 'MS Gothic', Sans-serif;
+        }
+        .propertyLabel {
+            width: 316px;
+        }
+        .propertyBtn {
+            width: 44px;
+        }
+        .upload_file_drop_target {
+            padding: 10px;
+            border: 3px dashed #000080;
+            virtical-align: middle;
+            text-align: center;
+            width: 315px !important;
+        }
+
+        .keyword_tree .jstree-anchor {
+            display: inline-block;
+            width: auto;
+        }
+
+        .screen-control {
+            width: 96%;
+        }
+        .keyword_tree {
+            border: 1px solid #999999;
+            float: left;
+            height: 160px;
+            width: 300px;
+            margin: 8px;
+            overflow: auto;
+        }
+        .keyword_btn_div {
+            float: left;
+            vertical-align: middle;
+            height: 145px;
+        }
+        .keyword_content {
+            padding: 5px;
+            float: left;
+            margin: 8px;
+            height: 160px;
+            width: 550px;
+            border: 1px solid #999999;
+            overflow: auto;
+        }
+        .kw-anchor {
+            display: inline-block;
+            color: black;
+            white-space: nowrap;
+            padding: 0 4px 0 1px;
+            margin: 0;
+            vertical-align: top;
+        }
+        .kw-anchor, .kw-anchor:link, .kw-anchor:visited, .kw-anchor:hover, .kw-anchor:active {
+            color: inherit;
+            text-decoration: none;
+        }
+        .sel-keyword{
+            background: #beebff;
+            border-radius: 2px;
+            box-shadow: inset 0 0 1px #999999;
+        }
+        div#headerArea
+        {
+            background-color: {% if is_edit_mode %} #363; {% else %} #393f4c; {% endif %}
+            height: 4.05em;
+        }
+        /* jqModal用CSS */
+        .jqmWindow {
+            width: 500px !important;
+            min-height: 550px !important;
+            max-height: 80% !important;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div id="wrap">
+        <div id="headerArea">
+            <table id="headerTable" style="color: #fff;">
+                <tr>
+                    <td>
+                        <div id="project_name">{{ db_name }}</div>
+                    </td>
+                    <td align="right">
+                        <span style="color: #fff; font-size: 11pt;">{{current_user.get_user_name()}}</span>
+                    </td>
+                </tr>
+            </table>
+        </div><!-- headerArea -->
+        <div class="container">
+            <form id="propertyForm" action="{{ url_for('save_property') }}" method="post">
+                <center>
+                    <table class="datalist_headerC" style="margin-bottom: 5px;">
+                        <tbody>
+                            <tr>
+                                <td class="title">
+                                    <span class="object_menu"><a href="javascript:void(0);" onclick="saveProperty(0)">保存</a></span>
+                                    <span class="object_menu"><a href="javascript:void(0);" onclick="saveProperty(1)">保存して閉じる</a></span>
+                                </td>
+                                <td class="function">
+                                    <span class="object_menu"><a href="javascript:void(0);" onclick="closePropertyPage()">閉じる</a></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </center>
+                <div class="main-content">
+                    <center>
+                        {{ form.hidden_tag() }}
+                        {% for err_msg in err_msgs %}
+                            <div class="required">{{ err_msg }}</div>
+                        {% endfor %}
+                        <table id="propertyDataList" class="datalistC">
+                            <thead>
+                                <tr><th colspan="3">Property</th></tr>
+                            </thead>
+                            <tbody>
+                                <td class="propertyLabel">{{ tabName }}</td>
+                                <td><span id="folder_path">{{ folderPath }}</span></td>
+                                <td class="propertyBtn"><button class="btn btn-default" type="button" onclick="popupFolderTree('{{form.db_id.data}}', '{{form.folder_id.data}}');">変更</button></td>
+                                {% for pro in proList %}
+                                    {% set column_name = pro.get('db_column_name')|lower() %}
+                                    {% set pro_index= (loop.index-1)|string %}
+                                    {% if 'TEXT' == pro.get('property_type') %}
+                                    <tr>
+                                        <td class="propertyLabel">{{ pro.get('property_name') }}{{ pro.get('property_name_req') or '' }}</td>
+                                        <td colspan="2">
+                                            <input type="text" name="{{ column_name }}" class="inputText" value="{{ form[column_name].data }}" />
+                                            {% for message in form[column_name].errors %}
+                                                <br><span class="required">{{message}}</span>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                    {% elif 'SELECT' == pro.get('property_type') %}
+                                    <tr>
+                                        <td class="propertyLabel">{{ pro.get('property_name') }}{{ pro.get('property_name_req') or '' }}</td>
+                                        <td colspan="2">
+                                            <select name="{{ column_name }}" class="inputText">
+                                                <option value=""></option>
+                                                {% for selection in selectionMstDic.get(pro.get('selection_mst_id')) %}
+                                                    {% if selection.get('value')|string == form[column_name].data|string %}
+                                                    <option value="{{selection.get('value')}}" selected>{{selection.get('label')}}</option>
+                                                    {% else %}
+                                                    <option value="{{selection.get('value')}}">{{selection.get('label')}}</option>
+                                                    {% endif%}
+                                                {% endfor %}
+                                            </select>
+                                            {% for message in form[column_name].errors %}
+                                                <br><span class="required">{{message}}</span>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                    {% elif 'KEYWORD' == pro.get('property_type') %}
+                                    <tr>
+                                        <td class="propertyLabel" colspan="3">{{ pro.get('property_name') }}{{ pro.get('property_name_req') or '' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div id="keyword_tree_{{pro_index}}" class="keyword_tree">
+                                            </div>
+                                            <div class="keyword_btn_div">
+                                                <span class="object_menu"><a href="javascript:void(0);" onclick="addKeyword('{{pro_index}}')" style="margin-top:45px; margin-bottom:10px;">&gt;&gt;</a></span>
+                                                <span class="object_menu"><a href="javascript:void(0);" onclick="removeKeyword('{{pro_index}}')">&lt;&lt;</a></span>
+                                            </div>
+                                            <div id="keyword_content_{{pro_index}}" class="keyword_content">
+                                                <input type="hidden" id="keywords-hid-{{pro_index}}" name="{{ column_name }}" value="{{form[column_name].data}}">
+                                                {% set keyword_str=form[column_name].data %}
+                                                {% if keyword_str is not none %}
+                                                    {%set keywords = keyword_str.split(', ')%}
+                                                    {% for kw in keywords %}
+                                                    <a id="keyword-{{pro_index}}-{{(loop.index-1)|string}}" class="kw-anchor" href="javascript:void(0);" onclick="selectKeyword('{{pro_index}}-{{(loop.index-1)|string}}');">{{kw.split('#')[1]}}</a>
+                                                    <input type="hidden" id="keyword-hid-{{pro_index}}-{{(loop.index-1)|string}}" value="{{kw}}">
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                            {% for message in form[column_name].errors %}
+                                                <br><span class="required">{{message}}</span>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </center>
+
+                    {% for fileType in fileTypeList %}
+                    <center>
+                        <table class="datalist_headerC">
+                            <tbody>
+                                <tr><th class="title">{{fileType.file_type_name}}</th><td class="function"></td></tr>
+                            </tbody>
+                        </table>
+
+                        <!-- リスク添付ファイル -->
+                        <div class="screen-control">
+                            <div class="float-left" style="margin: 0px 15px 15px 0px;">
+                                <div>
+                                    <table class="table-bordered psprimis-list-table">
+                                        <tbody>
+                                            <tr> <th class="NW" style="width: 315px;">添付ファイル</th></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="margin: 8px 0px 0px 0px; width:316px;">
+                                    <table class="file-content sub-container">
+                                        <tr>
+                                            <td class="button" valign="top">
+                                                <div id="attach_dnd_form">
+                                                    <div class="upload_file_drop_target" draggable="true">
+                                                        <input type="hidden" class="fileType" value="{{fileType.file_type_id}}" />
+                                                        <div class="file_upload">アップロードするファイルをドロップ</div>
+                                                        <div>または</div>
+                                                        <input class="upload_files" name="upload_files" style="display: none;" type="file" multiple="multiple" />
+                                                        <div class="btn btn-default file_upload_btn">ファイルを選択</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div style="width:940px;" class="float-left">
+                                <table id="propertyForm-relationAttachList-{{fileType.file_type_id}}" class="datalistC" style="width:100%; margin: 0px; ">
+                                    <thead>
+                                        <tr>
+                                            <th>ファイル名</th>
+                                            <th>ファイルサイズ</th>
+                                            <th>登録日</th>
+                                            <th style="width: 60px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for file in fileTypeDic.get(fileType.file_type_id) %}
+                                        <tr>
+                                            <td><a onclick="javascript:void(0);" href="{{ url_for('download_file', db_id=form.db_id.data, file_id=file.file_id, disp_mode='edit', file_edit_id=file_edit_id) }}" target="_blank">{{ file.file_name }}</a></td>
+                                            <td>{{ file.file_size_disp }}</td>
+                                            <td>{{ file.created_at_str }}</td>
+                                            <td>
+                                                <span class="object_menu"><a href="javascript:void(0);" onclick="post_delete_file('{{fileType.file_type_id}}', '{{file.file_id}}')">削除</a></span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="clear-float"></div>
+                            <br>
+                        </div>
+                    </center>
+                    {% endfor %}
+                    <div id="tlibFileUploadLoadingMessage"></div>
+                    <div id="tlibFileUploadLoadingMessageBody" style="position:absolute; left: 20%;"></div>
+
+                </div><!-- main-container -->
+                <input type="hidden" name="func" id="func" value="{{func}}" />
+                <input type="hidden" name="db_id" id="db_id" value="{{form.db_id.data}}" />
+                <input type="hidden" name="ids" id="ids" value="{{form.ids.data}}" />
+                <input type="hidden" name="ids_org" id="ids_org" value="{{form.ids_org.data}}" />
+                <input type="hidden" name="object_id" id="object_id" value="{{form.object_id.data}}" />
+                <input type="hidden" name="folder_id" id="folder_id" value="{{form.folder_id.data}}" />
+                <input type="hidden" name="object_type_id" id="object_type_id" value="{{form.object_type_id.data}}" />
+                <input type="hidden" name="file_edit_id" id="file_edit_id" value="{{file_edit_id}}" />
+                <input type="hidden" name="loadKeywordTreeFlg" id="loadKeywordTreeFlg" value="{{loadKeywordTreeFlg}}" />
+                <input type="hidden" name="act_type" id="act_type" />
+                <input type="hidden" name="displayOrder" id="displayOrder" value="{{displayOrder}}" />
+            </form>
+        </div><!-- container -->
+    </div><!-- wrap -->
+    <script>
+        //<![CDATA[
+        var isEditMode = '{{is_edit_mode}}';
+        var selectedKwIndex;
+        var addKwIdText;
+
+        $(function() {
+            $(".datalistC tr:not(:has(th)):odd").addClass("odd");
+            $(".datalistC tr:not(:has(th)):even").addClass("even");
+
+            tlib_init_drag_and_drop_upload();
+
+            drop_file = tlib_drag_and_drop({
+                elm_ids: {
+                    file_list_id: '',
+                    div_class: 'upload_file_drop_target',
+                    input_class: 'upload_files',
+                    button_class: 'file_upload_btn'
+                },
+                url: "{{url_for('prop_upload_files')}}",
+                param: {
+                    db_id: $("#db_id").val(),
+                    objectId: $("#object_id").val(),
+                    fileEditId: $("#file_edit_id").val()
+                },
+                func: {
+                    check_overwrite: 'check_overwrite',
+                    file_upload: 'file_upload_by_drop',
+                    get_file_list: post_get_file_list
+                },
+                msg: {
+                    upload_confirm_msg: 'ファイルをアップロードします。よろしいですか？',
+                    max_file_msg: '同時にアップロードできるファイル数は%sです。',
+                    max_file_size_msg: '最大ファイルサイズは%sMBです。',
+                    mix_file_size_msg: 'ファイルサイズ0byteは添付できません。'
+                },
+                max_files: 10,
+                max_file_size: 1024 * 1024 * {{ max_upload_file_size }},
+                min_file_size: 0
+            });
+            drop_file.on_ready();
+
+            resizeMainContent();
+
+            if ($("#object_id").val() == "") {
+                $(".upload_file_drop_target").hide();
+            }
+
+            {% if loadKeywordTreeFlg %}
+                localStorage.removeItem('jstree');
+                loadKeywordTree();
+            {% endif %}
+
+            {% if reloadContentsFlg %}
+                post_save_contents();
+            {% endif %}
+        });
+
+        $(window).resize(function() {
+            resizeMainContent();
+        });
+
+        function resizeMainContent() {
+            $(".main-content").css("height", ($(".container").height() - $(".main-content").offset().top + 40) + "px");
+        }
+
+        function post_delete_file(fileTypeId, fileId) {
+            ajax_post("{{url_for('prop_delete_file')}}", {
+                "db_id": $("#db_id").val(),
+                "file_edit_id": $("#file_edit_id").val(),
+                "file_type_id": fileTypeId,
+                "file_id": fileId
+            }, post_get_file_list, 'file_delete');
+            return false;
+        }
+
+        function post_get_file_list(result, fileTypeId) {
+            if(result.status === 'Error') {
+                alert_dlg('Error', result.msg);
+		        return;
+            }
+
+            if ("prop_delete_file" == result.func) {
+                fileTypeId = result.file_type_id
+            }
+
+            ajax_post("{{url_for('get_files')}}", {
+                "db_id": $("#db_id").val(),
+                "file_edit_id": $("#file_edit_id").val(),
+                "object_id": $("#object_id").val(),
+                "file_type_id": fileTypeId
+            }, reloadFileList, 'file_upload_after');
+            return false;
+        }
+
+        // ファイルアップロード後の再描画
+        function reloadFileList(result) {
+            // 返却メッセージ
+            if (result.msg !== "OK") {
+                alert(result.msg);
+                return;
+            }
+
+            // 明細データをクリア処理
+            $('table#propertyForm-relationAttachList-' + result.fileTypeId + ' tbody *').remove();
+            var fileList = result.dataList;
+            $.each(fileList, function(index, entity) {
+                var colEm = $("<td class='NW AT AL'></td>");
+                var fileNm = entity["file_name"];　　　　　 // 添付ファイル名
+                var fileSize = entity["file_size_disp"];   // ファイルサイズ
+                var registDate = entity["created_at_str"]; // 登録日
+                var pdfLinkUrl = "{{ url_for('download_file', disp_mode='edit', file_edit_id=file_edit_id) }}" + "&db_id=" + $("#db_id").val() + "&file_id=" + entity["file_id"];
+
+                // 行追加
+                var rowEm = $('<tr>'+
+                            '<td><a onclick="javascript:void(0);" href="' + pdfLinkUrl + '" target="_blank">' + fileNm + '</a></td>' +
+                            '<td>' + fileSize + '</td>' +
+                            '<td>' + registDate + '</td>' +
+                            '<td><span class="object_menu"><a href="javascript:void(0);" onclick="post_delete_file(\'' + result.fileTypeId + '\', \'' + entity["file_id"] + '\')">削除</a></span></td>' +
+                            '</tr>');
+                $('table#propertyForm-relationAttachList-' + result.fileTypeId + ' tbody').append(rowEm);
+            });
+        }
+
+        function saveProperty(actType) {
+            $("#act_type").val(actType);
+            $("#propertyForm").submit();
+        }
+
+        function closePropertyPage() {
+            if ('edit' == '{{func}}') {
+                openPropertyPage($("#ids_org").val(), $("#object_id").val(), $("#displayOrder").val(), '_SELF')
+            } else {
+                closeWindow();
+            }
+        }
+
+        function loadKeywordTree() {
+            $('.keyword_tree').jstree({
+                "core" : {
+                    'multiple' : false,
+                    "themes": {
+                        "responsive": false,
+                        "variant": "small"
+                    },
+                    "data" : {
+                        "url": "{{url_for('keyword', show_obj_cnt_flg=0)}}",
+                        "type" : "POST",
+                        "dataType": "json",
+                        "data": function (node) {
+                             return { "id" : node.id, "db_id" : $("#db_id").val() };
+                        }
+                    }
+                },
+                'sort' : function(a, b) {
+                    a1 = this.get_node(a);
+                    b1 = this.get_node(b);
+                    if (a1.icon == b1.icon) {
+                        return (a1.original.disp_order > b1.original.disp_order) ? 1 : -1;
+                    } else {
+                        return (a1.icon > b1.icon) ? 1 : -1;
+                    }
+                },
+                "types": {
+                    "default": {
+                        "icon": "folder"
+                    },
+                    "file": {
+                        "valid_children": [],
+                        "icon": "file"
+                    }
+                },
+                "plugins": ["state", "dnd", "sort", "types"]
+            }).on("changed.jstree", function (e, data) {
+                if(data.selected.length) {
+                    var node = data.instance.get_node(data.selected[0]);
+                    addKwIdText = node.text;
+                    $.each(node.parents, function(index, value) {
+                        if (typeof value.split("_")[1] == "undefined") {
+                            return true;
+                        }
+                        var p_node = data.instance.get_node(value);
+                        addKwIdText = p_node.text + "->" + addKwIdText;
+                    });
+
+                    addKwIdText = node.original.keyword_id + "#" + addKwIdText;
+                    console.log('The selected node is: ' + addKwIdText);
+                    //getFileList(node.id, node.original.child_object_type_id);
+                }
+            }).on('loaded.jstree', function() {
+                $('.keyword_tree').jstree('open_all');
+            });
+        }
+
+        function selectKeyword(index) {
+            selectedKwIndex = index;
+
+            $("#keyword-" + index).parent().find("a").each(function() {
+                $(this).removeClass("sel-keyword");
+            });
+            $("#keyword-" + index).addClass("sel-keyword");
+        }
+
+        function addKeyword(pro_index) {
+            var isExists = false;
+            var idx = 0;
+            var keywordId = addKwIdText.split('#')[0];
+            if (typeof(keywordId) == "undefined" || keywordId == "undefined") return;
+            var kwText = addKwIdText.split('#')[1];
+            $("#keyword_content_" + pro_index).find("a").each(function(index, value) {
+                if ($(this).text() === kwText) {
+                    isExists = true;
+                }
+                idx = Number($(this).attr("id").split("-")[2]);
+            });
+
+            if (!isExists) {
+                idx++;
+                idx = pro_index + "-" + idx;
+                $("#keyword_content_" + pro_index)
+                    .append($('<a id="keyword-' + idx + '" class="kw-anchor" href="javascript:void(0);" onclick="selectKeyword(\'' + idx + '\');">' + kwText + '</a>'))
+                    .append($('<input type="hidden" id="keyword-hid-' + idx + '" value="' + addKwIdText + '">'));
+            }
+
+            changeKeywordValue(pro_index);
+        }
+
+        function removeKeyword(pro_index) {
+            if (selectedKwIndex != null && selectedKwIndex != "") {
+                $("#keyword-" + selectedKwIndex).remove();
+                $("#keyword-hid-" + selectedKwIndex).remove();
+            }
+            changeKeywordValue(pro_index);
+        }
+
+        function changeKeywordValue(pro_index) {
+            var kw_value = "";
+            $("#keyword_content_" + pro_index).find("[id^='keyword-hid-" + pro_index + "']")
+              .each(function(index, value) {
+                if (kw_value == "") {
+                    kw_value = $(this).val();
+                } else {
+                    kw_value = kw_value + ", " + $(this).val();
+                }
+            });
+
+            $("#keywords-hid-" + pro_index).val(kw_value);
+        }
+
+        function propertyReflash() {
+            window.location.href = getPropertyUrl('edit', $("#db_id").val(), $("#ids").val(), $("#object_id").val(), $("#displayOrder").val(), $("#ids_org").val());
+        }
+        //]]>
+    </script>
+    <div class="jqmWindow" id="jqmWindow"></div>
+    <div id="confirm">
+        <div class="header"><span>Confirm</span></div>
+        <div class="message"></div>
+        <div class="buttons middleBtnArea float_none width_170">
+            <div class="btn btn-default yes float_none">Yes</div>
+            <div class="btn btn-default no simplemodal-close float_none">No</div>
+        </div>
+    </div>
+    <div id="alert">
+        <div class="header"><span>Alert</span></div>
+        <div class="message"></div>
+        <div class="buttons middleBtnArea"><div class="btn btn-default no simplemodal-close">OK</div></div>
+    </div>
+</body>
+</html>

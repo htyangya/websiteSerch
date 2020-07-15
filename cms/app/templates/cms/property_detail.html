@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-dist/css/bootstrap.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}">
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/bootstrap-dist/js/bootstrap.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+        html,body { margin: 0px; padding: 0px; }
+        html { overflow: hidden; }
+        body { overflow: hidden; }
+        .main-content {
+            overflow: auto;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+        .propertyLabel {
+            width: 316px;
+        }
+        table#headerTable {
+            height: 100%;
+        }
+        div#headerArea
+        {
+            background-color: {% if is_edit_mode %} #363; {% else %} #393f4c; {% endif %}
+            height: 4.05em;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div id="wrap">
+        <div id="headerArea">
+            <table id="headerTable" style="color: #fff;">
+                <tr>
+                    <td>
+                        <div id="project_name">{{ db_name }}</div>
+                    </td>
+                    <td align="right">
+                        <span style="color: #fff; font-size: 11pt;">{{current_user.get_user_name()}}</span>
+                    </td>
+                </tr>
+            </table>
+        </div><!-- headerArea -->
+        <div class="container">
+            <center>
+                <table class="datalist_headerC" style="margin-bottom: 5px;">
+                    <tbody>
+                        <tr><th class="title"></th>
+                            <td class="function">
+                                {% if func and func != 'show_property' %}
+                                <span class="object_menu"><a href="{{url_for('property', func='edit', db_id=form.db_id.data, id=form.ids.data, object_id=form.object_id.data, displayOrder=displayOrder)}}" target="_self">編集</a></span>
+                                <span class="object_menu"><a href="javascript:void(0);" onclick="deleteProperty()">削除</a></span>
+                                {% endif %}
+                                <span class="object_menu"><a href="javascript:void(0);" onclick="closeWindow();">閉じる</a></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </center>
+            <div class="main-content">
+                <center>
+                    <table id="propertyDataList" class="datalistC">
+                        <tbody>
+                            <tr>
+                                <th colspan="2">Property</th>
+                            </tr>
+                            <tr>
+                                <td class="propertyLabel">{{ tabName }}</td>
+                                <td>{{ folderPath }}</td>
+                            </tr>
+                                {% for pro in proList %}
+                                <tr>
+                                    <td class="propertyLabel">{{ pro.get('property_name') }}</td>
+                                    <td>
+                                        {% set value = proValues.get('col_' + (loop.index-1)|string) %}
+                                        {% set txtValue = proValues.get('col_' + (loop.index-1)|string + '_label') %}
+                                        {% if 'SELECT' == pro.get('property_type') %}
+                                            {{ txtValue }}
+                                        {% elif 'KEYWORD' == pro.get('property_type') %}
+                                            {% set keywords = value.split(', ') %}
+                                            {% for kw in keywords %}
+                                                {{kw}}<br>
+                                            {% endfor %}
+                                        {% elif 'URL' == pro.get('link_type') %}
+                                            {% if txtValue is none %} {% set txtValue = value %} {% endif %}
+                                            {% if value is not none and value != '' %}
+                                                <a href="{{value}}" target="_blank">{{txtValue}}</a>
+                                            {% endif %}
+                                        {% else %}
+                                            {{ value }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                        </tbody>
+                    </table>
+                </center>
+
+                {% for fileType in fileTypeList %}
+                <center>
+                    <table class="datalist_headerC">
+                        <tbody>
+                            <tr><th class="title">{{fileType.file_type_name}}</th><td class="function"></td></tr>
+                        </tbody>
+                    </table>
+                    <table class="datalistC">
+                        <tbody>
+                            <tr>
+                                <th>ファイル名</th>
+                                <th>ファイルサイズ</th>
+                                <th>登録日</th>
+                            </tr>
+                            {% for file in fileTypeDic.get(fileType.file_type_id) %}
+                            <tr>
+                                <td><a onclick="javascript:void(0);" href="{{ url_for('download_file', db_id=form.db_id.data, file_id=file.file_id) }}">{{ file.file_name }}</a></td>
+                                <td>{{ file.file_size_disp }}</td>
+                                <td>{{ file.created_at_str }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </center>
+                {% endfor %}
+            </div><!-- main-content -->
+        </div><!-- container -->
+        <input type="hidden" name="db_id" id="db_id" value="{{form.db_id.data}}" />
+        <input type="hidden" name="object_id" id="object_id" value="{{form.object_id.data}}" />
+        <input type="hidden" name="displayOrder" id="displayOrder" value="{{displayOrder}}" />
+    </div><!-- wrap -->
+    <script>
+        //<![CDATA[
+        $(function() {
+            $(".datalistC tr:not(:has(th)):odd").addClass("odd");
+            $(".datalistC tr:not(:has(th)):even").addClass("even");
+
+            resizeMainContent();
+            {% if reloadContentsFlg %}
+                post_save_contents();
+            {% endif %}
+        });
+
+        function deleteProperty(){
+            confirm_2cb_noclose('このコンテンツを削除します。よろしいですか？',
+			    function() { doDeleteProperty(); },
+			    function() { return; });
+        }
+
+        $(window).resize(function() {
+            resizeMainContent();
+        });
+
+        function resizeMainContent() {
+            $(".main-content").css("height", ($(".container").height() - $(".main-content").offset().top + 40) + "px");
+        }
+
+        function doDeleteProperty(){
+            $.ajax({
+                type: 'post',
+                url: '{{url_for("delete_property")}}',
+                data: {
+                    'db_id' : $("#db_id").val(),
+                    'object_id' : $("#object_id").val()
+                },
+                dataType: 'json',
+                success: function(result) {
+                    if (result.status == 'Error') {
+                        return;
+                    }
+                    post_save_contents();
+                    closeWindow();
+                },
+                error: function (xmlhttprequest, textstatus, errorThrown) {
+                    alert("Error at " + err_func_name + "<br>\n" +
+                        xmlhttprequest.responseText + "<br>\n" +
+                        "HttpStatus: " + xmlhttprequest.status + "<br>\n" +
+                        "TextStatus: " + textstatus + "<br>\n" +
+                        "Error: " + errorThrown.message);
+                }
+            });
+        }
+        //]]>
+    </script>
+    <div id="confirm">
+        <div class="header"><span>Confirm</span></div>
+        <div class="message"></div>
+        <div class="buttons middleBtnArea float_none width_170">
+            <div class="btn btn-default yes float_none">Yes</div>
+            <div class="btn btn-default no simplemodal-close float_none">No</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<style type="text/css">
+    .privsDeptBtn {
+        width: 80px;
+        height: 25px;
+        border: 0;
+        border-width: 1px;
+        background: #4BB0E0;
+        color: white;
+    }
+    .privsDeptBtn:hover {
+        color: #039;
+        cursor: pointer;
+        background: #4295BD;
+    }
+    .privsDeptInput {
+        width: 200px;
+        border:0 solid #4BB0E0;
+        border-width:1px;
+    }
+    .privsDeptSelect {
+        width: 205px;
+        border:0 solid #4BB0E0;
+        border-width:1px;
+    }
+    .privsDeptLable {
+        padding-top: 20px;
+        width: 80px;
+    }
+</style>
+<div class="jqDnRHandle">{{ jqmTitle }}</div>
+    <div class="jqmBody" id="jqmBody" style="overflow: hidden;">
+        <form id="privs_dept_form" name="privs_dept_form" method="post" action="{{ url_for('privs_dept_save') }}">
+            <div>
+                <div>
+                    <label class="privsDeptLable" for="corp_cd">Corp Cd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                {% if func == const.ADD_PRIVS_DEPT %}
+                    <input type="input" class="privsDeptInput" id="corp_cd" name="corp_cd" />
+                    <span class="btn-group" style="padding-left: 10px;">
+                        <button class="btn privsDeptBtn" onclick="corpSelect();" type="button">Select</button>
+                    </span>
+                    <div id="corp_name" style="padding-top: 10px; padding-left: 93px;"></div>
+                {% else %}
+                    {{ privsDept.corp_cd }}
+                {% endif %}
+                </div>
+                <div>
+                    <label class="privsDeptLable" for="div_cd">Div Cd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                {% if func == const.ADD_PRIVS_DEPT  or func == const.UPDATE_PRIVS_DEPT %}
+                    <input type="input" class="privsDeptInput" id="div_cd" name="div_cd"/>
+                {% elif func == const.DELETE_PRIVS_DEPT %}
+                    {{ privsDept.div_cd }}
+                {% endif %}
+                </div>
+                <div>
+                    <label class="privsDeptLable" for="dept_cd">Dept Cd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                {% if func == const.ADD_PRIVS_DEPT  or func == const.UPDATE_PRIVS_DEPT %}
+                    <input type="input" class="privsDeptInput" id="dept_cd" name="dept_cd" />
+                {% elif func == const.DELETE_PRIVS_DEPT %}
+                    {{ privsDept.dept_cd }}
+                {% endif %}
+                </div>
+                <div>
+                    <label class="privsDeptLable">Emp Type&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                {% if func == const.ADD_PRIVS_DEPT or func == const.UPDATE_PRIVS_DEPT %}
+                    <select class="privsDeptSelect" id="emp_type_cd" name="emp_type_cd">
+                        <option {% if privsDept.emp_type_cd =='%' %}selected {% endif %} value='%'>%:ALL</option>
+                    {% for empType in empTypeList %}
+                        <option {% if privsDept.emp_type_cd == empType.code %}selected {% endif %} value='{{ empType.code }}'>{{ empType.code }}:{{ empType.name }}</option>
+                    {% endfor %}
+                    </select>
+                {% elif func == const.DELETE_PRIVS_DEPT %}
+                    {{ privsDept.emp_type_cd }}:{{ privsDept.emp_type_name }}
+                {% endif %}
+                </div>
+                <div>
+                    <label class="privsDeptLable">Working Type:</label>
+                {% if func == const.ADD_PRIVS_DEPT or func == const.UPDATE_PRIVS_DEPT %}
+                    <select class="privsDeptSelect" id="working_type_cd" name="working_type_cd">
+                        <option {% if privsDept.working_type_cd =='%' %}selected {% endif %} value='%'>%:ALL</option>
+                    {% for workingType in workingTypeList %}
+                        <option {% if privsDept.working_type_cd == workingType.code %}selected {% endif %} value='{{ workingType.code }}'>{{ workingType.code }}:{{ workingType.name }}</option>
+                    {% endfor %}
+                    </select>
+                {% elif func == const.DELETE_PRIVS_DEPT %}
+                    {{ privsDept.working_type_cd }}:{{ privsDept.working_type_name }}
+                {% endif %}
+                </div>
+                <div>
+                    <label class="privsDeptLable">Privs Type&nbsp;&nbsp;:</label>
+                {% if func == const.ADD_PRIVS_DEPT %}
+                    <select class="privsDeptSelect" id="privs_type" name="privs_type">
+                        <option value="READ">READ</option>
+                        <option value="WRITE">WRITE</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </select>
+                {% elif func == const.UPDATE_PRIVS_DEPT or func == const.DELETE_PRIVS_DEPT %}
+                    {{ privsDept.privs_type or '' }}
+                {% endif %}
+                {% if func == const.DELETE_PRIVS_DEPT %}
+                    <div class="required" style="padding-top: 10px; text-align: center;">Are you sure to delete this department?</div>
+                {% endif %}
+                </div>
+                <div class="btn-group" style="padding-top: 20px; padding-left: 120px;">
+                    <button class="btn privsDeptBtn" onclick="privsDeptSave();" type="button">Submit</button>
+                    <button style="folat: right;" class="btn privsDeptBtn" onclick="close_jqmodal_dlg();" type="button">Cancel</button>
+                </div>
+            </div>
+            <input id="func" name="func" type="hidden" value="{{ func }}" />
+        </form>
+    </div>
+    <script>
+    //<![CDATA[
+        var db_id = "{{ db_id }}";
+        var data_required_err_msg = '{{ const.DATA_REQUIRED_ERR_MSG }}';
+
+        $(function() {
+            {% if func == const.UPDATE_PRIVS_DEPT %}
+            $("#div_cd").val('{{ privsDept.div_cd }}');
+            $("#dept_cd").val('{{ privsDept.dept_cd }}');
+            {% endif %}
+        });
+
+        // 組織選択
+        function corpSelect() {
+            popupSelectCorp(db_id, "#corp_cd", "#corp_name");
+        }
+
+        function privsDeptSave() {
+            var corp_cd, div_cd, dept_cd, emp_type_cd, working_type_cd, privs_type;
+            var old_div_cd, old_dept_cd, old_emp_type_cd, old_working_type_cd, old_privs_type;
+
+            {% if func == const.ADD_PRIVS_DEPT %}
+                corp_cd = $("#corp_cd").val();
+                if(jQuery.trim(corp_cd) == '') {
+                    alert(data_required_err_msg.replace('%s', 'Corp Cd'));
+                    return false;
+                }
+                privs_type = $("#privs_type").val();
+                if(jQuery.trim(privs_type) == '') {
+                    alert(data_required_err_msg.replace('%s', 'Privs Type'));
+                    return false;
+                }
+            {% endif %}
+            {% if func == const.ADD_PRIVS_DEPT or func == const.UPDATE_PRIVS_DEPT %}
+                div_cd = $("#div_cd").val();
+                if(jQuery.trim(div_cd) == '') {
+                    alert(data_required_err_msg.replace('%s', 'Div Cd'));
+                    return false;
+                }
+                dept_cd = $("#dept_cd").val();
+                if(jQuery.trim(dept_cd) == '') {
+                    alert(data_required_err_msg.replace('%s', 'Dept Cd'));
+                    return false;
+                }
+                emp_type_cd = $("#emp_type_cd").val();
+                if(jQuery.trim(emp_type_cd) == '') {
+                    alert(data_required_err_msg.replace('%s', 'Emp Type'));
+                    return false;
+                }
+                working_type_cd = $("#working_type_cd").val();
+                if(jQuery.trim(working_type_cd) == '') {
+                    alert(data_required_err_msg.replace('%s', 'Working Type'));
+                    return false;
+                }
+            {% endif %}
+            {% if func == const.UPDATE_PRIVS_DEPT %}
+                corp_cd = '{{ privsDept.corp_cd }}';
+                privs_type = '{{ privsDept.privs_type }}';
+
+                old_div_cd = '{{ privsDept.div_cd }}';
+                old_dept_cd = '{{ privsDept.dept_cd }}';
+                old_emp_type_cd = '{{ privsDept.emp_type_cd }}';
+                old_working_type_cd = '{{ privsDept.working_type_cd }}';
+                old_privs_type = '{{ privsDept.privs_type }}';
+            {% elif func == const.DELETE_PRIVS_DEPT %}
+                corp_cd = '{{ privsDept.corp_cd }}';
+                div_cd = '{{ privsDept.div_cd }}';
+                dept_cd = '{{ privsDept.dept_cd }}';
+                emp_type_cd = '{{ privsDept.emp_type_cd }}';
+                working_type_cd = '{{ privsDept.working_type_cd }}';
+                privs_type = '{{ privsDept.privs_type }}';
+            {% endif %}
+
+            $.ajax({
+                type: 'post',
+                url: '{{url_for("privs_dept_save")}}',
+                data: {
+                    'func' : '{{ func }}',
+                    'db_id' : db_id,
+                    'corp_cd' : corp_cd,
+                    'div_cd' : div_cd,
+                    'dept_cd' : dept_cd,
+                    'emp_type_cd' : emp_type_cd,
+                    'working_type_cd' : working_type_cd,
+                    'privs_type' : privs_type,
+                    'old_div_cd' : old_div_cd,
+                    'old_dept_cd' : old_dept_cd,
+                    'old_emp_type_cd' : old_emp_type_cd,
+                    'old_working_type_cd' : old_working_type_cd,
+                    'old_privs_type' : old_privs_type,
+                },
+                success: function(data) {
+                    var result = $.parseJSON(data);
+                    // 返却メッセージ
+                    if (typeof(result.err_msgs) != "undefined" && result.err_msgs.length > 0) {
+                        var errMsg = '';
+                        for (var i = 0; i < result.err_msgs.length; i++) {
+                            if (i > 0) { errMsg += '\n'; }
+                            errMsg += result.err_msgs[i];
+                        }
+                        alert(errMsg);
+                        return;
+                    }
+                    close_jqmodal_dlg();
+                    reload();
+                },
+                error: function (xmlhttprequest, textstatus, errorThrown) {}
+            });
+        }
+
+    //]]>
+    </script>
