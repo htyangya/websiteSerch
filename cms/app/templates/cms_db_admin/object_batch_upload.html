@@ -22,14 +22,14 @@
     <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/js/TlibDragAndDropUpload.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/TlibDragAndDropUploadFromDms.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jstree/jstree.min.js?q={{appVer}}" type="text/javascript"></script>
 
 
     <style type="text/css">
-html,body { margin: 0px; padding: 0px; }
+        html,body { margin: 0px; padding: 0px; }
         html { overflow: hidden; }
         body { overflow: hidden; }
         .main-content {
@@ -111,6 +111,56 @@ html,body { margin: 0px; padding: 0px; }
         {
             background-color: {% if is_edit_mode %} #363; {% else %} #393f4c; {% endif %}
             height: 4.05em;
+
+        }
+        div.file_upload {
+            font-size: 12pt;
+            font-weight: bold;
+        }
+        #property {
+            width: 95%;
+            border: 1px #444444 solid;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+        #property th {
+            text-align: left;
+            width: 95%;
+            background: #bbbbff;
+            border-bottom: 1px solid #999999;
+            font-size: 16px;
+            padding: 2px;
+        }
+        #property td {
+            text-align: left;
+            border-bottom: 1px solid #999999;
+        }
+        #property td.name { white-space: nowrap; }
+        #property td.value { width: 70%; }
+        button#file_upload_btn {
+            width: 150px;
+            padding: 5px;
+            font-size: 12pt;
+            cursor: pointer;
+            color: #FFFFFF;
+            border: 2px solid #000080;
+            background-color: #6495ED;
+        }
+        #file_upload_drop_target {
+            position: relative;
+            background: #FFFFFF;
+            z-index: 204;
+            width: 100%;
+            min-width: 800px;
+            height: 100px;
+            line-height: 22px;
+            text-align: center;
+            display: table-cell;
+            vertical-align: middle;
+            border: 3px dashed #000080;
+        }
+        .btn.btn-default{
+            height: 25px;
         }
         /* jqModal用CSS */
         .jqmWindow {
@@ -133,108 +183,118 @@ html,body { margin: 0px; padding: 0px; }
         <div class="border"></div>
         <br>
     </div>
-    <div>
-        <center>
-            <table id="datalist_header" class="datalist_headerC">
-                <tr>
-                    <th class="title">Upload  Document List</th>
-                </tr>
-                <tr>
-                    <td class="function"><a href="javascript:void(0);" onclick="downloadTemplateFile()">Download Template File</a></td>
-                </tr>
+    <center>
 
-            </table>
+        <table id="datalist_header" class="datalist_headerC">
+            <tr>
+                <th class="title">Upload  Document List</th>
+            </tr>
+            <tr>
+                <td class="function"><a href="javascript:void(0);" onclick="downloadTemplateFile()">Download Template File</a></td>
+            </tr>
+
+        </table>
+        <br>
+         <!--123-->
+        <form action="" name="xls_file_form" id="xls_file_form" method="post" enctype="multipart/form-data">
+            <span class="alert" ></span>
+            <div id="confirm">
+                <div class="header"><span>Confirm</span></div>
+                <div class="message"></div>
+                <div class="buttons">
+                    <div class="no simplemodal-close">No</div>
+                    <div class="yes">Yes</div>
+                </div>
+            </div>
+            <div id="alert">
+                <div class="header"><span>Alert</span></div>
+                <div class="message"></div>
+                <div class="buttons">
+                    <div class="no simplemodal-close">OK</div>
+                </div>
+            </div>
             <br>
-            <table id="property">
-                <tr>
-                    <th colspan="2"  style="background: #bbbbff;"> File Upload Form</th>
-                </tr>
-                <tr>
-                    <td class="even">File Name</td>
-                    <td class="value">
-                        <!-- リスク添付ファイル -->
-                        <div class="screen-control">
-                            <div class="float-left" style="margin: 0px 15px 15px 0px;">
-                                <div>
-                                    <table class="table-bordered psprimis-list-table">
-                                        <tbody>
-                                            <tr> <th class="NW" style="width: 315px;">添付ファイル</th></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div style="margin: 8px 0px 0px 0px; width:316px;">
-                                    <table class="file-content sub-container">
-                                        <tr>
-                                            <td class="button" valign="top">
-                                                <div id="attach_dnd_form">
-                                                    <div class="upload_file_drop_target" draggable="true">
-
-                                                        <div class="file_upload">アップロードするファイルをドロップ</div>
-                                                        <div>または</div>
-                                                        <input class="upload_files" name="upload_files" style="display: none;" type="file" multiple="multiple" />
-                                                        <div class="btn btn-default file_upload_btn">ファイルを選択</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+            <center>
+                <table id="property">
+                    <tbody>
+                    <tr>
+                        <th colspan="2" style="background: #bbbbff;">File Upload Form</th>
+                    </tr>
+                    <tr class="even">
+                        <td class="name">File Name</td>
+                        <td class="value">
+                            <div id="uploaded_file" class="uploaded_file"></div>
+                            <div id="file_upload_drop_target" draggable="true">
+                                <div class="file_upload">Drop a file here</div>
+                                <div>or</div>
+                                <input type="file" style="display:none" id="file_upload_input" multiple="multiple">
+                                <button type="button" id="file_upload_btn">select a file</button>
                             </div>
+                        </td>
+                    </tr>
+                    <tr class="odd">
 
-                            <div class="clear-float"></div>
-                            <br>
-                        </div>
-                        <div id="tlibFileUploadLoadingMessage"></div>
-                        <div id="tlibFileUploadLoadingMessageBody" style="position:absolute; left: 20%;"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="name">Option</td>
-                    <td>
-                        <input type="checkbox" name="nullcheck" value="1">Skip Null Check
-                    </td>
-                </tr>
-            </table>
-            <div>
-            <span class="object_menu"><a href="javascript:void(0);" onclick="closeWindow();">Preview</a></span>
-            <span class="object_menu"><a href="javascript:void(0);" onclick="closeWindow();">Cancel</a></span>
-        </div>
-        </center>
+                        <td class="name">Option</td>
+
+                        <td class="value">
+                            <div class="input-group">
+                                <input type="checkbox" id="skip_null_check" name="skip_null_check" style="vertical-align:middle;margin-top: -1px;" value="1">
+                                <label for="skip_null_check" style="vertical-align:middle;">Skip NULL check</label>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </center>
+            <input type="hidden" name="db_id" id="db_id" value="{{ form['db_id'] }}">
+            <input type="hidden" name="object_type_id" id="object_type_id" value="{{form['object_type_id']}}">
+            <!--<input type="hidden" name="func" id="func" value="check_upload_doc_list_form_data_for_upload_check">-->
+            <input type="submit" name="submit_btn" value="Preview" class="btn btn-default" >
+            <input type="button" name="cancel_btn" value="Cancel" class="btn btn-default" onclick="cancel_func()">
+        </form>
+    </center>
     <div class="border"></div>
-    </div>
-
-    </div><!-- main-container -->
-                <input type="hidden" name="func" id="func" value="{{func}}" />
-                <input type="hidden" name="db_id" id="db_id" value="{{form['db_id']}}" />
-    </div>
     <form id="downloadForm" name="downloadForm" action="{{url_for('template_dl')}}" method="post">
         <input type="hidden" name="db_id" value="{{form['db_id']}}" />
         <input type="hidden" name="object_type_id" id="object_type_id" value="{{form['object_type_id']}}" />
     </form>
+
+    <div class="jqmWindow" id="jqmWindow"></div>
     <script>
+        // downloadTemplateFile
+        function downloadTemplateFile() {
+            var url = $("#downloadForm").attr("action");
+            var sendOption = $("#downloadForm").serialize();
+            msSaveOrOpenBlob(url, "POST", "しばらくお待ちください", "", "application/x-www-form-urlencoded", sendOption);
+        }
 
-
-    // downloadTemplateFile
-    function downloadTemplateFile() {
-        var url = $("#downloadForm").attr("action");
-        var sendOption = $("#downloadForm").serialize();
-        msSaveOrOpenBlob(url, "POST", "しばらくお待ちください", "", "application/x-www-form-urlencoded", sendOption);
-    }
+        var drop_file;
+        $(document).ready(function () {
+            $("#xls_file_form").submit(function () {
+                var file = $("#file_upload_input").val();
+                if (file === "") {
+                    alert_dlg("Error","please drop or select a file!");
+                    return false;
+                }
+                if (!file.endsWith(".xlsx")) {
+                    alert_dlg("Error","you can only put a xlsx file!");
+                    return false;
+                }
+            })
+            tlib_init_drag_and_drop_upload();
+            drop_file = tlib_drag_and_drop({
+                elm_ids: {
+                    div_id: 'file_upload_drop_target',
+                    input_id: 'file_upload_input',
+                    button_id: 'file_upload_btn',
+                    ul_form_id: 'xls_file_form',
+                    ul_file_id: 'uploaded_file',
+                    ul_filename: 'doc_list_filename'
+                },
+            });
+            drop_file.on_ready();
+        });
 
     </script>
-    <div class="jqmWindow" id="jqmWindow"></div>
-    <div id="confirm">
-        <div class="header"><span>Confirm</span></div>
-        <div class="message"></div>
-        <div class="buttons middleBtnArea float_none width_170">
-            <div class="btn btn-default yes float_none">Yes</div>
-            <div class="btn btn-default no simplemodal-close float_none">No</div>
-        </div>
-    </div>
-    <div id="alert">
-        <div class="header"><span>Alert</span></div>
-        <div class="message"></div>
-        <div class="buttons middleBtnArea"><div class="btn btn-default no simplemodal-close">OK</div></div>
-    </div>
 </body>
 </html>
