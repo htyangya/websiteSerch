@@ -261,19 +261,21 @@
             </tr>
             </thead>
             <tbody>
-            {% for index,row in valid.excel_pd.iterrows() %}
-                <tr>
-                    <td>{{ index }}</td>
-                    {% for col,value in row.iteritems() %}
-                        {% set tip=valid.data_tips_pd.at[index,col] %}
-                        <td {% if tip %}
-                            class="alert2" data-toggle="tooltip" title="{{ tip }}"
-                        {% endif %}
-                        >{{ value }}</td>
-                    {% endfor %}
+            {% if valid.data_tips_pd is not none %}
+                {% for index,row in valid.excel_pd.iterrows() %}
+                    <tr>
+                        <td>{{ index }}</td>
+                        {% for col,value in row.iteritems() %}
+                            {% set tip=valid.data_tips_pd.at[index,col] %}
+                            <td {% if tip %}
+                                class="alert2" data-toggle="tooltip" title="{{ tip }}"
+                            {% endif %}
+                            >{{ value }}</td>
+                        {% endfor %}
 
-                </tr>
-            {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endif %}
             </tbody>
         </table>
     </div>
