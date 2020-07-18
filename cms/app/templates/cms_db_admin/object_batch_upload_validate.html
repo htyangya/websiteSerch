@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-dist/css/bootstrap.min.css?q={{ appVer }}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{ appVer }}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{ appVer }}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{ appVer }}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{ appVer }}">
+    <link rel="stylesheet" type="text/css"
+          href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{ appVer }}">
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{ appVer }}">
+    <link rel="stylesheet" type="text/css" href="/static/jstree/themes/style.min.css?q={{ appVer }}">
+    <link rel="stylesheet" type="text/css" href="/static/jstree/themes/style.cms.css?q={{ appVer }}">
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/bootstrap-dist/js/bootstrap.min.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{ appVer }}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/js/TlibDragAndDropUploadFromDms.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/jstree/jstree.min.js?q={{ appVer }}" type="text/javascript"></script>
+
+
+    <style type="text/css">
+        html, body {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .main-content {
+            overflow: auto;
+        }
+
+        table {
+            font-size: 9pt !important;
+        }
+
+        table#headerTable {
+            height: 100%;
+        }
+
+        .inputText {
+            width: 100%;
+            min-width: 150px;
+            font-family: 'MS Gothic', Sans-serif;
+        }
+
+        .propertyLabel {
+            width: 316px;
+        }
+
+        .propertyBtn {
+            width: 44px;
+        }
+
+        .upload_file_drop_target {
+            padding: 10px;
+            border: 3px dashed #000080;
+            virtical-align: middle;
+            text-align: center;
+            width: 315px !important;
+        }
+
+        .keyword_tree .jstree-anchor {
+            display: inline-block;
+            width: auto;
+        }
+
+        .screen-control {
+            width: 96%;
+        }
+
+        .keyword_tree {
+            border: 1px solid #999999;
+            float: left;
+            height: 160px;
+            width: 300px;
+            margin: 8px;
+            overflow: auto;
+        }
+
+        .keyword_btn_div {
+            float: left;
+            vertical-align: middle;
+            height: 145px;
+        }
+
+        .keyword_content {
+            padding: 5px;
+            float: left;
+            margin: 8px;
+            height: 160px;
+            width: 550px;
+            border: 1px solid #999999;
+            overflow: auto;
+        }
+
+        .kw-anchor {
+            display: inline-block;
+            color: black;
+            white-space: nowrap;
+            padding: 0 4px 0 1px;
+            margin: 0;
+            vertical-align: top;
+        }
+
+        .kw-anchor, .kw-anchor:link, .kw-anchor:visited, .kw-anchor:hover, .kw-anchor:active {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .sel-keyword {
+            background: #beebff;
+            border-radius: 2px;
+            box-shadow: inset 0 0 1px #999999;
+        }
+
+        div#headerArea {
+            background-color: {% if is_edit_mode %} #363; {% else %} #393f4c; {% endif %}
+            height: 4.05em;
+
+        }
+
+        div.file_upload {
+            font-size: 12pt;
+            font-weight: bold;
+        }
+
+        #property {
+            width: 95%;
+            border: 1px #444444 solid;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+
+        #property th {
+            text-align: left;
+            width: 95%;
+            background: #bbbbff;
+            border-bottom: 1px solid #999999;
+            font-size: 16px;
+            padding: 2px;
+        }
+
+        #property td {
+            text-align: left;
+            border-bottom: 1px solid #999999;
+        }
+
+        #property td.name {
+            white-space: nowrap;
+        }
+
+        #property td.value {
+            width: 70%;
+        }
+
+        button#file_upload_btn {
+            width: 150px;
+            padding: 5px;
+            font-size: 12pt;
+            cursor: pointer;
+            color: #FFFFFF;
+            border: 2px solid #000080;
+            background-color: #6495ED;
+        }
+
+        #file_upload_drop_target {
+            position: relative;
+            background: #FFFFFF;
+            z-index: 204;
+            width: 100%;
+            min-width: 800px;
+            height: 100px;
+            line-height: 22px;
+            text-align: center;
+            display: table-cell;
+            vertical-align: middle;
+            border: 3px dashed #000080;
+        }
+
+        .btn.btn-default {
+            height: 25px;
+        }
+
+        #datalist td.alert2 {
+            color: red;
+            background: #bbbbff url('/static/images/err_info.gif') no-repeat 95% 20%;
+        }
+
+        #datalist td {
+            padding: 1px 0.2em;
+            border-bottom: 1px solid #999999;
+            white-space: normal;
+        }
+
+        #ErrorMsg {
+            width: 100%;
+            height: 40pt;
+            overflow-y: scroll;
+        }
+        .table-hover > tbody > tr:hover > td,
+        .table-hover > tbody > tr:hover > th {
+          background-color: #ffffa2;
+        }
+
+        /* jqModal用CSS */
+        .jqmWindow {
+            width: 500px !important;
+            min-height: 600px !important;
+            max-height: 80% !important;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+<div class="condtion">
+    <div class="border"></div>
+    <center>
+        <h2>CMS : {{ menu_param["db_name"] }}</h2>
+        <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{ current_user.get_user_name() }}
+    </center>
+    <div class="border"></div>
+    &nbsp;&gt;&nbsp;<a href="{{ url_for('db_adm_index',db_id=db_id) }}">Main Menu</a>&nbsp;&gt; Batch Insert
+    ({{ menu_param['object_type_name'] }})
+    <div class="border"></div>
+</div>
+<center>
+    <div id="ErrorMsg">
+        <font color="red">
+            {% for error in valid.errors %}
+                {{ error }}<br>
+            {% endfor %}
+        </font>
+    </div>
+    <div class="border"></div>
+    <br>
+    <form action="{{ url_for('upload_data') }}" method="post">
+        <input type="hidden" name="db_id" id="db_id" value="{{ form.db_id.data }}"/>
+        <input type="hidden" name="object_type_id" id="object_type_id" value="{{ form.object_type_id.data }}"/>
+        {% if not menu_param["has_error"] %}
+            <input type="submit" name="submit_btn" value="Regist" class="btn btn-default"/>
+        {% endif %}
+        <input type="button" name="cancel_btn" value="Cancel" class="btn btn-default" onclick="cancel_func()"/>
+    </form>
+    <div id="datalist_div" style="min-height: 600px;">
+        <table id="datalist" class="datalistC table-hover table-striped table-bordered">
+            <thead>
+            <tr>
+                {% for header in valid.headers %}
+                    <th>{{ header }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for index,row in valid.excel_pd.iterrows() %}
+                <tr>
+                    <td>{{ index }}</td>
+                    {% for col,value in row.iteritems() %}
+                        {% set tip=valid.data_tips_pd.at[index,col] %}
+                        <td {% if tip %}
+                            class="alert2" data-toggle="tooltip" title="{{ tip }}"
+                        {% endif %}
+                        >{{ value }}</td>
+                    {% endfor %}
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="border"></div>
+</center>
+
+<div class="jqmWindow" id="jqmWindow"></div>
+<script>
+    function cancel_func() {
+        window.location.href = window.location.href;
+    }
+</script>
+</body>
+</html>

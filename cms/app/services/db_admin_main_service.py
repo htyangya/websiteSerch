@@ -1,34 +1,32 @@
 import json
+import os
 import sys
 from datetime import datetime
-import os
 import openpyxl
-from openpyxl.styles import PatternFill
-
 from flask import render_template, current_app, make_response, send_file, Response, flash
 from flask_login import current_user
+from openpyxl.styles import PatternFill
 
 import app.lib.cms_lib.session
 from app import db
 from app.controllers.package import PkgCmsLog
+from app.forms.batch_upload_form import BatchUploadForm
 from app.forms.privs_dept_form import PrivsDeptForm
 from app.forms.privs_user_form import PrivsUserForm
 from app.lib.cms_lib.date_util import DateUtil
 from app.lib.cms_lib.db_util import DbUtil
 from app.lib.cms_lib.str_util import StrUtil
+from app.lib.cms_lib.upload_excel_validate_util import UploadExcelValidateUtil
 from app.lib.conf.const import Const
 from app.models import User
 from app.models.cms_db_code_master import CmsDbCodeMaster
 from app.models.cms_db_dept_master import CmsDbDeptMaster
 from app.models.cms_db_privs_dept import CmsDbPrivsDept
 from app.models.cms_db_privs_user import CmsDbPrivsUser
+from app.models.cms_object_property import CmsObjectProperty
+from app.models.cms_object_type import CmsObjectType
 from app.models.cms_operation_log import CmsOperationLog
 from app.util.output.daily_log_csv_output import DailyLogCsvOutput
-from app.models.cms_object_type import CmsObjectType
-from app.models.cms_object import CmsObject
-from app.services import property_service
-from app.models.cms_common import CmsCommon
-from app.models.cms_object_property import CmsObjectProperty
 
 
 def admin_main_init(db_id, request):
@@ -608,7 +606,7 @@ def privs_dept_detail(db_id, request):
         appVer=current_app.config['APP_VER'])
 
 
-def object_batch_upload(db_id, request):
+def batch_upload_get(db_id, request):
     object_type_id = request.args.get('object_type_id')
     object_type_name = CmsObjectType().getCmsObjectType(object_type_id).object_type_name
     db_name = ""
@@ -631,20 +629,48 @@ def object_batch_upload(db_id, request):
         appVer=current_app.config['APP_VER'])
 
 
-def do_file_upload(params):
-    file_edit_id = None
-    cmsCommon = CmsCommon()
-    file_edit_id = cmsCommon.getObjectIdSeq()
+def batch_upload_post(db_id, request):
+    form = BatchUploadForm()
+    valid = UploadExcelValidateUtil(r"C:\Users\tsbcp\Downloads\Template_20200715164231--1.xlsx", db_id,
+                                    form.object_type_id.data)
+    has_error = not valid.validate(form.skip_null_check.data)
+    object_type_name = CmsObjectType().getCmsObjectType(form.object_type_id.data).object_type_name
+    db_name = ""
+    if app.lib.cms_lib.session.current_db:
+        db_name = app.lib.cms_lib.session.current_db.db_name
+    menu_param = {
+        "db_name": db_name,
+        "object_type_name": object_type_name,
+        "has_error": has_error,
+    }
 
-    param = {}
-    param["func"] = params["func"]
-    param["db_id"] = params["db_id"]
-    param["object_id"] = params["objectId"]
-    param["file_edit_id"] = file_edit_id
-    param["file_type_id"] = 151
-    param["file_names"] = params["file_names"]
-    param["file_paths"] = params["file_paths"]
-    return property_service.file_upload(param)
+    return render_template(
+        'cms_db_admin/object_batch_upload_validate.html',
+        db_id=db_id,
+        title='CMS(' + db_name + ') : Upload object file',
+        current_user=current_user,
+        form=form,
+        valid=valid,
+        menu_param=menu_param,
+        appVer=current_app.config['APP_VER'])
+
+
+def upload_data(db_id, request):
+    object_type_id = request.form.get("object_type_id")
+    db_name = ""
+    if app.lib.cms_lib.session.current_db:
+        db_name = app.lib.cms_lib.session.current_db.db_name
+    menu_param = {
+        "db_name": db_name,
+        "object_type_name": CmsObjectType().getCmsObjectType(object_type_id).object_type_name,
+    }
+    return render_template(
+        'cms_db_admin/object_batch_upload_success.html',
+        db_id=db_id,
+        title='CMS(' + db_name + ') : Upload object file',
+        current_user=current_user,
+        menu_param=menu_param,
+        appVer=current_app.config['APP_VER'])
 
 
 # templateダウンロード
@@ -664,6 +690,7 @@ def template_download(form):
     res = make_response(send_file(csvFilePath, attachment_filename=fileName, as_attachment=True))
     res.headers['Content-Type'] = 'application/octet-stream'
     return res
+
 
 def create_excel(object_type_id, csvFilePath):
     db_name = ""

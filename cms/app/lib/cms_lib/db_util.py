@@ -268,3 +268,9 @@ class DbUtil:
             dic = {**dic, **{row['column_name']: row}}
 
         return dic
+
+    @classmethod
+    def sqlExcuter(cls, sqlstr: str, *args, **kwargs):
+        sqlstr = sqlstr.format(*args, **kwargs)
+        StrUtil.print_debug(sqlstr)
+        return db.session.execute(text(sqlstr))

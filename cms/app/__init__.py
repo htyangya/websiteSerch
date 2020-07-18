@@ -75,7 +75,7 @@ def create_app():
                      methods=['GET'])
     app.add_url_rule('/cmsdbadmin/object_batch_upload', 'object_batch_upload', db_admin_route.object_batch_upload,
                      methods=['GET', 'POST'])
-    app.add_url_rule('/cmsdbadmin/upload_files', 'upload_files', db_admin_route.upload_files, methods=['POST'])
+    app.add_url_rule('/cmsdbadmin/upload_data', 'upload_data', db_admin_route.upload_data, methods=['POST'])
     app.add_url_rule('/cmsdbadmin/template_dl', 'template_dl', db_admin_route.template_dl, methods=['POST'])
 
     # システム管理機能

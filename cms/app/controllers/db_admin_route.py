@@ -80,23 +80,18 @@ def privs_dept_detail():
 
 @UserAuth.db_adm_login_required
 def object_batch_upload():
-    return adm_service.object_batch_upload(get_db_id(), request)
+    if request.method == 'POST':
+        return adm_service.batch_upload_post(get_db_id(), request)
+    else:
+        return adm_service.batch_upload_get(get_db_id(), request)
 
 @UserAuth.db_adm_login_required
 def template_dl():
     return adm_service.template_download(request.form)
 
 @UserAuth.db_adm_login_required
-def upload_files():
-    param = {}
-    param["func"] = request.form.get("func")
-    param["db_id"] = request.form.get('db_id')
-
-    param["object_id"] = request.form.get('objectId')
-
-    param["file_names"] = request.form.getlist('file_name[]')
-    param["file_paths"] = request.files.getlist('file_path[]')
-    return adm_service.do_file_upload(param)
+def upload_data():
+    return adm_service.upload_data(get_db_id(), request)
 
 # ログイン
 def redirect_db_admin():

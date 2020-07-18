@@ -227,7 +227,7 @@
                             <div id="file_upload_drop_target" draggable="true">
                                 <div class="file_upload">Drop a file here</div>
                                 <div>or</div>
-                                <input type="file" style="display:none" id="file_upload_input" multiple="multiple">
+                                <input type="file" style="display:none" id="file" name="file" multiple="multiple" accept=".xlsx" />
                                 <button type="button" id="file_upload_btn">select a file</button>
                             </div>
                         </td>
@@ -238,7 +238,7 @@
 
                         <td class="value">
                             <div class="input-group">
-                                <input type="checkbox" id="skip_null_check" name="skip_null_check" style="vertical-align:middle;margin-top: -1px;" value="1">
+                                <input type="checkbox" id="skip_null_check" name="skip_null_check" style="vertical-align:middle;margin-top: -1px;appearance:checkbox" value="1">
                                 <label for="skip_null_check" style="vertical-align:middle;">Skip NULL check</label>
                             </div>
                         </td>
@@ -246,11 +246,11 @@
                     </tbody>
                 </table>
             </center>
-            <input type="hidden" name="db_id" id="db_id" value="{{ form['db_id'] }}">
-            <input type="hidden" name="object_type_id" id="object_type_id" value="{{form['object_type_id']}}">
+            <input type="hidden" name="db_id" id="db_id" value="{{ form['db_id'] }}" />
+            <input type="hidden" name="object_type_id" id="object_type_id" value="{{form['object_type_id']}}"/>
             <!--<input type="hidden" name="func" id="func" value="check_upload_doc_list_form_data_for_upload_check">-->
-            <input type="submit" name="submit_btn" value="Preview" class="btn btn-default" >
-            <input type="button" name="cancel_btn" value="Cancel" class="btn btn-default" onclick="cancel_func()">
+            <input type="submit" name="submit_btn" value="Preview" class="btn btn-default" />
+            <input type="button" name="cancel_btn" value="Cancel" class="btn btn-default" onclick="cancel_func()"/>
         </form>
     </center>
     <div class="border"></div>
@@ -267,13 +267,16 @@
             var sendOption = $("#downloadForm").serialize();
             msSaveOrOpenBlob(url, "POST", "しばらくお待ちください", "", "application/x-www-form-urlencoded", sendOption);
         }
+        function cancel_func(){
+            window.close();
+        }
 
         var drop_file;
         $(document).ready(function () {
             $("#xls_file_form").submit(function () {
-                var file = $("#file_upload_input").val();
+                var file = $("#file").val();
                 if (file === "") {
-                    alert_dlg("Error","please drop or select a file!");
+                    alert_dlg("Error","please drop or select a Excel file!");
                     return false;
                 }
                 if (!file.endsWith(".xlsx")) {
@@ -285,7 +288,7 @@
             drop_file = tlib_drag_and_drop({
                 elm_ids: {
                     div_id: 'file_upload_drop_target',
-                    input_id: 'file_upload_input',
+                    input_id: 'file',
                     button_id: 'file_upload_btn',
                     ul_form_id: 'xls_file_form',
                     ul_file_id: 'uploaded_file',
