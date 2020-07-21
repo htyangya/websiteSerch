@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pandas as pd
 from numpy import nan
-
+import numpy as np
 from app import db
 from app.models.cms_common import CmsCommon
 from app.models.cms_keyword_master import CmsKeywordMaster
@@ -37,7 +37,8 @@ class UploadExcelValidateUtil:
 
     def validate(self, skip_null_check):
         # チェックされるexcel dataを用意
-        self.excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], dtype=str).fillna("")
+        first_time = datetime.utcnow()
+        self.excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], dtype=str, engine="openpyxl").fillna("")
         # エンプティexcelの場合は直ぐに戻る
         if self.excel_pd.empty:
             return False
@@ -45,7 +46,6 @@ class UploadExcelValidateUtil:
         # htmlに表示される列ヘーダー
         self.headers = ["Excel Idx"] + self.excel_pd.columns.to_list()
         # 以下はチェックために使うsqlのデータ
-        first_time = datetime.utcnow()
         self.obj_property_pd = self.read_sql(
             f"SELECT * FROM CMS_OBJECT_PROPERTY WHERE OBJECT_TYPE_ID ={self.obj_type_id}").drop_duplicates(
             "property_name").set_index("property_name", False)
@@ -106,10 +106,32 @@ class UploadExcelValidateUtil:
             self.data_tips_pd[col.name].where(condition, col.index.to_series().map(invalid_msg.format), True)
         # FOLDERのチェック
         if col.name == "FOLDER NAME":
-            respond_pd = col.str.split("->").apply(self._check_folder)
-            self.data_tips_pd[col.name].where(respond_pd["condition"] | (col == ""),
-                                              respond_pd["msg"] + col.index.to_series().map(
-                                                  "(Excel Row No: {0})".format), True)
+            respond_pd = col.str.split("->", expand=True).stack(dropna=True).reset_index(name="folder_name").rename(
+                columns={"level_0": "index", "level_1": "list_index"}).merge(
+                self.folder_pd.reset_index(drop=True), "left", "folder_name").set_index("index", False)
+            invalid_type = respond_pd[
+                (respond_pd.child_object_type_id != int(self.obj_type_id)) & (
+                    respond_pd.folder_id.notna())].drop_duplicates(
+                "index")
+            invalid_folder = respond_pd[
+                (respond_pd.folder_name != "") & (respond_pd.folder_id.isna())].drop_duplicates("index")
+            group_by_pd = respond_pd.reset_index(drop=True).groupby("index").agg(
+                {"folder_id": lambda x: np.sum(x.to_list()) - x.iat[-1],
+                 "parent_folder_id": lambda x: np.sum(x.to_list()) - x.iat[0]})
+            invalid_order_index = group_by_pd[(group_by_pd['folder_id'] != group_by_pd["parent_folder_id"]) & (
+                group_by_pd['folder_id'].notna())].index
+            if not invalid_type.empty:
+                self.data_tips_pd.loc[invalid_type["index"], col.name] = invalid_type["folder_name"].map(
+                    "{0} is invalid folder for this object type".format) + invalid_type["index"].map(
+                    "(Excel Row No: {0})".format)
+            if not invalid_folder.empty:
+                self.data_tips_pd.loc[invalid_folder["index"], col.name] = invalid_folder["folder_name"].map(
+                    "{0} is invalid folder name".format) + invalid_folder["index"].map(
+                    "(Excel Row No: {0})".format)
+            if not invalid_order_index.empty:
+                self.data_tips_pd.loc[invalid_order_index, col.name] = col[invalid_order_index].map(
+                    "{0} is invalid folder order".format) + invalid_order_index.to_series().map(
+                    "(Excel Row No: {0})".format)
         else:
             condition = None
             property_type = self.obj_property_pd.at[col.name, "property_type"]
@@ -122,8 +144,13 @@ class UploadExcelValidateUtil:
             elif property_type == "NUMBER":
                 invalid_msg = "{0} is invalid number."
                 i_len, f_len = self.obj_property_pd.loc[col.name, ["i_len", "f_len"]]
+
+                def _check_len(row, ilen, flen):
+                    re_ilen = row[0] + row[2]
+                    return re_ilen != 0 and re_ilen <= ilen and row[2] <= flen
+
                 condition = col.str.extract("^(\d+)(\.(\d+))?$").apply(lambda row: row.str.len()).fillna(0).apply(
-                    self._check_len, 1, args=(i_len or float("inf"), f_len or float("inf")))
+                    _check_len, 1, args=(i_len or float("inf"), f_len or float("inf")))
             # DATE型のチェック
             elif property_type == "DATE":
                 invalid_msg = "{0} is invalid date format."
@@ -144,36 +171,12 @@ class UploadExcelValidateUtil:
                 self.data_tips_pd[col.name].where(condition, col.map(invalid_msg.format) + col.index.to_series().map(
                     "(Excel Row No: {0})".format), True)
 
-    @staticmethod
-    def _check_len(row, ilen, flen):
-        re_ilen = row[0] + row[2]
-        return re_ilen != 0 and re_ilen <= ilen and row[2] <= flen
-
-    def _check_folder(self, folder_name_list):
-        folder_list = []
-        for i in range(len(folder_name_list) - 1, -1, -1):
-            folder_name = folder_name_list[i]
-            msg = "{0} is invalid folder name".format(folder_name)
-            if folder_name not in self.folder_pd.index:
-                return pd.Series([False, msg], ["condition", "msg"])
-            type_id, fid, pid = self.folder_pd.loc[folder_name,
-                                                   ["child_object_type_id", "folder_id", "parent_folder_id"]]
-            if type_id != int(self.obj_type_id):
-                msg = "{0} is invalid folder for this object type".format(folder_name)
-                return pd.Series([False, msg], ["condition", "msg"])
-            folder_list.append((fid, pid))
-        for i in range(len(folder_list) - 1):
-            if folder_list[i][1] != folder_list[i + 1][0]:
-                msg = "{0} is invalid folder name".format("->".join(folder_name_list))
-                return pd.Series([False, msg], ["condition", "msg"])
-        return pd.Series([True, msg], ["condition", "msg"])
-
     def add_error(self, row):
         self.errors.extend(row[row != False])
 
     def save_to_db(self):
         first_time = datetime.utcnow()
-        excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2])
+        excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], engine="openpyxl")
         rowCount = len(excel_pd)
         folder_pd = self.read_sql(
             f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID={self.db_id}")
