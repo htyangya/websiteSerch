@@ -656,13 +656,18 @@ def batch_upload_post(db_id, request):
 
 
 def upload_data(db_id, request):
-    object_type_id = request.form.get("object_type_id")
+    form = BatchUploadForm()
+    valid = UploadExcelValidateUtil(r"C:\Users\tsbcp\Downloads\Template_20200715164231.xlsx", db_id,
+                                    form.object_type_id.data)
+    item_ctn = valid.save_to_db()
+    object_type_id = form.object_type_id.data
     db_name = ""
     if app.lib.cms_lib.session.current_db:
         db_name = app.lib.cms_lib.session.current_db.db_name
     menu_param = {
         "db_name": db_name,
         "object_type_name": CmsObjectType().getCmsObjectType(object_type_id).object_type_name,
+        "item_ctn": item_ctn
     }
     return render_template(
         'cms_db_admin/object_batch_upload_success.html',

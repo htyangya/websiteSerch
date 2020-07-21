@@ -1,13 +1,23 @@
-from collections import namedtuple
+from datetime import datetime
 
 import pandas as pd
+from numpy import nan
+
 from app import db
+from app.models.cms_common import CmsCommon
 from app.models.cms_keyword_master import CmsKeywordMaster
 from app.models.cms_keyword_setting import CmsKeywordSetting
+from app.models.cms_object import CmsObject
 from app.models.cms_object_prop_selection_list import CmsObjectPropSelectionList
 
 
 class UploadExcelValidateUtil:
+
+    @staticmethod
+    def read_sql(sql):
+        resp = db.session.execute(sql)
+        return pd.DataFrame(resp.fetchall(), None, resp.keys())
+
     def __init__(self, excel_filename, db_id, obj_type_id):
         self.excel_filename = excel_filename
         self.db_id = db_id
@@ -34,9 +44,9 @@ class UploadExcelValidateUtil:
         # htmlに表示される列ヘーダー
         self.headers = ["Excel Idx"] + self.excel_pd.columns.to_list()
         # 以下はチェックために使うsqlのデータ
-        self.obj_property_pd = pd.read_sql(
-            f"SELECT * FROM CMS_OBJECT_PROPERTY WHERE OBJECT_TYPE_ID ={self.obj_type_id}",
-            db.engine)
+        first_time = datetime.utcnow()
+        self.obj_property_pd = self.read_sql(
+            f"SELECT * FROM CMS_OBJECT_PROPERTY WHERE OBJECT_TYPE_ID ={self.obj_type_id}")
         # 先ずは列ヘーダーをチェック、不具合になったらfalseを戻る
         if not self.validate_headers(skip_null_check):
             return False
@@ -45,14 +55,16 @@ class UploadExcelValidateUtil:
         self.multi_set_flg = db.session.query(CmsKeywordSetting.multi_set_flg).filter(
             CmsKeywordSetting.db_id == self.db_id).first()[0]
         self.keyword_list = list(map(lambda item: item[0], db.session.query(CmsKeywordMaster.keyword).all()))
-        self.folder_pd = pd.read_sql(
-            f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID={self.db_id}",
-            db.engine
-        )
+        self.folder_pd = self.read_sql(
+            f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID={self.db_id}")
+        sec_time = datetime.utcnow()
+        print("data load:", (sec_time - first_time).total_seconds())
         # データのチェック
         # チェックメッセージのdataFrame
         self.data_tips_pd = pd.DataFrame().reindex_like(self.excel_pd).fillna(False)
-        self.excel_pd.apply(self.check_data)
+        self.excel_pd.apply(self.validate_data)
+        third_time = datetime.utcnow()
+        print("data convert:", (third_time - sec_time).total_seconds())
         # add error to errors
         self.data_tips_pd.apply(self.add_error)
         return (self.data_tips_pd == False).all(axis=None)
@@ -81,7 +93,7 @@ class UploadExcelValidateUtil:
             self.errors.extend(map(lambda header: f"{header} is invalid property name.", invalid_headers))
         return valid_flag
 
-    def check_data(self, col):
+    def validate_data(self, col):
         # 必須項目のチェック
         if col.name in self.exits_required_header:
             invalid_msg = "%s is required.(Excel Row No: {0})" % col.name
@@ -154,3 +166,50 @@ class UploadExcelValidateUtil:
 
     def add_error(self, row):
         self.errors.extend(row[row != False])
+
+    def save_to_db(self):
+        excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2])
+        rowCount = len(excel_pd)
+        first_time = datetime.utcnow()
+        folder_pd = self.read_sql(
+            f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID={self.db_id}")
+        obj_property_pd = self.read_sql(
+            f"SELECT PROPERTY_NAME,DB_COLUMN_NAME,PROPERTY_TYPE FROM CMS_OBJECT_PROPERTY WHERE OBJECT_TYPE_ID ={self.obj_type_id}").append(
+            {"property_name": "FOLDER NAME", "db_column_name": "folder_name"}, True).drop_duplicates("property_name")
+        selection_list_pd = self.read_sql(
+            f"SELECT SELECTION_MST_ID,SELECTION_NAME FROM CMS_OBJECT_PROP_SELECTION_LIST"
+        )
+        # [番号   IDX_TEXT_001    TEXT] このようなMAP
+        prop_column_mapping_pd = pd.DataFrame(excel_pd.columns.to_list(), columns=["property_name"]).merge(
+            obj_property_pd, "left", "property_name")
+        # columnsはDBの列名前を取り替え
+        excel_pd.columns = prop_column_mapping_pd.db_column_name.str.lower()
+        sec_time = datetime.utcnow()
+        print("data load:", (sec_time - first_time).total_seconds())
+        excel_pd["object_type_id"] = int(self.obj_type_id)
+        excel_pd["db_id"] = int(self.db_id)
+        # excel_pd["object_id"] = CmsCommon.getObjectIdSeqList(rowCount)
+        excel_pd["object_id"] = range(2570, 2570 + rowCount)
+        # folder_idの列をつけます
+        excel_pd["parent_folder_id"] = excel_pd["folder_name"].str.split("->").apply(
+            lambda folder_name_list: folder_pd.query("folder_name==@folder_name_list[-1]")["folder_id"].iloc[0]
+        )
+        select_names = prop_column_mapping_pd.query("property_type=='SELECT'")["db_column_name"].str.lower()
+        # select型の列にselection_nameをselection_mst_idに換える
+        replace_dict = dict(zip(selection_list_pd.selection_name, selection_list_pd.selection_mst_id))
+        excel_pd[select_names] = excel_pd[select_names].replace(replace_dict)
+        # object_id db_columns_name keyword_id
+        keyword__names = prop_column_mapping_pd.query("property_type=='KEYWORD'")["db_column_name"].str.lower()
+        # excel_pd[keyword__names].apply(self.add_keyword_data())
+        # 保存する
+        excel_data = excel_pd.replace({nan: None}).to_dict("records")
+        third_time = datetime.utcnow()
+        print("data convert:", (third_time - sec_time).total_seconds())
+        db.session.execute(CmsObject.__table__.insert(), excel_data)
+        # db.session.commit()
+        four_time = datetime.utcnow()
+        print("data save:", (four_time - third_time).total_seconds())
+        return rowCount
+
+    def add_keyword_data(self, col):
+        db_columns_name = col.name

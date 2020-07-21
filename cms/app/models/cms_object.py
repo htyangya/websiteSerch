@@ -2,6 +2,7 @@ import re
 import sys
 from datetime import datetime
 
+from sqlalchemy import Sequence
 from sqlalchemy.sql import text
 
 from app import db
@@ -12,7 +13,9 @@ from app.models.cms_object_property import CmsObjectProperty
 
 class CmsObject(db.Model):
     __tablename__ = 'CMS_OBJECT'
-    object_id = db.Column(db.Numeric(10), primary_key=True)
+    id_seq = Sequence('OBJECT_ID_SEQUENCE')
+    object_id = db.Column(db.Numeric(10), id_seq,
+                          server_default=id_seq.next_value(), primary_key=True)
     parent_folder_id = db.Column(db.Numeric(10))
     db_id = db.Column(db.Numeric(10))
     object_type_id = db.Column(db.Numeric(10))
@@ -89,7 +92,7 @@ class CmsObject(db.Model):
     date_008 = db.Column(db.DateTime)
     date_009 = db.Column(db.DateTime)
     date_010 = db.Column(db.DateTime)
-    is_deleted = db.Column(db.Numeric(1))
+    is_deleted = db.Column(db.Numeric(1), default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     created_by = db.Column(db.String(10))
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
