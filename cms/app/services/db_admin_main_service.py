@@ -639,8 +639,7 @@ def batch_upload_post(db_id, request):
     has_error = not valid.validate(form.skip_null_check.data)
     f3 = datetime.utcnow()
     print("data syori", (f3 - f2).total_seconds())
-    object_type_name = CmsObjectType().getCmsObjectType(form.object_type_id.data).object_type_name
-
+    object_type_name = CmsObjectType.getCmsObjectType(form.object_type_id.data).object_type_name
     db_name = ""
     if app.lib.cms_lib.session.current_db:
         db_name = app.lib.cms_lib.session.current_db.db_name
@@ -650,7 +649,7 @@ def batch_upload_post(db_id, request):
         "has_error": has_error,
     }
     f4 = datetime.utcnow()
-    print("other sql", (f3 - f2).total_seconds())
+    print("other sql", (f4 - f3).total_seconds())
     tem = render_template(
         'cms_db_admin/object_batch_upload_validate.html',
         db_id=db_id,
@@ -676,7 +675,7 @@ def upload_data(db_id, request):
         db_name = app.lib.cms_lib.session.current_db.db_name
     menu_param = {
         "db_name": db_name,
-        "object_type_name": CmsObjectType().getCmsObjectType(object_type_id).object_type_name,
+        "object_type_name": CmsObjectType.getCmsObjectType(object_type_id).object_type_name,
         "item_ctn": item_ctn
     }
     return render_template(

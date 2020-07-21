@@ -15,8 +15,10 @@ class CmsObjectType(db.Model):
     def get_login_message(self):
         return self.login_message
 
-    def getCmsObjectType(self, object_type_id):
+    @staticmethod
+    def getCmsObjectType(object_type_id):
         return db.session.query(CmsObjectType).filter(CmsObjectType.object_type_id == object_type_id).first()
 
-    def getObjectTypeList(self, db_id):
+    @staticmethod
+    def getObjectTypeList(db_id):
         return db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id).all()
