@@ -248,6 +248,7 @@
         <input type="hidden" name="db_id" id="db_id" value="{{ form.db_id.data }}"/>
         <input type="hidden" name="object_type_id" id="object_type_id" value="{{ form.object_type_id.data }}"/>
         {% if not menu_param["has_error"] %}
+            <input type="hidden" name="file" value="{{ menu_param.excel_name }}" />
             <input type="submit" name="submit_btn" value="Regist" class="btn btn-default"/>
         {% endif %}
         <input type="button" name="cancel_btn" value="Cancel" class="btn btn-default" onclick="cancel_func()"/>

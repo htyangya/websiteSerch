@@ -23,12 +23,11 @@ class BatchUploadForm(FlaskForm):
         file.save(full_file_name)
         return full_file_name
 
-    @staticmethod
-    def get_full_tem_filename(filename):
+    def get_full_tem_filename(self):
         upload_temp_dir = StrUtil.get_safe_config(current_app, 'UPLOAD_TMP_DIR_PATH')
         if upload_temp_dir and not os.path.exists(upload_temp_dir):
             os.makedirs(upload_temp_dir, exist_ok=True)
-        return os.path.join(upload_temp_dir, filename)
+        return os.path.join(upload_temp_dir, self.file.data)
 
     @staticmethod
     def random_filename(filename):

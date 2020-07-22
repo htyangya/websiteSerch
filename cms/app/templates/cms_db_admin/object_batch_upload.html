@@ -175,11 +175,11 @@
     <div class="condtion">
         <div class="border"></div>
         <center>
-            <h2>CMS : {{ form["db_name"] }}</h2>
+            <h2>CMS : {{ menu_param["db_name"] }}</h2>
             <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
         </center>
         <div class="border"></div>
-        &nbsp;&gt;&nbsp;<a href="{{url_for('db_adm_index')}}?db_id={{ form['db_id'] }}">Main Menu</a>&nbsp;&gt; Batch Insert ({{ form['object_type_name'] }})
+        &nbsp;&gt;&nbsp;<a href="{{url_for('db_adm_index')}}?db_id={{ menu_param['db_id'] }}">Main Menu</a>&nbsp;&gt; Batch Insert ({{ menu_param['object_type_name'] }})
         <div class="border"></div>
         <br>
     </div>
@@ -246,8 +246,8 @@
                     </tbody>
                 </table>
             </center>
-            <input type="hidden" name="db_id" id="db_id" value="{{ form['db_id'] }}" />
-            <input type="hidden" name="object_type_id" id="object_type_id" value="{{form['object_type_id']}}"/>
+            <input type="hidden" name="db_id" id="db_id" value="{{ menu_param['db_id'] }}" />
+            <input type="hidden" name="object_type_id" id="object_type_id" value="{{menu_param['object_type_id']}}"/>
             <!--<input type="hidden" name="func" id="func" value="check_upload_doc_list_form_data_for_upload_check">-->
             <input type="submit" name="submit_btn" value="Preview" class="btn btn-default" />
             <input type="button" name="cancel_btn" value="Cancel" class="btn btn-default" onclick="cancel_func()"/>
@@ -255,8 +255,8 @@
     </center>
     <div class="border"></div>
     <form id="downloadForm" name="downloadForm" action="{{url_for('template_dl')}}" method="post">
-        <input type="hidden" name="db_id" value="{{form['db_id']}}" />
-        <input type="hidden" name="object_type_id" id="object_type_id" value="{{form['object_type_id']}}" />
+        <input type="hidden" name="db_id" value="{{menu_param['db_id']}}" />
+        <input type="hidden" name="object_type_id" id="object_type_id" value="{{menu_param['object_type_id']}}" />
     </form>
 
     <div class="jqmWindow" id="jqmWindow"></div>

@@ -612,31 +612,33 @@ def batch_upload_get(db_id, request):
     db_name = ""
     if app.lib.cms_lib.session.current_db:
         db_name = app.lib.cms_lib.session.current_db.db_name
-    form = {"add_privs_dept": Const.ADD_PRIVS_DEPT,
-            "update_privs_dept": Const.UPDATE_PRIVS_DEPT,
-            "delete_privs_dept": Const.DELETE_PRIVS_DEPT,
-            "db_id": db_id,
-            "db_name": db_name,
-            "object_type_id": object_type_id,
-            "object_type_name": object_type_name}
+    menu_param = {"add_privs_dept": Const.ADD_PRIVS_DEPT,
+                  "update_privs_dept": Const.UPDATE_PRIVS_DEPT,
+                  "delete_privs_dept": Const.DELETE_PRIVS_DEPT,
+                  "db_id": db_id,
+                  "db_name": db_name,
+                  "object_type_id": object_type_id,
+                  "object_type_name": object_type_name}
 
     return render_template(
         'cms_db_admin/object_batch_upload.html',
         db_id=db_id,
         title='CMS(' + db_name + ') : Upload object file',
         current_user=current_user,
-        form=form,
+        menu_param=menu_param,
         appVer=current_app.config['APP_VER'])
 
 
 def batch_upload_post(db_id, request):
     f1 = datetime.utcnow()
     form = BatchUploadForm()
-    valid = UploadExcelValidateUtil(r"C:\Users\tsbcp\Downloads\Template_20200715164231--1.xlsx", db_id,
-                                    form.object_type_id.data)
+    excel_full_path = form.save_file_temporarily()
+    valid = UploadExcelValidateUtil(excel_full_path, db_id, form.object_type_id.data)
     f2 = datetime.utcnow()
     print("form load", (f2 - f1).total_seconds())
     has_error = not valid.validate(form.skip_null_check.data)
+    if has_error:
+        os.remove(excel_full_path)
     f3 = datetime.utcnow()
     print("data syori", (f3 - f2).total_seconds())
     object_type_name = CmsObjectType.getCmsObjectType(form.object_type_id.data).object_type_name
@@ -647,7 +649,9 @@ def batch_upload_post(db_id, request):
         "db_name": db_name,
         "object_type_name": object_type_name,
         "has_error": has_error,
+        "excel_name": os.path.split(excel_full_path)[-1]
     }
+
     f4 = datetime.utcnow()
     print("other sql", (f4 - f3).total_seconds())
     tem = render_template(
@@ -666,9 +670,14 @@ def batch_upload_post(db_id, request):
 
 def upload_data(db_id, request):
     form = BatchUploadForm()
-    valid = UploadExcelValidateUtil(r"C:\Users\tsbcp\Downloads\Template_20200715164231.xlsx", db_id,
-                                    form.object_type_id.data)
-    item_ctn = valid.save_to_db()
+    excel_full_path = form.get_full_tem_filename()
+    if os.path.exists(excel_full_path):
+        valid = UploadExcelValidateUtil(excel_full_path, db_id, form.object_type_id.data)
+        item_ctn = valid.save_to_db()
+        os.remove(excel_full_path)
+        msg = f"Batch Insert was successful.{item_ctn} rows inserted"
+    else:
+        msg = "Please do not submit data repeatedly"
     object_type_id = form.object_type_id.data
     db_name = ""
     if app.lib.cms_lib.session.current_db:
@@ -676,7 +685,7 @@ def upload_data(db_id, request):
     menu_param = {
         "db_name": db_name,
         "object_type_name": CmsObjectType.getCmsObjectType(object_type_id).object_type_name,
-        "item_ctn": item_ctn
+        "msg": msg
     }
     return render_template(
         'cms_db_admin/object_batch_upload_success.html',
