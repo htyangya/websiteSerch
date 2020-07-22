@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pandas as pd
 from numpy import nan
 import numpy as np
@@ -37,7 +35,6 @@ class UploadExcelValidateUtil:
 
     def validate(self, skip_null_check):
         # チェックされるexcel dataを用意
-        first_time = datetime.utcnow()
         self.excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], dtype=str, engine="openpyxl").fillna("")
         # エンプティexcelの場合は直ぐに戻る
         if self.excel_pd.empty:
@@ -62,14 +59,10 @@ class UploadExcelValidateUtil:
         self.folder_pd = self.read_sql(
             f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID={self.db_id}").drop_duplicates(
             "folder_name").set_index("folder_name", False)
-        sec_time = datetime.utcnow()
-        print("data load:", (sec_time - first_time).total_seconds())
         # データのチェック
         # チェックメッセージのdataFrame
         self.data_tips_pd = pd.DataFrame().reindex_like(self.excel_pd).fillna(False)
         self.excel_pd.apply(self.validate_data)
-        third_time = datetime.utcnow()
-        print("data convert:", (third_time - sec_time).total_seconds())
         # add error to errors
         self.data_tips_pd.apply(self.add_error)
         return (self.data_tips_pd == False).all(axis=None)
@@ -175,7 +168,6 @@ class UploadExcelValidateUtil:
         self.errors.extend(row[row != False])
 
     def save_to_db(self):
-        first_time = datetime.utcnow()
         excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], engine="openpyxl")
         rowCount = len(excel_pd)
         folder_pd = self.read_sql(
@@ -196,19 +188,18 @@ class UploadExcelValidateUtil:
             obj_property_pd, "left", "property_name")
         # columnsはDBの列名前を取り替え
         excel_pd.columns = prop_column_mapping_pd.db_column_name = prop_column_mapping_pd.db_column_name.str.lower()
-        sec_time = datetime.utcnow()
-        print("data load:", (sec_time - first_time).total_seconds())
         excel_pd["object_type_id"] = int(self.obj_type_id)
         excel_pd["db_id"] = int(self.db_id)
-        # excel_pd["object_id"] = CmsCommon.getObjectIdSeqList(rowCount)
-        excel_pd["object_id"] = range(2570, 2570 + rowCount)
+        excel_pd["object_id"] = CmsCommon.getObjectIdSeqList(rowCount)
+        # --debug用object_id取得メソッド
+        # excel_pd["object_id"] = range(2570, 2570 + rowCount)
         # folder_idの列をつけます
         excel_pd["parent_folder_id"] = excel_pd["folder_name"].str.split("->").apply(lambda l: l[-1]).replace(
             folder_pd["folder_name"].to_list(), folder_pd["folder_id"].to_list()
         )
         type_groupby = prop_column_mapping_pd.groupby("property_type")
-        select_names = type_groupby.get_group("SELECT").db_column_name
         # select型の列にselection_nameをselection_mst_idに換える
+        select_names = type_groupby.get_group("SELECT").db_column_name
         excel_pd[select_names] = excel_pd[select_names].replace(selection_list_pd["selection_name"].to_list(),
                                                                 selection_list_pd["selection_mst_id"].to_list())
         # keyword型を保存するために使う結構を作成,列は以下のようです
@@ -220,11 +211,7 @@ class UploadExcelValidateUtil:
             excel_pd[["object_id"]])
         # 保存する
         excel_data = excel_pd.replace({nan: None}).to_dict("records")
-        third_time = datetime.utcnow()
-        print("data convert:", (third_time - sec_time).total_seconds())
         db.session.execute(CmsObject.__table__.insert(), excel_data)
         db.session.execute(CmsObjectKeyword.__table__.insert(), keyword_save_pd.to_dict("records"))
-        # db.session.commit()
-        four_time = datetime.utcnow()
-        print("data save:", (four_time - third_time).total_seconds())
+        db.session.commit()
         return rowCount

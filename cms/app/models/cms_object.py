@@ -2,6 +2,7 @@ import re
 import sys
 from datetime import datetime
 
+from flask_login import current_user
 from sqlalchemy import Sequence
 from sqlalchemy.sql import text
 
@@ -94,9 +95,9 @@ class CmsObject(db.Model):
     date_010 = db.Column(db.DateTime)
     is_deleted = db.Column(db.Numeric(1), default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    created_by = db.Column(db.String(10))
+    created_by = db.Column(db.String(10), default=lambda: current_user.get_id())
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_by = db.Column(db.String(10))
+    updated_by = db.Column(db.String(10), default=lambda: current_user.get_id())
     deleted_at = db.Column(db.DateTime)
     deleted_by = db.Column(db.String(10))
     ctx_indexed_flg = db.Column(db.Numeric(1), default=0)

@@ -49,7 +49,7 @@ class Config:
     # TRACK_MODIFICATIONという機能を無効化します
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # Trueにしておくと 発行される SQLがログで吐かれる
-    SQLALCHEMY_ECHO = False
+    SQLALCHEMY_ECHO = True
 
     # JAVA_LIBパス
     JAVA_LIB = os.environ.get(

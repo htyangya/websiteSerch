@@ -630,17 +630,12 @@ def batch_upload_get(db_id, request):
 
 
 def batch_upload_post(db_id, request):
-    f1 = datetime.utcnow()
     form = BatchUploadForm()
     excel_full_path = form.save_file_temporarily()
     valid = UploadExcelValidateUtil(excel_full_path, db_id, form.object_type_id.data)
-    f2 = datetime.utcnow()
-    print("form load", (f2 - f1).total_seconds())
     has_error = not valid.validate(form.skip_null_check.data)
     if has_error:
         os.remove(excel_full_path)
-    f3 = datetime.utcnow()
-    print("data syori", (f3 - f2).total_seconds())
     object_type_name = CmsObjectType.getCmsObjectType(form.object_type_id.data).object_type_name
     db_name = ""
     if app.lib.cms_lib.session.current_db:
@@ -651,10 +646,7 @@ def batch_upload_post(db_id, request):
         "has_error": has_error,
         "excel_name": os.path.split(excel_full_path)[-1]
     }
-
-    f4 = datetime.utcnow()
-    print("other sql", (f4 - f3).total_seconds())
-    tem = render_template(
+    return render_template(
         'cms_db_admin/object_batch_upload_validate.html',
         db_id=db_id,
         title='CMS(' + db_name + ') : Upload object file',
@@ -663,9 +655,6 @@ def batch_upload_post(db_id, request):
         valid=valid,
         menu_param=menu_param,
         appVer=current_app.config['APP_VER'])
-    f5 = datetime.utcnow()
-    print("template", (f5 - f4).total_seconds())
-    return tem
 
 
 def upload_data(db_id, request):
