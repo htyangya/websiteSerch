@@ -99,16 +99,16 @@ class UploadExcelValidateUtil:
             self.data_tips_pd[col.name].where(condition, col.index.to_series().map(invalid_msg.format), True)
         # FOLDERのチェック
         if col.name == "FOLDER NAME":
-            respond_pd = col.str.split("->", expand=True).stack(dropna=True).reset_index(name="folder_name").rename(
+            respond_pd = col.str.split("->", expand=True).stack(dropna=True).str.strip().reset_index(name="folder_name").rename(
                 columns={"level_0": "index", "level_1": "list_index"}).merge(
                 self.folder_pd.reset_index(drop=True), "left", "folder_name").set_index("index", False)
-            last_ele_pd = respond_pd.reset_index(drop=True).groupby("index").agg("last")
+            last_ele_pd = respond_pd.groupby(respond_pd.index).agg("last")
             invalid_type = last_ele_pd[
                 (last_ele_pd.child_object_type_id != int(self.obj_type_id)) & (
                     last_ele_pd.folder_id.notna())]
             invalid_folder = respond_pd[
                 (respond_pd.folder_name != "") & (respond_pd.folder_id.isna())].drop_duplicates("index")
-            group_by_pd = respond_pd.reset_index(drop=True).groupby("index").agg(
+            group_by_pd = respond_pd.groupby(respond_pd.index).agg(
                 {"folder_id": lambda x: np.sum(x.to_list()) - x.iat[-1],
                  "parent_folder_id": lambda x: np.sum(x.to_list()) - x.iat[0]})
             invalid_order_index = group_by_pd[(group_by_pd['folder_id'] != group_by_pd["parent_folder_id"]) & (
@@ -157,7 +157,7 @@ class UploadExcelValidateUtil:
             elif property_type == "KEYWORD":
                 invalid_msg = "{0} is invalid data."
                 condition = col.isin(self.keyword_list) if not self.multi_set_flg else col.str.split(",").apply(
-                    lambda l: pd.Series(l).isin(self.keyword_list).all())
+                    lambda l: pd.Series(l).str.strip().isin(self.keyword_list).all())
             # ブランクは必須項目のチェックをする,ここでチェックしない
             if condition is not None:
                 condition |= (col == "")
@@ -194,7 +194,7 @@ class UploadExcelValidateUtil:
         # --debug用object_id取得メソッド
         # excel_pd["object_id"] = range(2570, 2570 + rowCount)
         # folder_idの列をつけます
-        excel_pd["parent_folder_id"] = excel_pd["folder_name"].str.split("->").apply(lambda l: l[-1]).replace(
+        excel_pd["parent_folder_id"] = excel_pd["folder_name"].str.split("->").apply(lambda l: l[-1].strip()).replace(
             folder_pd["folder_name"].to_list(), folder_pd["folder_id"].to_list()
         )
         type_groupby = prop_column_mapping_pd.groupby("property_type")
@@ -206,7 +206,7 @@ class UploadExcelValidateUtil:
         # object_id　 db_columns_name 　keyword_id
         keyword__names = type_groupby.get_group("KEYWORD").db_column_name
         keyword_save_pd = excel_pd[keyword__names].rename(str.upper, axis=1).stack().str.split(",", expand=True).stack(
-            dropna=True).reset_index("db_column_name").reset_index(1, True).rename(columns={0: "keyword_id"}).replace(
+            dropna=True).str.strip().reset_index("db_column_name").reset_index(1, True).rename(columns={0: "keyword_id"}).replace(
             keyword_list_pd["keyword"].to_list(), keyword_list_pd["keyword_id"].to_list()).combine_first(
             excel_pd[["object_id"]])
         # 保存する
