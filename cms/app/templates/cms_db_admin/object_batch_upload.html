@@ -245,7 +245,7 @@
             <input type="hidden" name="db_id" id="db_id" value="{{ menu_param['db_id'] }}" />
             <input type="hidden" name="object_type_id" id="object_type_id" value="{{menu_param['object_type_id']}}"/>
             <!--<input type="hidden" name="func" id="func" value="check_upload_doc_list_form_data_for_upload_check">-->
-            <input type="submit" name="submit_btn" value="Preview" class="btn btn-default" />
+            <input type="button" name="submit_btn" value="Preview" class="btn btn-default" onclick="drop_file.submit()" />
             <input type="button" name="cancel_btn" value="Cancel" class="btn btn-default" onclick="cancel_func()"/>
         </form>
     </center>
@@ -266,20 +266,21 @@
         function cancel_func(){
             window.close();
         }
+        function form_check () {
+            var file = ($("#file").val() || $("#uploaded_file").text());
+            if (file === "") {
+                alert_dlg("Error","{{ const.EXCEL_FILE_NOT_FOUND_MSG }}");
+                return false;
+            }
+            if (!file.match(/\.xlsx$/i)) {
+                alert_dlg("Error","{{ const.NOT_XLSX_FILE_MSG }}");
+                return false;
+            }
+            return true
+        }
 
         var drop_file;
         $(document).ready(function () {
-            $("#xls_file_form").submit(function () {
-                var file = $("#file").val().toString().toLowerCase();
-                if (file === "") {
-                    alert_dlg("Error","{{ const.EXCEL_FILE_NOT_FOUND_MSG }}");
-                    return false;
-                }
-                if (!file.endsWith(".xlsx")) {
-                    alert_dlg("Error","{{ const.NOT_XLSX_FILE_MSG }}");
-                    return false;
-                }
-            })
             tlib_init_drag_and_drop_upload();
             drop_file = tlib_drag_and_drop({
                 elm_ids: {
@@ -288,7 +289,8 @@
                     button_id: 'file_upload_btn',
                     ul_form_id: 'xls_file_form',
                     ul_file_id: 'uploaded_file',
-                    ul_filename: 'doc_list_filename'
+                    ul_filename: 'doc_list_filename',
+                    check_func: form_check
                 },
             });
             drop_file.on_ready();

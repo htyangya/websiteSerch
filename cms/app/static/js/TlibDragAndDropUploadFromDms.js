@@ -24,64 +24,49 @@ function show_error_message(msg) {
 	alert_dlg('Error', msg);
 }
 
-function check_template_form() {
+function submit() {
+
+	var file_input = $("#" + args['elm_ids']['input_id']);
+	var file_form = $("#" + args['elm_ids']['ul_form_id']);
+    if (args['elm_ids']['check_func'] && !args['elm_ids']['check_func']()) {
+        return
+    }
+	if (file_input.val()) {
+		file_form.submit();
+		return
+	}
 
 	// FormDataオブジェクトを用意
-	var fd = create_form_data(args['func']['check_template_form']);
+	var fd = function () {
+	    file_input.prop("disabled", true);
+	    var fd = new FormData(file_form[0]);
+	    file_input.prop("disabled", false);
+        fd.append("file_select_method", file_select_method);
+        fd.append("ajax_flag", 1);
+        if(typeof files !== "undefined" && files.length !== 0) {
+            // ファイル情報を追加
+            fd.append(file_input.attr("name"), files[0]);
+        }
+        return fd;
+    }();
 
-	var err_func_name = 'check_template_form';
 	// XHR で送信
 	$.ajax({
-		url: args['url'],
+		url: file_form.attr("action"),
 		type: 'POST',
 		data: fd,
 		dataType: 'json',
 		processData: false,
 		contentType: false,
 		success: function(result) {
-				post_check_template_form(result);
+				 file_input.attr("type","hidden").val(result.excel_name)
+				 file_form.submit()
 			},
 		error: function(xmlhttprequest, textstatus, errorThrown) {
 			hide_loading_msg();
-			alert_dlg("Error", "Error at " + err_func_name + "<br>\n" +
-				xmlhttprequest.responseText + "<br>\n" +
-				"HttpStatus: " + xmlhttprequest.status + "<br>\n" +
-				"TextStatus: " + textstatus + "<br>\n" +
-				"Error: " + errorThrown.message);
+			alert_dlg("Error", "File upload failed");
 			}
   	});
-}
-
-function post_check_template_form(result) {
-	if(result.check_error_flg) {
-		alert_dlg('Error', result.msg);
-		return;
-	} else {
-		var url = args['param']['redirect_url'] + result.template_id;
-		if(result.opt_param) {
-			url += result.opt_param;
-		}
-		window.location.href = url;
-	}
-}
-
-function create_form_data(func) {
-
-	// FormDataオブジェクトを用意
-	var file_upload_form = document.forms.namedItem(args['elm_ids']['ul_form_id']);
-	if(typeof file_upload_form.elements["func"] !== "undefined") {
-		file_upload_form.elements["func"].value = func;
-	}
-	var fd = new FormData(file_upload_form);
-	fd.append("func", func);
-	fd.append("file_select_method", file_select_method);
-
-	if(typeof files !== "undefined" && files.length !== 0) {
-		// ファイル情報を追加
-		fd.append(args['elm_ids']['ul_filename'], files[0]);
-	}
-
-	return fd;
 }
 
 function init_drop_file_target() {
@@ -165,7 +150,7 @@ function on_ready() {
 // public method
 return {
 	on_ready: on_ready,
-	check_template_form: check_template_form
+	submit: submit
 };
 
 };

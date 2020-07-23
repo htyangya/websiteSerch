@@ -3,7 +3,7 @@ import os
 import sys
 from datetime import datetime
 import openpyxl
-from flask import render_template, current_app, make_response, send_file, Response, flash, session
+from flask import render_template, current_app, make_response, send_file, Response, flash, session, jsonify
 from flask_login import current_user
 from openpyxl.styles import PatternFill
 
@@ -632,7 +632,10 @@ def batch_upload_get(db_id, request):
 
 def batch_upload_post(db_id, request):
     form = BatchUploadForm()
-    excel_full_path = form.save_file_temporarily()
+    if form.ajax_flag.data:
+        excel_name = form.save_and_get_filename(False)
+        return jsonify({"excel_name": excel_name})
+    excel_full_path = form.save_and_get_filename()
     valid = UploadExcelValidateUtil(excel_full_path, db_id, form.object_type_id.data)
     has_error = not valid.validate(form.skip_null_check.data)
     object_type_name = CmsObjectType.getCmsObjectType(form.object_type_id.data).object_type_name
@@ -659,7 +662,7 @@ def batch_upload_post(db_id, request):
 
 def upload_data(db_id, request):
     form = BatchUploadForm()
-    excel_full_path = form.get_full_tem_filename()
+    excel_full_path = form.save_and_get_filename()
     if session.get("more_upload_excel") != excel_full_path:
         valid = UploadExcelValidateUtil(excel_full_path, db_id, form.object_type_id.data)
         item_ctn = valid.save_to_db()
