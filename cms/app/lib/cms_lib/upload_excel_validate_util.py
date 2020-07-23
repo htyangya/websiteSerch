@@ -102,10 +102,10 @@ class UploadExcelValidateUtil:
             respond_pd = col.str.split("->", expand=True).stack(dropna=True).reset_index(name="folder_name").rename(
                 columns={"level_0": "index", "level_1": "list_index"}).merge(
                 self.folder_pd.reset_index(drop=True), "left", "folder_name").set_index("index", False)
-            invalid_type = respond_pd[
-                (respond_pd.child_object_type_id != int(self.obj_type_id)) & (
-                    respond_pd.folder_id.notna())].drop_duplicates(
-                "index")
+            last_ele_pd = respond_pd.reset_index(drop=True).groupby("index").agg("last")
+            invalid_type = last_ele_pd[
+                (last_ele_pd.child_object_type_id != int(self.obj_type_id)) & (
+                    last_ele_pd.folder_id.notna())]
             invalid_folder = respond_pd[
                 (respond_pd.folder_name != "") & (respond_pd.folder_id.isna())].drop_duplicates("index")
             group_by_pd = respond_pd.reset_index(drop=True).groupby("index").agg(
@@ -114,8 +114,8 @@ class UploadExcelValidateUtil:
             invalid_order_index = group_by_pd[(group_by_pd['folder_id'] != group_by_pd["parent_folder_id"]) & (
                 group_by_pd['folder_id'].notna())].index
             if not invalid_type.empty:
-                self.data_tips_pd.loc[invalid_type["index"], col.name] = invalid_type["folder_name"].map(
-                    "{0} is invalid folder for this object type".format) + invalid_type["index"].map(
+                self.data_tips_pd.loc[invalid_type.index, col.name] = invalid_type["folder_name"].map(
+                    "{0} is invalid folder for this object type".format) + invalid_type.index.map(
                     "(Excel Row No: {0})".format)
             if not invalid_folder.empty:
                 self.data_tips_pd.loc[invalid_folder["index"], col.name] = invalid_folder["folder_name"].map(

@@ -129,11 +129,12 @@
             background: #bbbbff;
             border-bottom: 1px solid #999999;
             font-size: 16px;
-            padding: 2px;
+            padding: 0.2em;
         }
         #property td {
             text-align: left;
             border-bottom: 1px solid #999999;
+            padding: 0.2em;
         }
         #property td.name { white-space: nowrap; }
         #property td.value { width: 70%; }
@@ -187,16 +188,11 @@
 
         <table id="datalist_header" class="datalist_headerC">
             <tr>
-                <th class="title">Upload  Document List</th>
+                <th class="title"><font color="red">Batch Insert</font></th>
+                <th class="function float-right"><a href="javascript:void(0);" onclick="downloadTemplateFile()">Download Template File</a></th>
             </tr>
-            <tr>
-                <td class="function"><a href="javascript:void(0);" onclick="downloadTemplateFile()">Download Template File</a></td>
-            </tr>
-
         </table>
-        <br>
-         <!--123-->
-        <form action="" name="xls_file_form" id="xls_file_form" method="post" enctype="multipart/form-data">
+        <form action="" name="xls_file_form" id="xls_file_form" method="post" enctype="multipart/form-data" style="margin-top: -23px;">
             <span class="alert" ></span>
             <div id="confirm">
                 <div class="header"><span>Confirm</span></div>
@@ -265,7 +261,7 @@
         function downloadTemplateFile() {
             var url = $("#downloadForm").attr("action");
             var sendOption = $("#downloadForm").serialize();
-            msSaveOrOpenBlob(url, "POST", "しばらくお待ちください", "", "application/x-www-form-urlencoded", sendOption);
+            msSaveOrOpenBlob(url, "POST", "{{ const.WAIT_MSG }}", "", "application/x-www-form-urlencoded", sendOption);
         }
         function cancel_func(){
             window.close();
@@ -274,13 +270,13 @@
         var drop_file;
         $(document).ready(function () {
             $("#xls_file_form").submit(function () {
-                var file = $("#file").val();
+                var file = $("#file").val().toString().toLowerCase();
                 if (file === "") {
-                    alert_dlg("Error","please drop or select a Excel file!");
+                    alert_dlg("Error","{{ const.EXCEL_FILE_NOT_FOUND_MSG }}");
                     return false;
                 }
                 if (!file.endsWith(".xlsx")) {
-                    alert_dlg("Error","you can only put a xlsx file!");
+                    alert_dlg("Error","{{ const.NOT_XLSX_FILE_MSG }}");
                     return false;
                 }
             })

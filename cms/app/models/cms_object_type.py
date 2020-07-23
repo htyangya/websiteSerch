@@ -17,7 +17,7 @@ class CmsObjectType(db.Model):
 
     @staticmethod
     def getCmsObjectType(object_type_id):
-        return db.session.query(CmsObjectType).filter(CmsObjectType.object_type_id == object_type_id).first()
+        return db.session.query(CmsObjectType).get_or_404(object_type_id)
 
     @staticmethod
     def getObjectTypeList(db_id):

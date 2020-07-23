@@ -103,3 +103,7 @@ class Const(object):
     DEPT_CD_ERR_MSG = 'Dept Cd is required.'
 
     IP_ADDRESS_SAVE_ERROR = 'IP Address save failed.'
+
+    # BATCH FILE UPLOAD
+    EXCEL_FILE_NOT_FOUND_MSG = "Please drop or select an excel file."
+    NOT_XLSX_FILE_MSG = "Xlsx(excel) file is required."

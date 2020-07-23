@@ -102,6 +102,7 @@ function init_drop_file_target() {
 		}
 
 		$("#" + args['elm_ids']['ul_file_id']).html(files[0].name);
+		$("#" + args['elm_ids']['input_id'])[0].files = files;
 	};
 
 	var onDropFile = function(evt) {

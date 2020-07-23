@@ -253,17 +253,17 @@
         {% endif %}
         <input type="button" name="cancel_btn" value="Cancel" class="btn btn-default" onclick="cancel_func()"/>
     </form>
-    <div id="datalist_div" style="min-height: 600px;">
-        <table id="datalist" class="datalistC table-hover table-striped table-bordered">
-            <thead>
-            <tr>
-                {% for header in valid.headers %}
-                    <th>{{ header }}</th>
-                {% endfor %}
-            </tr>
-            </thead>
-            <tbody>
-            {% if valid.data_tips_pd is not none %}
+    {% if valid.data_tips_pd is not none %}
+        <div id="datalist_div" style="min-height: 600px;">
+            <table id="datalist" class="datalistC table-hover table-striped table-bordered">
+                <thead>
+                <tr>
+                    {% for header in valid.headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
                 {% for index,row in valid.excel_pd.iterrows() %}
                     <tr>
                         <td>{{ index }}</td>
@@ -277,11 +277,11 @@
 
                     </tr>
                 {% endfor %}
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
     <div class="border"></div>
+    {% endif %}
 </center>
 
 <div class="jqmWindow" id="jqmWindow"></div>

@@ -3,7 +3,7 @@ import os
 import sys
 from datetime import datetime
 import openpyxl
-from flask import render_template, current_app, make_response, send_file, Response, flash
+from flask import render_template, current_app, make_response, send_file, Response, flash, session
 from flask_login import current_user
 from openpyxl.styles import PatternFill
 
@@ -608,7 +608,7 @@ def privs_dept_detail(db_id, request):
 
 def batch_upload_get(db_id, request):
     object_type_id = request.args.get('object_type_id')
-    object_type_name = CmsObjectType().getCmsObjectType(object_type_id).object_type_name
+    object_type_name = CmsObjectType.getCmsObjectType(object_type_id).object_type_name
     db_name = ""
     if app.lib.cms_lib.session.current_db:
         db_name = app.lib.cms_lib.session.current_db.db_name
@@ -626,6 +626,7 @@ def batch_upload_get(db_id, request):
         title='CMS(' + db_name + ') : Upload object file',
         current_user=current_user,
         menu_param=menu_param,
+        const=Const,
         appVer=current_app.config['APP_VER'])
 
 
@@ -634,8 +635,6 @@ def batch_upload_post(db_id, request):
     excel_full_path = form.save_file_temporarily()
     valid = UploadExcelValidateUtil(excel_full_path, db_id, form.object_type_id.data)
     has_error = not valid.validate(form.skip_null_check.data)
-    if has_error:
-        os.remove(excel_full_path)
     object_type_name = CmsObjectType.getCmsObjectType(form.object_type_id.data).object_type_name
     db_name = ""
     if app.lib.cms_lib.session.current_db:
@@ -654,16 +653,17 @@ def batch_upload_post(db_id, request):
         form=form,
         valid=valid,
         menu_param=menu_param,
+        const=Const,
         appVer=current_app.config['APP_VER'])
 
 
 def upload_data(db_id, request):
     form = BatchUploadForm()
     excel_full_path = form.get_full_tem_filename()
-    if os.path.exists(excel_full_path):
+    if session.get("more_upload_excel") != excel_full_path:
         valid = UploadExcelValidateUtil(excel_full_path, db_id, form.object_type_id.data)
         item_ctn = valid.save_to_db()
-        os.remove(excel_full_path)
+        session["more_upload_excel"] = excel_full_path
         msg = f"Batch Insert was successful.{item_ctn} rows inserted"
     else:
         msg = "Please do not submit data repeatedly"
@@ -682,6 +682,7 @@ def upload_data(db_id, request):
         title='CMS(' + db_name + ') : Upload object file',
         current_user=current_user,
         menu_param=menu_param,
+        const=Const,
         appVer=current_app.config['APP_VER'])
 
 
