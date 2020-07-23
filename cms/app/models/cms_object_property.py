@@ -110,7 +110,6 @@ class CmsObjectProperty():
                    COP.PROPERTY_TYPE
               FROM CMS_OBJECT_PROPERTY COP
              WHERE COP.OBJECT_TYPE_ID = :object_type_id
-               
              ORDER BY COP.DISPLAY_ORDER
         '''
         t = text(selectSql)

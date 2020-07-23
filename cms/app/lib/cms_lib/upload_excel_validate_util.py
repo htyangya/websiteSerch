@@ -1,6 +1,7 @@
+import numpy as np
 import pandas as pd
 from numpy import nan
-import numpy as np
+
 from app import db
 from app.models.cms_common import CmsCommon
 from app.models.cms_keyword_master import CmsKeywordMaster
@@ -40,13 +41,15 @@ class UploadExcelValidateUtil:
         if self.excel_pd.empty:
             return False
         self.excel_pd.index += 4
-        # htmlに表示される列ヘーダー
+
+        # htmlに表示される列ヘッダー
         self.headers = ["Excel Idx"] + self.excel_pd.columns.to_list()
-        # 以下はチェックために使うsqlのデータ
+        # 以下はチェックために使うSQLのデータ
         self.obj_property_pd = self.read_sql(
-            f"SELECT * FROM CMS_OBJECT_PROPERTY WHERE OBJECT_TYPE_ID ={self.obj_type_id}").drop_duplicates(
+            f"SELECT * FROM CMS_OBJECT_PROPERTY WHERE OBJECT_TYPE_ID = {self.obj_type_id}").drop_duplicates(
             "property_name").set_index("property_name", False)
-        # 先ずは列ヘーダーをチェック、不具合になったらfalseを戻る
+
+        # 先ずは列ヘッダーをチェック、不具合になったらFalseを戻る
         if not self.validate_headers(skip_null_check):
             return False
         self.selection_name_list = list(
@@ -57,21 +60,23 @@ class UploadExcelValidateUtil:
         self.keyword_list = list(map(lambda item: item[0], db.session.query(CmsKeywordMaster.keyword).filter(
             CmsKeywordMaster.keyword_mst_id == keyword_mst_id).all()))
         self.folder_pd = self.read_sql(
-            f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID={self.db_id}").drop_duplicates(
+            f"SELECT FOLDER_ID, PARENT_FOLDER_ID, FOLDER_NAME, CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID = {self.db_id}").drop_duplicates(
             "folder_name").set_index("folder_name", False)
+
         # データのチェック
-        # チェックメッセージのdataFrame
+        # チェックメッセージのDataFrame
         self.data_tips_pd = pd.DataFrame().reindex_like(self.excel_pd).fillna(False)
         self.excel_pd.apply(self.validate_data)
+
         # add error to errors
         self.data_tips_pd.apply(self.add_error)
         return (self.data_tips_pd == False).all(axis=None)
 
     def validate_headers(self, skip_null_check):
         valid_flag = True
-        # 今の列ヘーダー
+        # 今の列ヘッダー
         columns = self.excel_pd.columns.to_series()
-        # 不具合な列ヘーダーのチェック
+        # 不具合な列ヘッダーのチェック
         invalid_headers = columns[
             ~columns.isin(["FOLDER NAME"] + self.obj_property_pd["property_name"].to_list())]
         # 必須項目が存在しないのチェック
@@ -171,9 +176,9 @@ class UploadExcelValidateUtil:
         excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], engine="openpyxl")
         rowCount = len(excel_pd)
         folder_pd = self.read_sql(
-            f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID={self.db_id}")
+            f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID = {self.db_id}")
         obj_property_pd = self.read_sql(
-            f"SELECT PROPERTY_NAME,DB_COLUMN_NAME,PROPERTY_TYPE FROM CMS_OBJECT_PROPERTY WHERE OBJECT_TYPE_ID ={self.obj_type_id}").append(
+            f"SELECT PROPERTY_NAME,DB_COLUMN_NAME,PROPERTY_TYPE FROM CMS_OBJECT_PROPERTY WHERE OBJECT_TYPE_ID = {self.obj_type_id}").append(
             {"property_name": "FOLDER NAME", "db_column_name": "folder_name"}, True).drop_duplicates("property_name")
         selection_list_pd = self.read_sql(
             f"SELECT SELECTION_MST_ID,SELECTION_NAME FROM CMS_OBJECT_PROP_SELECTION_LIST")
@@ -209,6 +214,7 @@ class UploadExcelValidateUtil:
             dropna=True).str.strip().reset_index("db_column_name").reset_index(1, True).rename(columns={0: "keyword_id"}).replace(
             keyword_list_pd["keyword"].to_list(), keyword_list_pd["keyword_id"].to_list()).combine_first(
             excel_pd[["object_id"]])
+
         # 保存する
         excel_data = excel_pd.replace({nan: None}).to_dict("records")
         db.session.execute(CmsObject.__table__.insert(), excel_data)

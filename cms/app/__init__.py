@@ -73,10 +73,10 @@ def create_app():
                      methods=['GET', 'POST'])
     app.add_url_rule('/cmsdbadmin/privs_dept_detail', 'privs_dept_detail', db_admin_route.privs_dept_detail,
                      methods=['GET'])
+    app.add_url_rule('/cmsdbadmin/template_dl', 'template_dl', db_admin_route.template_dl, methods=['POST'])
     app.add_url_rule('/cmsdbadmin/object_batch_upload', 'object_batch_upload', db_admin_route.object_batch_upload,
                      methods=['GET', 'POST'])
     app.add_url_rule('/cmsdbadmin/upload_data', 'upload_data', db_admin_route.upload_data, methods=['POST'])
-    app.add_url_rule('/cmsdbadmin/template_dl', 'template_dl', db_admin_route.template_dl, methods=['POST'])
 
     # システム管理機能
     app.add_url_rule('/cmsadmin/index', 'adm_index', methods=['GET', 'POST'])
