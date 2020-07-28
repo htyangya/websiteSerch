@@ -612,18 +612,16 @@ def batch_upload_get(db_id, request):
     db_name = ""
     if app.lib.cms_lib.session.current_db:
         db_name = app.lib.cms_lib.session.current_db.db_name
-    menu_param = {"add_privs_dept": Const.ADD_PRIVS_DEPT,
-                  "update_privs_dept": Const.UPDATE_PRIVS_DEPT,
-                  "delete_privs_dept": Const.DELETE_PRIVS_DEPT,
-                  "db_id": db_id,
-                  "db_name": db_name,
-                  "object_type_id": object_type_id,
-                  "object_type_name": object_type_name}
+    menu_param = {
+        "db_id": db_id,
+        "db_name": db_name,
+        "object_type_id": object_type_id,
+        "object_type_name": object_type_name}
 
     return render_template(
         'cms_db_admin/object_batch_upload.html',
         db_id=db_id,
-        title='CMS(' + db_name + ') : Upload object file',
+        title='CMS(' + db_name + ') : Batch Insert',
         current_user=current_user,
         menu_param=menu_param,
         const=Const,
@@ -651,7 +649,7 @@ def batch_upload_post(db_id, request):
     return render_template(
         'cms_db_admin/object_batch_upload_validate.html',
         db_id=db_id,
-        title='CMS(' + db_name + ') : Upload object file',
+        title='CMS(' + db_name + ') : Batch Insert',
         current_user=current_user,
         form=form,
         valid=valid,
@@ -682,7 +680,7 @@ def upload_data(db_id, request):
     return render_template(
         'cms_db_admin/object_batch_upload_success.html',
         db_id=db_id,
-        title='CMS(' + db_name + ') : Upload object file',
+        title='CMS(' + db_name + ') : Batch Insert',
         current_user=current_user,
         menu_param=menu_param,
         const=Const,
@@ -698,11 +696,11 @@ def template_download(form):
     if not os.path.exists(tmp_path):
         os.makedirs(tmp_path, exist_ok=True)
 
-    csvFilePath = os.path.join(tmp_path, ('Template_' + cds + Const.FILE_SUFFIX_EXCEL))
+    fileName = 'CMSObjectList_' + cds + Const.FILE_SUFFIX_EXCEL
+    csvFilePath = os.path.join(tmp_path, fileName)
     create_excel(object_type_id, csvFilePath)
 
     # download file
-    fileName = 'Template_' + cds + Const.FILE_SUFFIX_EXCEL
     res = make_response(send_file(csvFilePath, attachment_filename=fileName, as_attachment=True))
     res.headers['Content-Type'] = 'application/octet-stream'
     return res
@@ -728,7 +726,7 @@ def create_excel(object_type_id, csvFilePath):
     # create excel file
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = 'test_sheet1'
+    ws.title = 'Sheet1'
     ws.cell(row=1, column=1).value = db_name
     fill = PatternFill(patternType='solid', fgColor='b0c4de')
 
@@ -750,7 +748,8 @@ def adjust_col(ws):
         column = col[0].column  # Get the column name
         column = chr(ord("A") - 1 + column)
         for i in list(ws.rows)[1]:
-            try:  # Necessary to avoid error on empty cells
+            try:
+                # Necessary to avoid error on empty cells
                 if len(str(i.value)) > max_length:
                     max_length = len(i.value)
             except Exception as e:

@@ -104,7 +104,8 @@ class UploadExcelValidateUtil:
             self.data_tips_pd[col.name].where(condition, col.index.to_series().map(invalid_msg.format), True)
         # FOLDERのチェック
         if col.name == "FOLDER NAME":
-            respond_pd = col.str.split("->", expand=True).stack(dropna=True).str.strip().reset_index(name="folder_name").rename(
+            respond_pd = col.str.split("->", expand=True).stack(dropna=True).str.strip().reset_index(
+                name="folder_name").rename(
                 columns={"level_0": "index", "level_1": "list_index"}).merge(
                 self.folder_pd.reset_index(drop=True), "left", "folder_name").set_index("index", False)
             last_ele_pd = respond_pd.groupby(respond_pd.index).agg("last")
@@ -173,7 +174,7 @@ class UploadExcelValidateUtil:
         self.errors.extend(row[row != False])
 
     def save_to_db(self):
-        excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], engine="openpyxl")
+        excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], engine="openpyxl", dtype=str)
         rowCount = len(excel_pd)
         folder_pd = self.read_sql(
             f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID = {self.db_id}")
@@ -203,21 +204,31 @@ class UploadExcelValidateUtil:
             folder_pd["folder_name"].to_list(), folder_pd["folder_id"].to_list()
         )
         type_groupby = prop_column_mapping_pd.groupby("property_type")
-        # select型の列にselection_nameをselection_mst_idに換える
-        select_names = type_groupby.get_group("SELECT").db_column_name
-        excel_pd[select_names] = excel_pd[select_names].replace(selection_list_pd["selection_name"].to_list(),
-                                                                selection_list_pd["selection_mst_id"].to_list())
-        # keyword型を保存するために使う結構を作成,列は以下のようです
-        # object_id　 db_columns_name 　keyword_id
-        keyword__names = type_groupby.get_group("KEYWORD").db_column_name
-        keyword_save_pd = excel_pd[keyword__names].rename(str.upper, axis=1).stack().str.split(",", expand=True).stack(
-            dropna=True).str.strip().reset_index("db_column_name").reset_index(1, True).rename(columns={0: "keyword_id"}).replace(
-            keyword_list_pd["keyword"].to_list(), keyword_list_pd["keyword_id"].to_list()).combine_first(
-            excel_pd[["object_id"]])
+        for type_name, group in type_groupby:
+            if type_name == "SELECT":
+                # select型の列にselection_nameをselection_mst_idに換える
+                select_names = group.db_column_name
+                excel_pd[select_names] = excel_pd[select_names].replace(selection_list_pd["selection_name"].to_list(),
+                                                                        selection_list_pd["selection_mst_id"].to_list())
+            elif type_name == "NUMBER":
+                number_names = group.db_column_name
+                excel_pd[number_names] = excel_pd[number_names].astype(np.float64)
+            elif type_name == "KEYWORD":
+                # keyword型を保存するために使う結構を作成,列は以下のようです
+                # object_id　 db_columns_name 　keyword_id
+                keyword__names = group.db_column_name
+                keyword_save_pd = excel_pd[keyword__names].rename(str.upper, axis=1).stack()
+                if not keyword_save_pd.empty:
+                    keyword_save_pd = keyword_save_pd.str.split(",", expand=True).stack(
+                        dropna=True).str.strip().reset_index("db_column_name").reset_index(1, True).rename(
+                        columns={0: "keyword_id"}).replace(
+                        keyword_list_pd["keyword"].to_list(), keyword_list_pd["keyword_id"].to_list()).combine_first(
+                        excel_pd[["object_id"]])
+                    # keyword型を保存する
+                    db.session.execute(CmsObjectKeyword.__table__.insert(), keyword_save_pd.to_dict("records"))
 
         # 保存する
         excel_data = excel_pd.replace({nan: None}).to_dict("records")
         db.session.execute(CmsObject.__table__.insert(), excel_data)
-        db.session.execute(CmsObjectKeyword.__table__.insert(), keyword_save_pd.to_dict("records"))
         db.session.commit()
         return rowCount
