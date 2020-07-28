@@ -7,112 +7,18 @@
     <link rel="stylesheet" type="text/css" href="/static/bootstrap-dist/css/bootstrap.min.css?q={{appVer}}">
     <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
     <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
     <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/jstree/themes/style.min.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/jstree/themes/style.cms.css?q={{appVer}}">
 
     <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/bootstrap-dist/js/bootstrap.min.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
     <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/js/TlibDragAndDropUploadFromDms.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/jstree/jstree.min.js?q={{appVer}}" type="text/javascript"></script>
-
-
     <style type="text/css">
         html,body { margin: 0px; padding: 0px; }
         html { overflow: hidden; }
         body { overflow: hidden; }
-        .main-content {
-            overflow: auto;
-        }
-        table {
-            font-size: 9pt !important;
-        }
-        table#headerTable {
-            height: 100%;
-        }
-        .inputText {
-            width: 100%;
-            min-width: 150px;
-            font-family: 'MS Gothic', Sans-serif;
-        }
-        .propertyLabel {
-            width: 316px;
-        }
-        .propertyBtn {
-            width: 44px;
-        }
-        .upload_file_drop_target {
-            padding: 10px;
-            border: 3px dashed #000080;
-            virtical-align: middle;
-            text-align: center;
-            width: 315px !important;
-        }
-
-        .keyword_tree .jstree-anchor {
-            display: inline-block;
-            width: auto;
-        }
-
-        .screen-control {
-            width: 96%;
-        }
-        .keyword_tree {
-            border: 1px solid #999999;
-            float: left;
-            height: 160px;
-            width: 300px;
-            margin: 8px;
-            overflow: auto;
-        }
-        .keyword_btn_div {
-            float: left;
-            vertical-align: middle;
-            height: 145px;
-        }
-        .keyword_content {
-            padding: 5px;
-            float: left;
-            margin: 8px;
-            height: 160px;
-            width: 550px;
-            border: 1px solid #999999;
-            overflow: auto;
-        }
-        .kw-anchor {
-            display: inline-block;
-            color: black;
-            white-space: nowrap;
-            padding: 0 4px 0 1px;
-            margin: 0;
-            vertical-align: top;
-        }
-        .kw-anchor, .kw-anchor:link, .kw-anchor:visited, .kw-anchor:hover, .kw-anchor:active {
-            color: inherit;
-            text-decoration: none;
-        }
-        .sel-keyword{
-            background: #beebff;
-            border-radius: 2px;
-            box-shadow: inset 0 0 1px #999999;
-        }
-        div#headerArea
-        {
-            background-color: {% if is_edit_mode %} #363; {% else %} #393f4c; {% endif %}
-            height: 4.05em;
-
-        }
     </style>
     <title>{{ title }}</title>
 </head>
@@ -124,7 +30,7 @@
             <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
         </center>
         <div class="border"></div>
-        &nbsp;&gt;&nbsp;<a href="{{url_for('db_adm_index',db_id=db_id)}}">Main Menu</a>&nbsp;&gt; Batch Insert ({{ menu_param['object_type_name'] }})
+        &nbsp;&gt;&nbsp;<a href="{{ url_for('db_adm_index',db_id=db_id) }}">Main Menu</a>&nbsp;&gt; Batch Insert ({{ menu_param['object_type_name'] }})
         <div class="border"></div>
     </div>
     <div style="margin:40px">
@@ -132,14 +38,7 @@
             {{ menu_param.msg }}
         </h4>
         <div style="margin-bottom: 40px"></div>
-        <a href="{{url_for('db_adm_index',db_id=db_id)}}" style="font-size: 18px">＞Go to Main Menu</a>
+        <a href="{{ url_for('db_adm_index',db_id=db_id) }}" style="font-size: 18px">＞Go to Main Menu</a>
     </div>
-
-
-{#    終わった#}
-    <div class="jqmWindow" id="jqmWindow"></div>
-    <script>
-        {#$(function () { $("[data-toggle='tooltip']").tooltip(); });#}
-    </script>
 </body>
 </html>

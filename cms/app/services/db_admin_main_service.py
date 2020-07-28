@@ -1,7 +1,9 @@
 import json
 import os
+import re
 import sys
 from datetime import datetime
+
 import openpyxl
 from flask import render_template, current_app, make_response, send_file, Response, flash, session, jsonify
 from flask_login import current_user
@@ -628,13 +630,28 @@ def batch_upload_get(db_id, request):
         appVer=current_app.config['APP_VER'])
 
 
+def check_batch_upload_post(db_id, request):
+    form = BatchUploadForm()
+    upload_file = ""
+    if "upload_file" in request.files:
+        upload_file = request.files["upload_file"].filename
+
+    check_result = {}
+    if upload_file == "":
+        check_result["check_error_flg"] = 1
+        check_result["msg"] = Const.EXCEL_FILE_NOT_FOUND_MSG
+    elif not re.search('\.xlsx$', upload_file, re.IGNORECASE):
+        check_result["check_error_flg"] = 1
+        check_result["msg"] = Const.NOT_XLSX_FILE_MSG
+    else:
+        temp_file_info = form.save_and_get_filename()
+        check_result["template_id"] = temp_file_info['template_id']
+    return jsonify(check_result)
+
+
 def batch_upload_post(db_id, request):
     form = BatchUploadForm()
-    if form.ajax_flag.data:
-        excel_name = form.save_and_get_filename(False)
-        return jsonify({"excel_name": excel_name})
-    excel_full_path = form.save_and_get_filename()
-    valid = UploadExcelValidateUtil(excel_full_path, db_id, form.object_type_id.data)
+    valid = UploadExcelValidateUtil(form.get_template_filename(), db_id, form.object_type_id.data)
     has_error = not valid.validate(form.skip_null_check.data)
     object_type_name = CmsObjectType.getCmsObjectType(form.object_type_id.data).object_type_name
     db_name = ""
@@ -644,7 +661,7 @@ def batch_upload_post(db_id, request):
         "db_name": db_name,
         "object_type_name": object_type_name,
         "has_error": has_error,
-        "excel_name": os.path.split(excel_full_path)[-1]
+        "template_id": form.template_id.data
     }
     return render_template(
         'cms_db_admin/object_batch_upload_validate.html',
@@ -660,11 +677,10 @@ def batch_upload_post(db_id, request):
 
 def upload_data(db_id, request):
     form = BatchUploadForm()
-    excel_full_path = form.save_and_get_filename()
-    if session.get("more_upload_excel") != excel_full_path:
-        valid = UploadExcelValidateUtil(excel_full_path, db_id, form.object_type_id.data)
+    if session.get("more_upload_excel") != form.template_id.data:
+        valid = UploadExcelValidateUtil(form.get_template_filename(), db_id, form.object_type_id.data)
         item_ctn = valid.save_to_db()
-        session["more_upload_excel"] = excel_full_path
+        session["more_upload_excel"] = form.template_id.data
         msg = f"Batch Insert was successful.{item_ctn} rows inserted"
     else:
         msg = "Please do not submit data repeatedly"

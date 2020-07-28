@@ -22,7 +22,7 @@
     <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/js/TlibDragAndDropUploadCms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/TlibDragAndDropUpload.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jstree/jstree.min.js?q={{appVer}}" type="text/javascript"></script>
@@ -327,6 +327,9 @@
             tlib_init_drag_and_drop_upload();
 
             drop_file = tlib_drag_and_drop({
+                tlib_types: {
+                    operate_type: 'UPLOAD_FILE'
+                },
                 elm_ids: {
                     file_list_id: '',
                     div_class: 'upload_file_drop_target',

@@ -74,6 +74,8 @@ def create_app():
     app.add_url_rule('/cmsdbadmin/privs_dept_detail', 'privs_dept_detail', db_admin_route.privs_dept_detail,
                      methods=['GET'])
     app.add_url_rule('/cmsdbadmin/template_dl', 'template_dl', db_admin_route.template_dl, methods=['POST'])
+    app.add_url_rule('/cmsdbadmin/check_object_batch_upload', 'check_object_batch_upload', db_admin_route.check_object_batch_upload,
+                     methods=['GET', 'POST'])
     app.add_url_rule('/cmsdbadmin/object_batch_upload', 'object_batch_upload', db_admin_route.object_batch_upload,
                      methods=['GET', 'POST'])
     app.add_url_rule('/cmsdbadmin/upload_data', 'upload_data', db_admin_route.upload_data, methods=['POST'])

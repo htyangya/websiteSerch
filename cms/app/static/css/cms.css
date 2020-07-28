@@ -277,7 +277,7 @@ div.file_upload {
     font-weight: bold;
 }
 #file_upload_drop_target {
-    position:relative;
+    position: relative;
     background: #FFFFFF;
     z-index: 204;
     width: 100%;

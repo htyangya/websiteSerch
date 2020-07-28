@@ -21,7 +21,6 @@ class UploadExcelValidateUtil:
     def __init__(self, excel_filename, db_id, obj_type_id):
         self.excel_filename = excel_filename
         self.db_id = db_id
-        self.db_id = db_id
         self.obj_type_id = obj_type_id
         self.errors = []
         self.headers = None
@@ -39,6 +38,7 @@ class UploadExcelValidateUtil:
         self.excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], dtype=str, engine="openpyxl").fillna("")
         # エンプティexcelの場合は直ぐに戻る
         if self.excel_pd.empty:
+            self.errors.extend(["File is empty."])
             return False
         self.excel_pd.index += 4
 
@@ -98,6 +98,7 @@ class UploadExcelValidateUtil:
 
     def validate_data(self, col):
         # 必須項目のチェック
+        suffix = "%s({0}) " % col.name
         if col.name in self.exits_required_header:
             invalid_msg = "%s is required.(Excel Row No: {0})" % col.name
             condition = col != ""
@@ -121,27 +122,27 @@ class UploadExcelValidateUtil:
                 group_by_pd['folder_id'].notna())].index
             if not invalid_type.empty:
                 self.data_tips_pd.loc[invalid_type.index, col.name] = invalid_type["folder_name"].map(
-                    "{0} is invalid folder for this object type".format) + invalid_type.index.map(
+                    (suffix + "is invalid folder for this object type.").format) + invalid_type.index.map(
                     "(Excel Row No: {0})".format)
             if not invalid_folder.empty:
                 self.data_tips_pd.loc[invalid_folder["index"], col.name] = invalid_folder["folder_name"].map(
-                    "{0} is invalid folder name".format) + invalid_folder["index"].map(
+                    (suffix + "is invalid folder name.").format) + invalid_folder["index"].map(
                     "(Excel Row No: {0})".format)
             if not invalid_order_index.empty:
                 self.data_tips_pd.loc[invalid_order_index, col.name] = col[invalid_order_index].map(
-                    "{0} is invalid folder order".format) + invalid_order_index.to_series().map(
+                    (suffix + "is invalid data.").format) + invalid_order_index.to_series().map(
                     "(Excel Row No: {0})".format)
         else:
             condition = None
             property_type = self.obj_property_pd.at[col.name, "property_type"]
             # TEXT型のチェック
             if property_type == "TEXT":
-                invalid_msg = "{0} is too long."
+                invalid_msg = suffix + "is too long."
                 data_size = self.obj_property_pd.at[col.name, "data_size"]
                 condition = col.str.len() < (data_size or float("inf"))
             # NUMBER型のチェック
             elif property_type == "NUMBER":
-                invalid_msg = "{0} is invalid number."
+                invalid_msg = suffix + "is invalid number."
                 i_len, f_len = self.obj_property_pd.loc[col.name, ["i_len", "f_len"]]
 
                 def _check_len(row, ilen, flen):
@@ -152,19 +153,19 @@ class UploadExcelValidateUtil:
                     _check_len, 1, args=(i_len or float("inf"), f_len or float("inf")))
             # DATE型のチェック
             elif property_type == "DATE":
-                invalid_msg = "{0} is invalid date format."
+                invalid_msg = suffix + "is invalid date format."
                 date_col = pd.to_datetime(col, errors="coerce", format="%Y-%m-%d %H:%M:%S")
                 condition = date_col.notna() & col.str.match(r"\d{4}-\d{2}-\d{2}")
             # SELECT型のチェック
             elif property_type == "SELECT":
-                invalid_msg = "{0} is invalid data."
+                invalid_msg = suffix + "is invalid data."
                 condition = col.isin(self.selection_name_list)
             # KEYWORD型のチェック
             elif property_type == "KEYWORD":
-                invalid_msg = "{0} is invalid data."
+                invalid_msg = suffix + "is invalid data."
                 condition = col.isin(self.keyword_list) if not self.multi_set_flg else col.str.split(",").apply(
                     lambda l: pd.Series(l).str.strip().isin(self.keyword_list).all())
-            # ブランクは必須項目のチェックをする,ここでチェックしない
+            # ブランクは必須項目のチェックをするので、ここはチェックしない
             if condition is not None:
                 condition |= (col == "")
                 self.data_tips_pd[col.name].where(condition, col.map(invalid_msg.format) + col.index.to_series().map(
@@ -189,6 +190,7 @@ class UploadExcelValidateUtil:
                     SELECT KEYWORD_MST_ID FROM CMS_KEYWORD_SETTING
 		            WHERE DB_ID = {self.db_id})'''
         )
+
         # [番号   IDX_TEXT_001    TEXT] このようなMAP
         prop_column_mapping_pd = pd.DataFrame(excel_pd.columns.to_list(), columns=["property_name"]).merge(
             obj_property_pd, "left", "property_name")
@@ -197,6 +199,7 @@ class UploadExcelValidateUtil:
         excel_pd["object_type_id"] = int(self.obj_type_id)
         excel_pd["db_id"] = int(self.db_id)
         excel_pd["object_id"] = CmsCommon.getObjectIdSeqList(rowCount)
+
         # --debug用object_id取得メソッド
         # excel_pd["object_id"] = range(2570, 2570 + rowCount)
         # folder_idの列をつけます
@@ -204,6 +207,7 @@ class UploadExcelValidateUtil:
             folder_pd["folder_name"].to_list(), folder_pd["folder_id"].to_list()
         )
         type_groupby = prop_column_mapping_pd.groupby("property_type")
+
         for type_name, group in type_groupby:
             if type_name == "SELECT":
                 # select型の列にselection_nameをselection_mst_idに換える

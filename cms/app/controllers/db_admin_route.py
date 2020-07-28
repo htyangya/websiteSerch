@@ -78,6 +78,12 @@ def privs_dept_save():
 def privs_dept_detail():
     return adm_service.privs_dept_detail(get_db_id(), request)
 
+
+@UserAuth.db_adm_login_required
+def check_object_batch_upload():
+    return adm_service.check_batch_upload_post(get_db_id(), request)
+
+
 @UserAuth.db_adm_login_required
 def object_batch_upload():
     if request.method == 'POST':
@@ -85,13 +91,16 @@ def object_batch_upload():
     else:
         return adm_service.batch_upload_get(get_db_id(), request)
 
+
 @UserAuth.db_adm_login_required
 def template_dl():
     return adm_service.template_download(request.form)
 
+
 @UserAuth.db_adm_login_required
 def upload_data():
     return adm_service.upload_data(get_db_id(), request)
+
 
 # ログイン
 def redirect_db_admin():

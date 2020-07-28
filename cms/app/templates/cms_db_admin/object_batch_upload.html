@@ -22,97 +22,19 @@
     <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/js/TlibDragAndDropUploadFromDms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/TlibDragAndDropUpload.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jstree/jstree.min.js?q={{appVer}}" type="text/javascript"></script>
-
 
     <style type="text/css">
         html,body { margin: 0px; padding: 0px; }
         html { overflow: hidden; }
         body { overflow: hidden; }
-        .main-content {
-            overflow: auto;
-        }
         table {
             font-size: 9pt !important;
         }
-        table#headerTable {
-            height: 100%;
-        }
-        .inputText {
-            width: 100%;
-            min-width: 150px;
-            font-family: 'MS Gothic', Sans-serif;
-        }
-        .propertyLabel {
-            width: 316px;
-        }
-        .propertyBtn {
-            width: 44px;
-        }
-        .upload_file_drop_target {
-            padding: 10px;
-            border: 3px dashed #000080;
-            virtical-align: middle;
-            text-align: center;
-            width: 315px !important;
-        }
 
-        .keyword_tree .jstree-anchor {
-            display: inline-block;
-            width: auto;
-        }
-
-        .screen-control {
-            width: 96%;
-        }
-        .keyword_tree {
-            border: 1px solid #999999;
-            float: left;
-            height: 160px;
-            width: 300px;
-            margin: 8px;
-            overflow: auto;
-        }
-        .keyword_btn_div {
-            float: left;
-            vertical-align: middle;
-            height: 145px;
-        }
-        .keyword_content {
-            padding: 5px;
-            float: left;
-            margin: 8px;
-            height: 160px;
-            width: 550px;
-            border: 1px solid #999999;
-            overflow: auto;
-        }
-        .kw-anchor {
-            display: inline-block;
-            color: black;
-            white-space: nowrap;
-            padding: 0 4px 0 1px;
-            margin: 0;
-            vertical-align: top;
-        }
-        .kw-anchor, .kw-anchor:link, .kw-anchor:visited, .kw-anchor:hover, .kw-anchor:active {
-            color: inherit;
-            text-decoration: none;
-        }
-        .sel-keyword{
-            background: #beebff;
-            border-radius: 2px;
-            box-shadow: inset 0 0 1px #999999;
-        }
-        div#headerArea
-        {
-            background-color: {% if is_edit_mode %} #363; {% else %} #393f4c; {% endif %}
-            height: 4.05em;
-
-        }
         div.file_upload {
             font-size: 12pt;
             font-weight: bold;
@@ -138,16 +60,8 @@
         }
         #property td.name { white-space: nowrap; }
         #property td.value { width: 70%; }
-        button#file_upload_btn {
-            width: 150px;
-            padding: 5px;
-            font-size: 12pt;
-            cursor: pointer;
-            color: #FFFFFF;
-            border: 2px solid #000080;
-            background-color: #6495ED;
-        }
-        #file_upload_drop_target {
+
+        .file_upload_drop_target {
             position: relative;
             background: #FFFFFF;
             z-index: 204;
@@ -180,36 +94,18 @@
             <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
         </center>
         <div class="border"></div>
-        &nbsp;&gt;&nbsp;<a href="{{url_for('db_adm_index')}}?db_id={{ menu_param['db_id'] }}">Main Menu</a>&nbsp;&gt; Batch Insert ({{ menu_param['object_type_name'] }})
+        &nbsp;&gt;&nbsp;<a href="{{ url_for('db_adm_index') }}?db_id={{ menu_param['db_id'] }}">Main Menu</a>&nbsp;&gt; Batch Insert ({{ menu_param['object_type_name'] }})
         <div class="border"></div>
         <br>
     </div>
     <center>
-
         <table id="datalist_header" class="datalist_headerC">
             <tr>
                 <th class="title">Batch Insert</th>
                 <th class="function float-right"><a href="javascript:void(0);" onclick="downloadTemplateFile()">Download Template File</a></th>
             </tr>
         </table>
-        <form action="" name="xls_file_form" id="xls_file_form" method="post" enctype="multipart/form-data" style="margin-top: -23px;">
-            <span class="alert" ></span>
-            <div id="confirm">
-                <div class="header"><span>Confirm</span></div>
-                <div class="message"></div>
-                <div class="buttons">
-                    <div class="no simplemodal-close">No</div>
-                    <div class="yes">Yes</div>
-                </div>
-            </div>
-            <div id="alert">
-                <div class="header"><span>Alert</span></div>
-                <div class="message"></div>
-                <div class="buttons">
-                    <div class="no simplemodal-close">OK</div>
-                </div>
-            </div>
-            <br>
+        <form action="" name="xls_file_form" id="xls_file_form" method="post" enctype="multipart/form-data">
             <center>
                 <table id="property">
                     <tbody>
@@ -220,18 +116,16 @@
                         <td class="name">File Name</td>
                         <td class="value">
                             <div id="uploaded_file" class="uploaded_file"></div>
-                            <div id="file_upload_drop_target" draggable="true">
+                            <div class="file_upload_drop_target" draggable="true">
                                 <div class="file_upload">Drop a file here</div>
                                 <div>or</div>
-                                <input type="file" style="display:none" id="file" name="file" multiple="multiple" accept=".xlsx" />
-                                <button type="button" id="file_upload_btn">select a file</button>
+                                <input type="file" class="upload_file_by_select" style="display:none" name="upload_file_by_select" multiple="multiple" accept=".xlsx" />
+                                <div class="btn btn-default file_upload_btn">select a file</div>
                             </div>
                         </td>
                     </tr>
                     <tr class="odd">
-
                         <td class="name">Option</td>
-
                         <td class="value">
                             <div class="input-group">
                                 <input type="checkbox" id="skip_null_check" name="skip_null_check" style="vertical-align:middle;margin-top: -1px;appearance:checkbox" value="1">
@@ -244,8 +138,8 @@
             </center>
             <input type="hidden" name="db_id" id="db_id" value="{{ menu_param['db_id'] }}" />
             <input type="hidden" name="object_type_id" id="object_type_id" value="{{menu_param['object_type_id']}}"/>
-            <!--<input type="hidden" name="func" id="func" value="check_upload_doc_list_form_data_for_upload_check">-->
-            <input type="button" name="submit_btn" value="Preview" class="btn btn-default" onclick="drop_file.submit()" />
+            <input type="hidden" name="template_id" id="template_id" value="">
+            <input type="button" name="submit_btn" value="Preview" class="btn btn-default" onclick="drop_file.check_template_form()" />
             <input type="button" name="cancel_btn" value="Cancel" class="btn btn-default" onclick="cancel_func()"/>
         </form>
     </center>
@@ -256,6 +150,19 @@
     </form>
 
     <div class="jqmWindow" id="jqmWindow"></div>
+    <div id="confirm">
+        <div class="header"><span>Confirm</span></div>
+        <div class="message"></div>
+        <div class="buttons middleBtnArea float_none width_170">
+            <div class="btn btn-default yes float_none">Yes</div>
+            <div class="btn btn-default no simplemodal-close float_none">No</div>
+        </div>
+    </div>
+    <div id="alert">
+        <div class="header"><span>Alert</span></div>
+        <div class="message"></div>
+        <div class="buttons middleBtnArea"><div class="btn btn-default no simplemodal-close">OK</div></div>
+    </div>
     <script>
         // Download Template File
         function downloadTemplateFile() {
@@ -264,34 +171,36 @@
             msSaveOrOpenBlob(url, "POST", "{{ const.WAIT_MSG }}", "", "application/x-www-form-urlencoded", sendOption);
         }
         function cancel_func(){
-            window.close();
-        }
-        function form_check () {
-            var file = ($("#file").val() || $("#uploaded_file").text());
-            if (file === "") {
-                alert_dlg("Error","{{ const.EXCEL_FILE_NOT_FOUND_MSG }}");
-                return false;
-            }
-            if (!file.match(/\.xlsx$/i)) {
-                alert_dlg("Error","{{ const.NOT_XLSX_FILE_MSG }}");
-                return false;
-            }
-            return true
+            closeWindow();
         }
 
         var drop_file;
         $(document).ready(function () {
             tlib_init_drag_and_drop_upload();
             drop_file = tlib_drag_and_drop({
+                tlib_types: {
+                    operate_type: 'TEMPLATE_FILE',
+                    request_type: 'POST'
+                },
                 elm_ids: {
-                    div_id: 'file_upload_drop_target',
-                    input_id: 'file',
-                    button_id: 'file_upload_btn',
+                    div_class: 'file_upload_drop_target',
+                    input_class: 'upload_file_by_select',
+                    button_class: 'file_upload_btn',
                     ul_form_id: 'xls_file_form',
                     ul_file_id: 'uploaded_file',
-                    ul_filename: 'doc_list_filename',
-                    check_func: form_check
+                    ul_filename: 'upload_file'
                 },
+		        url: '{{ url_for('check_object_batch_upload') }}',
+                param: {
+                    db_id: $('#db_id').val(),
+                    redirect_url: '{{ url_for('object_batch_upload') }}' + '?db_id=' + $('#db_id').val() +
+                        '&object_type_id=' + $('#object_type_id').val() + '&skip_null_check=' + $('#skip_null_check').val() + '&template_id=',
+                },
+                func: {
+                    check_template_form: 'check_object_batch_upload'
+                },
+                max_files: 1,
+                msg: { },
             });
             drop_file.on_ready();
         });
