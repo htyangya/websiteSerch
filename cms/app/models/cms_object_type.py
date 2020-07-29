@@ -1,3 +1,5 @@
+from werkzeug.exceptions import abort
+
 from app import db
 
 
@@ -16,8 +18,12 @@ class CmsObjectType(db.Model):
         return self.login_message
 
     @staticmethod
-    def getCmsObjectType(object_type_id):
-        return db.session.query(CmsObjectType).get_or_404(object_type_id)
+    def getCmsObjectType(db_id, object_type_id):
+        obj = db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id,
+                                                     CmsObjectType.object_type_id == object_type_id).first()
+        if obj is None:
+            abort(404)
+        return obj
 
     @staticmethod
     def getObjectTypeList(db_id):

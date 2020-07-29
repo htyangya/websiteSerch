@@ -610,7 +610,7 @@ def privs_dept_detail(db_id, request):
 
 def batch_upload_get(db_id, request):
     object_type_id = request.args.get('object_type_id')
-    object_type_name = CmsObjectType.getCmsObjectType(object_type_id).object_type_name
+    object_type_name = CmsObjectType.getCmsObjectType(db_id, object_type_id).object_type_name
     db_name = ""
     if app.lib.cms_lib.session.current_db:
         db_name = app.lib.cms_lib.session.current_db.db_name
@@ -653,7 +653,7 @@ def batch_upload_post(db_id, request):
     form = BatchUploadForm()
     valid = UploadExcelValidateUtil(form.get_template_filename(), db_id, form.object_type_id.data)
     has_error = not valid.validate(form.skip_null_check.data)
-    object_type_name = CmsObjectType.getCmsObjectType(form.object_type_id.data).object_type_name
+    object_type_name = CmsObjectType.getCmsObjectType(db_id, form.object_type_id.data).object_type_name
     db_name = ""
     if app.lib.cms_lib.session.current_db:
         db_name = app.lib.cms_lib.session.current_db.db_name
@@ -677,20 +677,22 @@ def batch_upload_post(db_id, request):
 
 def upload_data(db_id, request):
     form = BatchUploadForm()
+    object_type_id = form.object_type_id.data
+    object_type_obj = CmsObjectType.getCmsObjectType(db_id, object_type_id)
     if session.get("more_upload_excel") != form.template_id.data:
         valid = UploadExcelValidateUtil(form.get_template_filename(), db_id, form.object_type_id.data)
-        item_ctn = valid.save_to_db()
+        item_ctn = valid.save_to_db(object_type_obj.log_notes_format)
         session["more_upload_excel"] = form.template_id.data
         msg = f"Batch Insert was successful.{item_ctn} rows inserted"
     else:
         msg = "Please do not submit data repeatedly"
-    object_type_id = form.object_type_id.data
+
     db_name = ""
     if app.lib.cms_lib.session.current_db:
         db_name = app.lib.cms_lib.session.current_db.db_name
     menu_param = {
         "db_name": db_name,
-        "object_type_name": CmsObjectType.getCmsObjectType(object_type_id).object_type_name,
+        "object_type_name": object_type_obj.object_type_name,
         "msg": msg
     }
     return render_template(

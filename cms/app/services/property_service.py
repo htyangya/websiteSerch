@@ -3,7 +3,7 @@ import os
 import re
 import sys
 from datetime import datetime
-
+import pandas as pd
 from flask import render_template, jsonify, current_app, session
 from flask_login import current_user
 
@@ -173,7 +173,7 @@ def property_save(db_id, func, request):
         isSaveError = True
     elif not isSaveError:
         try:
-            objectType = cmsObjectType.getCmsObjectType(form.object_type_id.data)
+            objectType = cmsObjectType.getCmsObjectType(db_id, form.object_type_id.data)
 
             # db.session.begin()
             # 新規の場合
@@ -431,7 +431,7 @@ def property_delete(request):
 
             # オブジェクトの変更を記録する
             cmsObjectType = CmsObjectType()
-            objectType = cmsObjectType.getCmsObjectType(object.object_type_id)
+            objectType = cmsObjectType.getCmsObjectType(db_id, object.object_type_id)
             pkgCmsLog = PkgCmsLog()
             pkgCmsLog.saveOperationLog(
                 current_user.tuid,
@@ -674,6 +674,8 @@ def format_object_log_note(op_object, log_note_format):
                 value = getattr(op_object, col_name).data
             elif isinstance(op_object, CmsObject) and hasattr(op_object, col_name):
                 value = getattr(op_object, col_name)
+            elif isinstance(op_object, pd.DataFrame) and (col_name in op_object.index):
+                value = op_object.at[col_name, "property_name"]
             note = note.replace('<#' + col + '#>', StrUtil.get_safe_string(value))
     return note
 
