@@ -29,7 +29,7 @@ class DbUtil:
                 value = form.__dict__[col_name].data
                 if col_name.startswith("num_"):
                     if len(value) > 0:
-                        value = int(value)
+                        value = float(value)
                     else:
                         value = ''
 
@@ -43,17 +43,17 @@ class DbUtil:
 
                 # 数字チェック
                 if "NUMBER" == property_type:
-                    if NumUtil.is_number_data(value) != 1:
+                    if NumUtil.is_number_data(str(value)) != 1:
                         err_msgs.append(
                             Const.NUMERICAL_VALUE_REQUIRED_MSG.format(pro.get("property_name")))
                     else:
                         num_prop = {'sign_ref': '', 'i_ref': '', 'f_ref': ''}
-                        NumUtil.split_number(value, num_prop)
-                        if len(num_prop['i_ref']) > int(pro.get("i_len")):
+                        NumUtil.split_number(str(value), num_prop)
+                        if (len(num_prop['i_ref']) + len(num_prop['f_ref'])) > int(pro.get("i_len")):
                             err_msgs.append(
                                 Const.INTEGRAL_PART_OUT_OF_RANGE_MSG.format(
                                     pro.get("property_name"),
-                                    str(pro.get("i_len"))))
+                                    str(pro.get("i_len") - pro.get("f_len"))))
                         if len(num_prop['f_ref']) > int(pro.get("f_len")):
                             err_msgs.append(
                                 Const.FRACTIONAL_PART_OUT_OF_RANGE_MSG.format(
@@ -150,12 +150,12 @@ class DbUtil:
                                 err_msgs.append(
                                     Const.INTEGER_VALUE_REQUIRED_MSG.format(col_prop['cname'][idx]))
                         """
-                        if NumUtil.is_number_data(value) != 1:
+                        if NumUtil.is_number_data(str(value)) != 1:
                             err_msgs.append(
                                 Const.NUMERICAL_VALUE_REQUIRED_MSG.format(col_prop['cname'][idx]))
                         else:
                             num_prop = {'sign_ref': '', 'i_ref': '', 'f_ref': ''}
-                            NumUtil.split_number(value, num_prop)
+                            NumUtil.split_number(str(value), num_prop)
                             if 'data_precision' in user_tab_columns[db_field] \
                                     and user_tab_columns[db_field]['data_precision'] is not None:
                                 if len(num_prop['i_ref']) > int(user_tab_columns[db_field]['data_precision']):

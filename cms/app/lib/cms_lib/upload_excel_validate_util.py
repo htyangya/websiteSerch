@@ -162,7 +162,7 @@ class UploadExcelValidateUtil:
                 too_large_msg = suffix + "is too large."
                 i_len, f_len = self.obj_property_pd.loc[col.name, ["i_len", "f_len"]]
                 i_len, f_len = i_len or float("inf"), f_len or float("inf")
-                tem_pd = col.str.extract("^(\d+)(\.(\d+))?$").apply(lambda row: row.str.len()).fillna(0)
+                tem_pd = col.str.extract("^([0-9]+)(\.([0-9]+))?$").apply(lambda row: row.str.len()).fillna(0)
                 tem_pd["ilen"] = tem_pd[0] + tem_pd[2]
                 invalid_number = (tem_pd["ilen"] == 0) & (col != "")
                 too_large = (col != "") & (tem_pd["ilen"] != 0) & ((tem_pd["ilen"] > i_len) | (tem_pd[2] > f_len))
@@ -203,7 +203,7 @@ class UploadExcelValidateUtil:
             f"SELECT PROPERTY_NAME,DB_COLUMN_NAME,PROPERTY_TYPE FROM CMS_OBJECT_PROPERTY WHERE OBJECT_TYPE_ID = {self.obj_type_id}").append(
             {"property_name": "FOLDER NAME", "db_column_name": "folder_name"}, True).drop_duplicates("property_name")
         selection_list_pd = self.read_sql(
-            f'''SELECT SELECTION_MST_ID,SELECTION_NAME FROM CMS_OBJECT_PROP_SELECTION_LIST
+            f'''SELECT SELECTION_ID, SELECTION_NAME FROM CMS_OBJECT_PROP_SELECTION_LIST
                 WHERE SELECTION_MST_ID in (
                    SELECT SELECTION_MST_ID FROM CMS_OBJECT_PROP_SELECTION_MST
                    WHERE DB_ID = {self.db_id})''')
@@ -236,7 +236,7 @@ class UploadExcelValidateUtil:
                 # select型の列にselection_nameをselection_mst_idに換える
                 select_names = group.db_column_name
                 excel_pd[select_names] = excel_pd[select_names].replace(selection_list_pd["selection_name"].to_list(),
-                                                                        selection_list_pd["selection_mst_id"].to_list())
+                                                                        selection_list_pd["selection_id"].to_list())
             elif type_name == "NUMBER":
                 number_names = group.db_column_name
                 excel_pd[number_names] = excel_pd[number_names].astype(np.float64)
@@ -260,15 +260,14 @@ class UploadExcelValidateUtil:
 
         # オブジェクトの新規登録を記録する
         pkgCmsLog = PkgCmsLog()
-        note = format_object_log_note(prop_column_mapping_pd, log_notes_format)
-        for obj_id in excel_pd["object_id"].to_list():
+        for index, obj_id in excel_pd["object_id"].iteritems():
             pkgCmsLog.saveOperationLog(
                 current_user.tuid,
                 self.db_id,
                 operation_cd=Const.OPERATION_CD_CREATE_OBJECT,
                 object_id=obj_id,
                 object_type='OBJECT',
-                note=note
+                note=format_object_log_note(excel_pd.loc[index], log_notes_format)
             )
 
         db.session.commit()

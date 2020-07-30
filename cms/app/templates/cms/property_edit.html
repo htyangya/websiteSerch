@@ -168,7 +168,7 @@
                                 {% for pro in proList %}
                                     {% set column_name = pro.get('db_column_name')|lower() %}
                                     {% set pro_index= (loop.index-1)|string %}
-                                    {% if 'TEXT' == pro.get('property_type') %}
+                                    {% if 'TEXT' == pro.get('property_type') or 'NUMBER' == pro.get('property_type') %}
                                     <tr>
                                         <td class="propertyLabel">{{ pro.get('property_name') }}{{ pro.get('property_name_req') or '' }}</td>
                                         <td colspan="2">
