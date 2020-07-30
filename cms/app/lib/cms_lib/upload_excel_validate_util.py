@@ -175,7 +175,7 @@ class UploadExcelValidateUtil:
             elif property_type == "DATE":
                 invalid_msg = suffix + "is invalid date format."
                 date_col = pd.to_datetime(col, errors="coerce", format="%Y-%m-%d %H:%M:%S")
-                condition = date_col.notna() & col.str.match(r"\d{4}-\d{2}-\d{2}")
+                condition = date_col.notna()
             # SELECT型のチェック
             elif property_type == "SELECT":
                 invalid_msg = suffix + "is invalid data."
@@ -232,19 +232,19 @@ class UploadExcelValidateUtil:
         type_groupby = prop_column_mapping_pd.groupby("property_type")
 
         for type_name, group in type_groupby:
+            names = group.db_column_name
             if type_name == "SELECT":
                 # select型の列にselection_nameをselection_mst_idに換える
-                select_names = group.db_column_name
-                excel_pd[select_names] = excel_pd[select_names].replace(selection_list_pd["selection_name"].to_list(),
-                                                                        selection_list_pd["selection_id"].to_list())
+                excel_pd[names] = excel_pd[names].replace(selection_list_pd["selection_name"].to_list(),
+                                                          selection_list_pd["selection_id"].to_list())
             elif type_name == "NUMBER":
-                number_names = group.db_column_name
-                excel_pd[number_names] = excel_pd[number_names].astype(np.float64)
+                excel_pd[names] = excel_pd[names].astype(np.float64)
+            elif type_name == "DATE":
+                excel_pd[names] = excel_pd[names].astype(np.datetime64)
             elif type_name == "KEYWORD":
                 # keyword型を保存するために使う結構を作成,列は以下のようです
                 # object_id　 db_columns_name 　keyword_id
-                keyword__names = group.db_column_name
-                keyword_save_pd = excel_pd[keyword__names].rename(str.upper, axis=1).stack()
+                keyword_save_pd = excel_pd[names].rename(str.upper, axis=1).stack()
                 if not keyword_save_pd.empty:
                     keyword_save_pd = keyword_save_pd.str.split(",", expand=True).stack(
                         dropna=True).str.strip().reset_index("db_column_name").reset_index(1, True).rename(
