@@ -49,11 +49,11 @@ class DbUtil:
                     else:
                         num_prop = {'sign_ref': '', 'i_ref': '', 'f_ref': ''}
                         NumUtil.split_number(value, num_prop)
-                        if len(num_prop['i_ref']) > int(pro.get("i_len")):
+                        if (len(num_prop['i_ref']) + len(num_prop['f_ref'])) > int(pro.get("i_len")):
                             err_msgs.append(
                                 Const.INTEGRAL_PART_OUT_OF_RANGE_MSG.format(
                                     pro.get("property_name"),
-                                    str(pro.get("i_len"))))
+                                    str(pro.get("i_len") - pro.get("f_len"))))
                         if len(num_prop['f_ref']) > int(pro.get("f_len")):
                             err_msgs.append(
                                 Const.FRACTIONAL_PART_OUT_OF_RANGE_MSG.format(

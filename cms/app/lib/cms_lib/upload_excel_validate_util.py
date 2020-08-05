@@ -41,7 +41,8 @@ class UploadExcelValidateUtil:
 
     def validate(self, skip_null_check):
         # チェックされるexcel dataを用意
-        self.excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], dtype=str, engine="openpyxl").fillna("")
+        excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], dtype=str, engine="openpyxl")
+        self.excel_pd = excel_pd.loc[~excel_pd.isna().all(1)].fillna("")
         # エンプティexcelの場合は直ぐに戻る
         if self.excel_pd.empty:
             self.errors.extend(["File is empty."])
@@ -110,7 +111,7 @@ class UploadExcelValidateUtil:
         suffix = "%s({0}) " % col.name
         if col.name in self.exits_required_header:
             invalid_msg = "%s is required.(Excel Row No: {0})" % col.name
-            condition = col != ""
+            condition = col.str.strip() != ""
             self.data_tips_pd[col.name].where(condition, col.index.to_series().map(invalid_msg.format), True)
         # FOLDERのチェック
         if col.name == "FOLDER NAME":
@@ -196,6 +197,7 @@ class UploadExcelValidateUtil:
 
     def save_to_db(self, log_notes_format):
         excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], engine="openpyxl", dtype=str)
+        excel_pd = excel_pd.loc[~excel_pd.isna().all(1)]
         rowCount = len(excel_pd)
         folder_pd = self.read_sql(
             f"SELECT FOLDER_ID,PARENT_FOLDER_ID,FOLDER_NAME,CHILD_OBJECT_TYPE_ID FROM CMS_FOLDER WHERE DB_ID = {self.db_id} AND IS_DELETED = 0")

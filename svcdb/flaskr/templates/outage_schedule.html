@@ -179,15 +179,15 @@
             {% if menu_param["outage_schedule_list"] %}
                 fixedResultTable();
             {% endif %}
-            //min-yearを選択されたとき、max-yearが自動的に変化します
+            // min-yearを選択されたとき、max-yearが自動的に変化します
             $("#date_start").on("change", function () {
-                $("#date_end").val(Math.min(this.value*1+5, $("#date_end option:last").val()));
+                $("#date_end").val(Math.min(this.value * 1 + 5, $("#date_end option:last").val()));
             });
-            //再検索する時、ページが初期化をします
+            // 再検索する時、ページが初期化をします
             $("#search").on("click", function () {
                 $("#page").val(1);
             });
-            //ページングの設定
+            // ページングの設定
             $("#resultForm-paging input:submit").on("click", function () {
                 $("#page").val(this.value);
             });
@@ -276,7 +276,7 @@
             window.open(path, "_blank");
         }
 
-        // add,edit画面で保存するとき、該当画面をreload
+        // add、edit画面で保存するとき、該当画面をreload
         function search() {
             $("#schedule_form").submit()
         }
