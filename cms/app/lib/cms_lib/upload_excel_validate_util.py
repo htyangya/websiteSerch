@@ -42,6 +42,7 @@ class UploadExcelValidateUtil:
     def validate(self, skip_null_check):
         # チェックされるexcel dataを用意
         excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], dtype=str, engine="openpyxl")
+        # 空行を削除する
         self.excel_pd = excel_pd.loc[~excel_pd.isna().all(1)].fillna("")
         # エンプティexcelの場合は直ぐに戻る
         if self.excel_pd.empty:
@@ -197,6 +198,7 @@ class UploadExcelValidateUtil:
 
     def save_to_db(self, log_notes_format):
         excel_pd = pd.read_excel(self.excel_filename, skiprows=[0, 2], engine="openpyxl", dtype=str)
+        # 空行を削除する
         excel_pd = excel_pd.loc[~excel_pd.isna().all(1)]
         rowCount = len(excel_pd)
         folder_pd = self.read_sql(

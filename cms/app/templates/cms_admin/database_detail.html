@@ -84,33 +84,23 @@
     <center>
         <table id="datalist_header" class="datalist_headerC">
             <tbody>
-                <tr><th class="title">Keyword List</th><td class="function"></td></tr>
+                <tr><th class="title">Data Management</th><td class="function"></td></tr>
             </tbody>
         </table>
-        <table id="datalist" class="datalistC">
+        <table id="datalist" class="datalistC" style="width: 94%;">
             <tbody>
                 <tr>
-                    <th>Keyword Name</th>
-                    <th>Multi Set Flg</th>
-                    <th>Not Null Flg</th>
-                    <th>Tree Separator</th>
-                    <th>Keyword Data</th>
-                    <th>Menu</th>
+                    <th>Data Management</th>
                 </tr>
-                {% for data in keywordList %}
-                <tr>
-                    <td>{{ data.keyword_name }}</td>
-                    <td>{{ data.multiSetFlg }}</td>
-                    <td>{{ data.notNullFlg }}</td>
-                    <td>{{ data.tree_separator }}</td>
-                    <td>
-                        {% for keyword in data.keywords %}
-                        {{ keyword }}<br>
-                        {% endfor %}
-                    </td>
-                    <td><a href="{{url_for('adm_keyword', func='keyword_edit', db_id=cmsDb.db_id, keyword_mst_id=data.keyword_mst_id)}}">変更</a></td>
+                <tr class="even">
+                    <td> <a href="{{url_for('list_format_list',db_id = cmsDb['db_id'],format_type_flag='0')}}" target="_self">List Format</a></td>
                 </tr>
-                {% endfor %}
+                <tr class="even">
+                    <td><a href="{{url_for('list_format_list',db_id = cmsDb['db_id'],format_type_flag='1')}}" target="_self">Property Format</a></td>
+                </tr>
+                <tr class="even">
+                    <td> <a href="{{url_for('keyword_list',db_id = cmsDb['db_id'])}}" target="_self">Keyword</a></td>
+                </tr>
             </tbody>
         </table>
     </center>

@@ -93,6 +93,14 @@ def create_app():
     app.add_url_rule('/cmsadmin/ip_addr_list', 'ip_addr_list', admin_route.ip_addr_list, methods=['GET'])
     app.add_url_rule('/cmsadmin/ip_addr', 'ip_addr', admin_route.ip_addr, methods=['GET', 'POST'])
 
+    # keyword_list
+    app.add_url_rule('/cmsadmin/keyword_list', 'keyword_list', admin_route.keyword_list, methods=['GET'])
+    app.add_url_rule('/cmsadmin/list_format_list', 'list_format_list', admin_route.list_format_list, methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/check_list_format_delete', 'check_list_format_delete', admin_route.check_list_format_delete,
+                     methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/list_format_edit', 'list_format_edit', admin_route.list_format_edit,methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/list_format_jqmodal', 'list_format_jqmodal', admin_route.list_format_jqmodal,methods=['GET', 'POST'])
+
     app.add_url_rule('/no_privs', 'no_privs', route.no_privs, methods=['GET'])
     app.register_error_handler(404, route.page_not_found)
     return app

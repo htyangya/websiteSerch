@@ -37,13 +37,12 @@ class Config:
     REMEMBER_COOKIE_DURATION = timedelta(minutes=60)
     # デフォルトのセッションの有効期間
     PERMANENT_SESSION_LIFETIME = timedelta(hours=8)
-    # db environment: AWS or DEV1
-    DB_PROFILE = Const.AWS
+
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI = 'oracle+cx_oracle://{user}:{password}@{host}'.format(**{
         'user': os.getenv('DB_USER', 'svcdb'),
         'password': os.getenv('DB_PASSWORD', 'svcadmin'),
-        'host': os.getenv('DB_HOST', 'AWSXE' if DB_PROFILE == Const.AWS else "'DEV1'"),
+        'host': os.getenv('DB_HOST', 'AWSXE'),
     })
     # TRACK_MODIFICATIONという機能を無効化します
     SQLALCHEMY_TRACK_MODIFICATIONS = False

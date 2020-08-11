@@ -60,8 +60,8 @@ def set_cookie(session_cookie_name, tuid, redirectUrl):
 
 def cookie_path(user_id_in, session_id_in):
     return DbUtil.sqlExcuter(
-        "SELECT {pkg_turbine}.SIGNIN_TO_TURBINEDB( '{user_id_in}', '{session_id_in}') FROM DUAL",
-        user_id_in=user_id_in, session_id_in=session_id_in, pkg_turbine=DbUtil.get_pkg_turbine()).first()[0]
+        "SELECT PKG_TURBINE_DB_UTIL.SIGNIN_TO_TURBINEDB( '{user_id_in}', '{session_id_in}') FROM DUAL",
+        user_id_in=user_id_in, session_id_in=session_id_in).first()[0]
 
 
 def get_session_id(session_cookie_name):

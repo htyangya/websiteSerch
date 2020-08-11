@@ -91,6 +91,14 @@ class PkgCmsSecurity():
             return True
         return False
 
+    # List Format削除可能かチェック
+    def isListFormatDelete(self, format_id, user_id):
+        returnVal = db.session.execute(
+            'select ' + self.package_name + '.check_list_format_delete_privs(:format_id, :user_id) as val from dual',
+            {'format_id': format_id, 'user_id': user_id}).fetchone().val
+        if returnVal == 1:
+            return True
+        return False
 
 class PkgIpAddrUtil():
     # パッケージ

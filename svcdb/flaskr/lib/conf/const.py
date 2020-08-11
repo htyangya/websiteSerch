@@ -48,5 +48,3 @@ class Const(object):
     DATE_FORMAT_ERR_MSG = '日付エラー'
     DATE_VALUE_ERR_MSG = '終了日は開始日より後の日付を指定してください'
     TURBINE_URL_ERR_MSG = 'Error: You are not registered in Plant Data Base'
-    AWS = 'AWS'
-    DEV1 = 'DEV1'

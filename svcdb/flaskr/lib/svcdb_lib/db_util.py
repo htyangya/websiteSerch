@@ -277,7 +277,3 @@ class DbUtil:
         sqlstr = sqlstr.format(*args, **kwargs)
         StrUtil.print_debug(sqlstr)
         return db.session.execute(text(sqlstr))
-
-    @staticmethod
-    def get_pkg_turbine():
-        return "pkg_turbine_db_util_test" if current_app.config.get("DB_PROFILE") == "AWS" else "pkg_turbine_db_util"

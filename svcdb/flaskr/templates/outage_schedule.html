@@ -229,7 +229,7 @@
             };
             var No = 0;
             var res = "";
-            for (const value of ids) {
+            ids.forEach(function (value) {
                 No = No + 1;
                 var Outage_Type_T = 'Turbine: ' + outage_type_mapping[teiken_map[value][2]];
                 var Outage_Type_G = 'Generator: ' + outage_type_mapping[teiken_map[value][3]];
@@ -239,7 +239,7 @@
                     "       <td class='NW AT AL'> " + teiken_map[value][1] + "</td>" +
                     "       <td class='NW AT AL'> " + Outage_Type_T + "," + Outage_Type_G + "</td> " +
                     "   </tr> ";
-            }
+            });
             return "<div class=\"arrow\"  >" +
                 "<table class='table-bordered psprimis-list-table' style='border: 1px solid black; width:100%'>" +
                 " <tr> " +

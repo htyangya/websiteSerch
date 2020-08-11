@@ -39,5 +39,5 @@ def do_main(request):
 def list_url():
     session_id_in = get_session_id(Const.SESSION_COOKIE_NAME)
     return DbUtil.sqlExcuter(
-        "SELECT {pkg_turbine}.GET_TURBINE_LIST_URL('{session_id_in}') FROM DUAL",
-        session_id_in=session_id_in, pkg_turbine=DbUtil.get_pkg_turbine()).first()[0] or ""
+        "SELECT PKG_TURBINE_DB_UTIL.GET_TURBINE_LIST_URL('{session_id_in}') FROM DUAL",
+        session_id_in=session_id_in).first()[0] or ""

@@ -299,7 +299,8 @@ def service_keyword(func, request):
                         display_order += 1
 
                     db.session.commit()
-                    return redirect(url_for('database', func='database_detail', db_id=form.dbId.data))
+                    #return redirect(url_for('database', func='database_detail', db_id=form.dbId.data))
+                    return redirect(url_for('keyword_list', db_id=form.dbId.data))
                 except Exception as e:
                     db.session.rollback()
                     tb = sys.exc_info()[2]
@@ -341,4 +342,47 @@ def getCmsDb(cmsDb, form):
     cmsDb.information_message = form.informationMessage.data
     cmsDb.remarks = form.remarks.data
     return cmsDb
+
+
+def keywordList(request):
+    cmsDb = CmsDb()
+    cmsKeywordSetting = CmsKeywordSetting()
+    cmsKeywordMaster = CmsKeywordMaster()
+    keywordList = []
+    page_id = 'cms_admin/keyword_list.html'
+    err_msgs = []
+
+    db_id = request.args.get("db_id")
+    cmsDb = CmsDb.getCmsDbProperty(db_id)
+    # キーワード情報を取得
+    keywordSettingList = cmsKeywordSetting.getKeywordSettingList(db_id)
+    for keywordSetting in keywordSettingList:
+        kwSetting = CmsKeywordSetting()
+        kwSetting.keyword_mst_id = keywordSetting.keyword_mst_id
+        kwSetting.keyword_name = keywordSetting.keyword_name
+        kwSetting.tree_separator = keywordSetting.tree_separator
+        if keywordSetting.multi_set_flg == 0:
+            kwSetting.multiSetFlg = '1つ設定可能'
+        elif keywordSetting.multi_set_flg == 1:
+            kwSetting.multiSetFlg = '複数セット可能'
+        if keywordSetting.not_null_flg == 1:
+            kwSetting.notNullFlg = '必須'
+
+        # キーワード
+        kList = cmsKeywordMaster.getKeywordList(keywordSetting.keyword_mst_id)
+        kwSetting.setKeywords(kList)
+        keywordList.append(kwSetting)
+
+    return render_template(
+        page_id,
+        title='CMS：Keyword List',
+        err_msgs=err_msgs,
+        current_user=current_user,
+        cmsDb=cmsDb,
+        keywordList=keywordList,
+        appVer=current_app.config['APP_VER'])
+
+
+
+
 # Database management end

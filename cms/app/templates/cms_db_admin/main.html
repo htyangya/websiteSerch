@@ -43,7 +43,7 @@
                     <th>Operation Log：Daily Log</th>
                 </tr>
                 <tr class="even">
-                    <td class="TL" onclick="openWindow('{{ url_for('daily_log') }}?db_id={{ db_id }}', 'daily_log');">Daily log</td>
+                    <td class="TL"><a href="{{ url_for('daily_log') }}?db_id={{ db_id }}" target="_self">Daily log</a></td>
                 </tr>
             </tbody>
         </table>
@@ -56,10 +56,10 @@
                     <th>Security Settings</th>
                 </tr>
                 <tr class="even">
-                    <td class="TL" onclick="openWindow('{{ url_for('privs_dept') }}?db_id={{ db_id }}', 'privs_dept');">Privilege (Department)</td>
+                    <td class="TL"><a href="{{ url_for('privs_dept') }}?db_id={{ db_id }}" target="_self">Privilege (Department)</a></td>
                 </tr>
                 <tr class="odd">
-                    <td class="TL" onclick="openWindow('{{ url_for('privs_user') }}?db_id={{ db_id }}', 'privs_user');">Privilege (User)</td>
+                    <td class="TL"><a href="{{ url_for('privs_user') }}?db_id={{ db_id }}" target="_self">Privilege (User)</a></td>
                 </tr>
             </tbody>
         </table>
@@ -74,7 +74,7 @@
                 </tr>
                 {% for data in objectTypeList %}
                     <tr class="even">
-                        <td class="TL" onclick="openWindow('{{ url_for('object_batch_upload') }}?db_id={{ db_id }}&object_type_id={{ data.object_type_id }}', 'object_batch_upload');">Batch Insert ({{ data.object_type_name }})</td>
+                        <td class="TL"><a href="{{ url_for('object_batch_upload') }}?db_id={{ db_id }}&object_type_id={{ data.object_type_id }}" target="_self">Batch Insert ({{ data.object_type_name }})</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

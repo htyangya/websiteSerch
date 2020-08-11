@@ -28,3 +28,7 @@ class CmsObjectType(db.Model):
     @staticmethod
     def getObjectTypeList(db_id):
         return db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id).all()
+
+    @staticmethod
+    def getObjectType(db_id):
+        return db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id).first()

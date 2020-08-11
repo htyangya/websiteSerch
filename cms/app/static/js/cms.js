@@ -784,6 +784,20 @@ function popupPrivsDept(db_id, func, corp_cd, div_cd, dept_cd, emp_type_cd, work
     load_jqmodal_dlg(url, on_load_jqmodal_dlg);
 }
 
+function getKeywordListUrl(db_id) {
+    return _get_location_path() + "/cmsadmin/keyword_list?db_id=" + db_id;
+}
+
+function getOpenListFormat(db_id,object_type_id,data_list) {
+    return _get_location_path() + "/list_format_jqmodal?db_id=" + db_id + "&object_type_id=" + object_type_id
+        + "&data_list=" + data_list
+}
+
+function popupListFormat(db_id,object_type_id,data_list) {
+    var url = getOpenListFormat(db_id,object_type_id,data_list);
+    load_jqmodal_dlg(url, on_load_jqmodal_dlg);
+}
+
 function decodeHtml(s) {
     var HTML_DECODE = {
         "&lt;": "<",

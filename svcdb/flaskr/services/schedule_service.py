@@ -83,7 +83,6 @@ class Cell:
 def searching(form, menu_param):
     and_sql = ''
     turbine_id = form.turbine_id.data
-    pkg_turbine = DbUtil.get_pkg_turbine()
     session_id_in = get_session_id(Const.SESSION_COOKIE_NAME)
     if turbine_id and turbine_id != "None":
         and_sql += f''' AND A.TURBINE_ID = '{turbine_id}' \n'''
@@ -119,7 +118,7 @@ def searching(form, menu_param):
         menu_param["page_model"] = page_model = PageModel(form.page.data, item_count)
         where_sql = f"WHERE IDX BETWEEN {page_model.begin_item} AND {page_model.end_item}"
     outage_schedule_list = DbUtil.sqlExcuter(scheduleSql.scheduleListSql, search_table=search_table, and_sql=and_sql,
-                                             where_sql=where_sql, session_id_in=session_id_in, pkg_turbine=pkg_turbine)
+                                             where_sql=where_sql, session_id_in=session_id_in)
     rows_dict = {}
     tenken_dict = {}
     for row in outage_schedule_list:
