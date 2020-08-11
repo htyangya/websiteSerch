@@ -103,10 +103,7 @@ def page_not_found(e):
 
 @UserAuth.login_required
 def main_menu():
-    return render_template(
-        'svcdb_main.html',
-        user_name=current_user.get_user_name(),
-    )
+    return main_service.do_main(request)
 
 
 @UserAuth.login_required

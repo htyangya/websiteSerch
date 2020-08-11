@@ -1,6 +1,7 @@
 import re
 import sys
 
+from flask import current_app
 from sqlalchemy import text
 
 from flaskr import db
@@ -84,14 +85,16 @@ class DbUtil:
                             err_msgs.append(pro.get('validate_err_msg').replace('<#DATA#>', value))
                     except Exception as e:
                         tb = sys.exc_info()[2]
-                        StrUtil.print_error('##########check_input_form_data_by_prop validate_rule:{} error_msg:{}'.format(
-                            re_cond, str(e.with_traceback(tb))))
+                        StrUtil.print_error(
+                            '##########check_input_form_data_by_prop validate_rule:{} error_msg:{}'.format(
+                                re_cond, str(e.with_traceback(tb))))
             param_prop['err_msgs'].extend(err_msgs)
 
         except Exception as e:
             tb = sys.exc_info()[2]
             param_prop['err_msgs'].extend(str(e.with_traceback(tb)))
-            StrUtil.print_error('##########check_input_form_data_by_prop error_msg:{}'.format(str(e.with_traceback(tb))))
+            StrUtil.print_error(
+                '##########check_input_form_data_by_prop error_msg:{}'.format(str(e.with_traceback(tb))))
 
     def check_input_form_data_by_db(param_prop):
         err_msgs = []
@@ -269,8 +272,12 @@ class DbUtil:
 
         return dic
 
-    @classmethod
-    def sqlExcuter(cls, sqlstr: str, *args, **kwargs):
+    @staticmethod
+    def sqlExcuter(sqlstr: str, *args, **kwargs):
         sqlstr = sqlstr.format(*args, **kwargs)
         StrUtil.print_debug(sqlstr)
         return db.session.execute(text(sqlstr))
+
+    @staticmethod
+    def get_pkg_turbine():
+        return "pkg_turbine_db_util_test" if current_app.config.get("DB_PROFILE") == "AWS" else "pkg_turbine_db_util"

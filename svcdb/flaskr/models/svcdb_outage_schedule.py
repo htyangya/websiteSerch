@@ -54,7 +54,7 @@ class OutageSchedule(db.Model):
 
     @property
     def outage_type_g_nm(self):
-        return 'Turbine: ' + self._outage_type_mapping.get(self.outage_type_g, "")
+        return 'Generator: ' + self._outage_type_mapping.get(self.outage_type_g, "")
 
     @property
     def outage_type_nm(self):

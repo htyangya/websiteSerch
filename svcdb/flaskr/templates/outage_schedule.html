@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block js_content %}
     <script src="/static/js/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/jquery-ui.js?q={{ appVer }}"
+            type="text/javascript"></script>
 {% endblock %}
 {% block css_content %}
     <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{ appVer }}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/jquery-ui.css?q={{ appVer }}">
 {% endblock %}
 {% block header_name %} {{ header_name }} {% endblock %}
 {% block container_content %}
@@ -71,6 +74,16 @@
             min-height: 500px !important;
             max-height: 80% !important;
         }
+
+        .tooltip_table {
+            overflow: auto;
+            padding: 2px 1px;
+            width: 500px;
+            max-width: 500px;
+            min-height: 0px;
+            max-height: 400px;
+        }
+
     </style>
 
     <div class="row">
@@ -113,11 +126,11 @@
                             <label>Period
                                 {{ form.date_start(class="form-control") }}
                                 <span style="padding: 0 10px 0 10px;">～</span>
-                                {{ form.date_end(class="form-control")}}
+                                {{ form.date_end(class="form-control") }}
                             </label>
                         </div>
                     </div>
-                    {{ form.page(class="hidden")}}
+                    {{ form.page(class="hidden") }}
                 </div>
                 <div class="right-header-btn">
                     <div class="form-group" style="vertical-align: bottom;">
@@ -157,8 +170,20 @@
         </form>
     </div>
     <script>
+        var teiken_map = {{ menu_param["tenken_dict"]|safe }};
         //<![CDATA[
         $(function () {
+            $(document).tooltip({
+                classes: {
+                    "ui-tooltip": "tooltip_table"
+                },
+                items: ".td_link.purple,.td_link.green,.td_link.red",
+                content: function () {
+                    var ids = JSON.parse(this.id);
+                    return parse_ids_to_table(ids);
+                },
+            });
+
             $("input").keypress(function (ev) {
                 if (ev.which && ev.which === 13 || ev.keyCode && ev.keyCode === 13) {
                     return false;
@@ -176,6 +201,7 @@
                     outageScheduleList(this.id);
                 }
             });
+
             {% if menu_param["outage_schedule_list"] %}
                 fixedResultTable();
             {% endif %}
@@ -193,6 +219,37 @@
             });
 
         });
+
+        function parse_ids_to_table(ids) {
+            var outage_type_mapping = {
+                '1': "Major",
+                '2': "Minor",
+                '3': "Other",
+                '4': "N/A",
+            };
+            var No = 0;
+            var res = "";
+            for (const value of ids) {
+                No = No + 1;
+                var Outage_Type_T = 'Turbine: ' + outage_type_mapping[teiken_map[value][2]];
+                var Outage_Type_G = 'Generator: ' + outage_type_mapping[teiken_map[value][3]];
+                res += "<tr> " +
+                    "       <td class='NW'> " + No + "</td> " +
+                    "       <td class='NW AT AL '> " + teiken_map[value][0] + "</td> " +
+                    "       <td class='NW AT AL'> " + teiken_map[value][1] + "</td>" +
+                    "       <td class='NW AT AL'> " + Outage_Type_T + "," + Outage_Type_G + "</td> " +
+                    "   </tr> ";
+            }
+            return "<div class=\"arrow\"  >" +
+                "<table class='table-bordered psprimis-list-table' style='border: 1px solid black; width:100%'>" +
+                " <tr> " +
+                "   <th class='NW' style='border: 1px solid black'>No.</th> " +
+                "   <th class='NW' style='border: 1px solid black'>Start</th> " +
+                "   <th class='NW' style='border: 1px solid black'>End</th> " +
+                "   <th class='NW' style='border: 1px solid black'>Outage Type</th> " +
+                "</tr>" + res +
+                "</table></div>"
+        }
 
         function fixedResultTable() {
             var fixedHeaderCols = 9;
@@ -222,10 +279,10 @@
         function outageScheduleDetail(teiken_id) {
             var url = '{{url_for("outage_schedule_detail")}}';
             var param_str = $.param({
-                    teiken_id: teiken_id,
-                    date_start: $("#date_start").val(),
-                    date_end: $("#date_end").val(),
-                });
+                teiken_id: teiken_id,
+                date_start: $("#date_start").val(),
+                date_end: $("#date_end").val(),
+            });
             var path = url + "?" + param_str;
             window.open(path, "_blank");
         }

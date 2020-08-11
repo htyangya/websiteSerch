@@ -1,6 +1,6 @@
 import urllib
 
-from flask import session, request, make_response, url_for
+from flask import session, request, make_response, url_for, render_template
 from werkzeug.utils import redirect
 
 from flaskr import db
@@ -8,6 +8,7 @@ from flaskr.controllers.common import CreateSeq
 from flaskr.lib.svcdb_lib.str_util import StrUtil
 from flaskr.models.svcdb_db import SvcdbDb
 from flaskr.models.svcdb_session_table import SvcdbSessionTable
+from flaskr.lib.svcdb_lib.db_util import DbUtil
 
 current_db = None
 
@@ -53,7 +54,14 @@ def set_cookie(session_cookie_name, tuid, redirectUrl):
     StrUtil.print_debug('next_url:' + next_url)
     response = make_response(redirect(next_url))
     response.set_cookie(session_cookie_name, random_str)
+    response.set_cookie("session_id", random_str, path=cookie_path(tuid, random_str))
     return response
+
+
+def cookie_path(user_id_in, session_id_in):
+    return DbUtil.sqlExcuter(
+        "SELECT {pkg_turbine}.SIGNIN_TO_TURBINEDB( '{user_id_in}', '{session_id_in}') FROM DUAL",
+        user_id_in=user_id_in, session_id_in=session_id_in, pkg_turbine=DbUtil.get_pkg_turbine()).first()[0]
 
 
 def get_session_id(session_cookie_name):

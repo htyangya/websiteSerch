@@ -1,3 +1,4 @@
+
 class Const(object):
     SYSTEM_NAME = '定検ＤＢ'
     DEVELOPMENT = 'DEVELOPMENT'
@@ -9,7 +10,7 @@ class Const(object):
 
     # サブメニュー
     OUTAGE_SCHEDULE = 'outage_schedule'
-
+    PLANT_DATA_BASE = 'Plant_Data_Base'
     URL_FORMAT = '{}?{}'
     NO_FILE_FOUND_MSG = 'File not found: {}'
     UNZIP_ERROR_MSG = 'File not unzip: {}'
@@ -46,3 +47,6 @@ class Const(object):
 
     DATE_FORMAT_ERR_MSG = '日付エラー'
     DATE_VALUE_ERR_MSG = '終了日は開始日より後の日付を指定してください'
+    TURBINE_URL_ERR_MSG = 'Error: You are not registered in Plant Data Base'
+    AWS = 'AWS'
+    DEV1 = 'DEV1'

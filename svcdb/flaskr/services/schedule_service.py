@@ -1,14 +1,16 @@
 import datetime
 import json
 
-from flask import render_template, url_for, jsonify
+from flask import render_template, url_for, jsonify, current_app
 from flask_login import current_user
 
 from flaskr import db
 from flaskr.forms.outage_edit_form import OutageEditForm
 from flaskr.forms.outage_form import OutageForm
+from flaskr.lib.conf.const import Const
 from flaskr.lib.svcdb_lib.db_util import DbUtil
 from flaskr.lib.svcdb_lib.page_model import PageModel
+from flaskr.lib.svcdb_lib.session import get_session_id
 from flaskr.models.svcdb_outage_schedule import OutageSchedule
 from flaskr.models.svcdb_turbine_master_table import SvcdbTurbineMasterTable
 from flaskr.sql import scheduleSql
@@ -45,8 +47,8 @@ class RowObj:
                 cell.color = COLORMAPPING.get(color_number, "gray")
                 cell.teiken_ids.append(teiken_id)
 
-    def __init__(self, plant_cd, plant_name, country_nm, turbine_id, data_type, min_year, max_year, outage_start=None,
-                 outage_end=None, color_number=None, teiken_id=None, delete_flg=0, **dict):
+    def __init__(self, plant_cd, plant_name, country_nm, turbine_id, data_type, min_year, max_year, data_url,
+                 outage_start=None, outage_end=None, color_number=None, teiken_id=None, delete_flg=0, **dict):
         self.plant_cd = plant_cd
         self.plant_name = plant_name
         self.country_nm = country_nm
@@ -54,6 +56,7 @@ class RowObj:
         self.data_type = data_type
         self.min_year = int(min_year)
         self.max_year = int(max_year)
+        self.data_url = data_url
         # セルリストの作成と処理
         month_range = [str(m).zfill(2) for m in range(1, 13)]
         self.cells = list(map(Cell, [year + month for year in map(str, range(self.min_year, self.max_year + 1))
@@ -80,6 +83,8 @@ class Cell:
 def searching(form, menu_param):
     and_sql = ''
     turbine_id = form.turbine_id.data
+    pkg_turbine = DbUtil.get_pkg_turbine()
+    session_id_in = get_session_id(Const.SESSION_COOKIE_NAME)
     if turbine_id and turbine_id != "None":
         and_sql += f''' AND A.TURBINE_ID = '{turbine_id}' \n'''
     teiken_id = form.teiken_id.data
@@ -114,9 +119,14 @@ def searching(form, menu_param):
         menu_param["page_model"] = page_model = PageModel(form.page.data, item_count)
         where_sql = f"WHERE IDX BETWEEN {page_model.begin_item} AND {page_model.end_item}"
     outage_schedule_list = DbUtil.sqlExcuter(scheduleSql.scheduleListSql, search_table=search_table, and_sql=and_sql,
-                                             where_sql=where_sql)
+                                             where_sql=where_sql, session_id_in=session_id_in, pkg_turbine=pkg_turbine)
     rows_dict = {}
+    tenken_dict = {}
     for row in outage_schedule_list:
+        if row.teiken_id:
+            tenken_dict[row.teiken_id] = [row.outage_start and row.outage_start.strftime("%Y/%m/%d"),
+                                          row.outage_end and row.outage_end.strftime("%Y/%m/%d"), row.outage_type_t,
+                                          row.outage_type_g]
         if row.turbine_id not in rows_dict:
             rows_dict[row.turbine_id] = RowObj(**{k: v for k, v in row.items()},
                                                min_year=menu_param["min_year"],
@@ -124,6 +134,7 @@ def searching(form, menu_param):
         elif row.delete_flg == 0:
             rows_dict[row.turbine_id].colour_cells(row.outage_start, row.outage_end, row.color_number, row.teiken_id)
     menu_param["outage_schedule_list"] = rows_dict.values()
+    menu_param["tenken_dict"] = json.dumps(tenken_dict)
 
 
 def show_schedule(request):

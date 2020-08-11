@@ -3,7 +3,9 @@ from flask_login import current_user
 from werkzeug.utils import redirect
 
 from flaskr.lib.conf.const import Const
+from flaskr.lib.svcdb_lib.session import get_session_id
 from flaskr.services.schedule_service import show_schedule
+from flaskr.lib.svcdb_lib.db_util import DbUtil
 
 
 def main_init(sub_menu, request):
@@ -23,3 +25,19 @@ def index_init(request):
     if current_user.is_active:
         return redirect(url_for('main'))
     return redirect(url_for('login'))
+
+
+def do_main(request):
+    return render_template(
+        'svcdb_main.html',
+        user_name=current_user.get_user_name(),
+        turbine_list_url=list_url(),
+        Const=Const,
+    )
+
+
+def list_url():
+    session_id_in = get_session_id(Const.SESSION_COOKIE_NAME)
+    return DbUtil.sqlExcuter(
+        "SELECT {pkg_turbine}.GET_TURBINE_LIST_URL('{session_id_in}') FROM DUAL",
+        session_id_in=session_id_in, pkg_turbine=DbUtil.get_pkg_turbine()).first()[0] or ""
