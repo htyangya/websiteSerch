@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block js_content %}
     <script src="/static/js/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
-    <script src="/static/jquery-ui-1.10.3.custom/jquery-ui.js?q={{ appVer }}"
-            type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/jquery-ui.js?q={{ appVer }}" type="text/javascript"></script>
 {% endblock %}
 {% block css_content %}
     <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{ appVer }}">
@@ -237,7 +236,7 @@
                     "       <td class='NW'> " + No + "</td> " +
                     "       <td class='NW AT AL '> " + teiken_map[value][0] + "</td> " +
                     "       <td class='NW AT AL'> " + teiken_map[value][1] + "</td>" +
-                    "       <td class='NW AT AL'> " + Outage_Type_T + "," + Outage_Type_G + "</td> " +
+                    "       <td class='NW AT AL'> " + Outage_Type_T + ", " + Outage_Type_G + "</td> " +
                     "   </tr> ";
             });
             return "<div class=\"arrow\"  >" +
@@ -248,7 +247,7 @@
                 "   <th class='NW' style='border: 1px solid black'>End</th> " +
                 "   <th class='NW' style='border: 1px solid black'>Outage Type</th> " +
                 "</tr>" + res +
-                "</table></div>"
+                "</table></div>";
         }
 
         function fixedResultTable() {
@@ -305,7 +304,7 @@
             }
         }
 
-        //最終日処理
+        // 最終日処理
         function get_end_date(str) {
             var date = new Date(str);
             date.setMonth(date.getMonth() + 1);

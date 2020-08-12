@@ -59,10 +59,12 @@ def set_cookie(session_cookie_name, tuid, redirectUrl):
 
 
 def cookie_path(user_id_in, session_id_in):
-    return DbUtil.sqlExcuter(
-        "SELECT PKG_TURBINE_DB_UTIL.SIGNIN_TO_TURBINEDB( '{user_id_in}', '{session_id_in}') FROM DUAL",
-        user_id_in=user_id_in, session_id_in=session_id_in).first()[0]
-
+    connection = db.engine.raw_connection()
+    cursor = connection.cursor()
+    result = cursor.callfunc('pkg_turbine_db_util.signin_to_turbinedb', str, (user_id_in, session_id_in))
+    cursor.close()
+    connection.close()
+    return result or None
 
 def get_session_id(session_cookie_name):
     # セッションIDの取得

@@ -1,4 +1,3 @@
-
 class Const(object):
     SYSTEM_NAME = '定検ＤＢ'
     DEVELOPMENT = 'DEVELOPMENT'
