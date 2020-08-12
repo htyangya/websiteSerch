@@ -1,0 +1,28 @@
+    <div class="jqDnRHandle">{{ jqmTitle }}</div>
+    <div class="jqmBody" id="jqmBody" style="overflow: hidden;">
+        <p>Preview</p>
+        <center>
+             <table id="datalist" class="datalistC">
+                <tbody>
+                    <tr>
+                        <tr>
+                        {% for item in propertyList %}
+                            <th>{{ item }}</th>
+                        {% endfor %}
+
+                        </tr>
+                    </tr>
+                </tbody>
+            </table>
+        </center>
+        <center class="footer-content">
+            <!-- ok -->
+            <div class="btn-group"  >
+                <button style="float: right" class="btn btn-default" onclick="close_jqmodal_dlg();" type="button">OK</button>
+            </div>
+        </center>
+
+    </div>
+    <script>
+
+    </script>

@@ -32,4 +32,5 @@ class CmsObjectType(db.Model):
 
     @staticmethod
     def getObjectType(db_id):
-        return db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id).order_by(CmsObjectType.object_type_id).first()
+        # return db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id).order_by(CmsObjectType.object_type_id).first()
+        return db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id).first()

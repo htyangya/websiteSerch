@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}">
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.scrollTo-min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/ui/1.12.1/jquery-ui.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/dms_dialog_common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/dms_col_list_dnd.js?q={{appVer}}" type="text/javascript"></script>
+    <style type="text/css">
+        [draggable] {
+            user-select: none;
+            cursor: move;
+        }
+        ul.sortable {
+            list-style-type: none;
+            margin: 10px 10px;
+            padding: 2px;
+            min-height: 20px;
+            min-width: 220px;
+        }
+        .col_div {
+            margin: 3px;
+            min-width: 200px;
+            padding: 0.3em;
+            padding-left: 1em;
+            font-size: 15px;
+            cursor: move;
+            background: #ebf6f7;
+            border: 1px solid #a0d8ef;
+            pointer-events: none;
+        }
+        .dropzone {
+            margin: 3px;
+            padding: 0.3em;
+            padding-left: 1em;
+            font-size: 15px;
+            cursor: move;
+            background: #ccc;
+            min-height: 20px;
+            pointer-events: none;
+        }
+        .colitem {
+            font-size: 14px;
+        }
+        .dragitem {
+            color: red;
+            opacity: 0.5;
+        }
+        .dragon {
+        }
+        .dragon_trashcan {
+            color: blue;
+            background: #ccc;
+        }
+        #drop_source {
+            margin-left: 20px;
+            border: 1px solid #ccc;
+            padding-top: 4px;
+            padding-left: 4px;
+            width: 260px;
+            min-height: 200px;
+            height: 400px;
+            overflow-y: auto;
+            float: left;
+        }
+        #drop_target {
+            margin-left: 20px;
+            border: 1px solid #ccc;
+            padding-top: 4px;
+            padding-left: 4px;
+            width: 260px;
+            min-height: 200px;
+            height: 400px;
+            overflow-y: auto;
+            float: left;
+        }
+        #drop_target_bottom {
+            min-height: 40px;
+            margin-left: 15px;
+            width: 200px;
+            padding: 0.3em;
+            padding-left: 1em;
+            font-size: 15px;
+        }
+        .dragon_bottom {
+            background: #ccc;
+        }
+        #col_list {
+            margin-bottom: 0px;
+        }
+        #trash_area {
+            width: 120px;
+            float: left;
+        }
+        #trashcan {
+            margin-top: 100px;
+            margin-left: 20px;
+            border: 1px solid #274a78;
+            width: 120px;
+            min-height: 100px;
+            text-align: center;
+        }
+        #preview_btn_div {
+            margin-top: 50px;
+            margin-left: 20px;
+            padding: 2px;
+            text-align: center;
+            width: 120px;
+            border: 1px solid #274a78;
+            cursor: pointer;
+        }
+        #preview_btn_div:hover {
+            background: #ebf6f7;
+        }
+        /* jqModal用CSS */
+        .jqmWindow {
+            width: 800px !important;
+            min-height: 500px !important;
+            max-height: 80% !important;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="border"></div>
+    <center>
+        <h2>TOSHIBA CMS</h2>
+        <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+    </center>
+    <div class="border"></div>
+    &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('database_admin')}}" target="_self">Database</a>&nbsp;&gt;&nbsp;<a href="{{ url_for('database', func='database_detail', db_id=cmsDb['db_id']) }}" >{{cmsDb['db_name']}}</a>&nbsp;&gt;&nbsp; {{thTitle}}
+    <div class="border"></div>
+    <div id="ope_msg">{{subTitle}}</div>
+    <br>
+    <center>
+        <form id="list_format_form" action="{{url_for('list_format_edit')}}" name="list_format_form" method="post">
+            {{ form.hidden_tag() }}
+            <div id="errMsgDiv">
+                {% for err_msg in err_msgs %}
+                    <div class="required">{{ err_msg }}</div>
+                {% endfor %}
+            </div>
+            <center>
+                <table id="property">
+                    <tbody>
+                        <tr>
+                            <th colspan="2">{{thTitle}}</th>
+                        </tr>
+                        <tr class="even">
+                            <td class="name">FORMAT TYPE</td>
+                            <td class="value">
+                                {{form.formatType}}
+                                {% for message in form.formatType.errors %}
+                                    <br><span class="required">{{message}}</span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr class="odd">
+                            <td class="name">DISPLAY ORDER</td>
+                            <td class="value">
+                                {{form.displayOrder}}
+                                {% for message in form.displayOrder.errors %}
+                                    <br><span class="required">{{message}}</span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr class="even">
+                            <td class="name">REMARKS</td>
+                            <td class="value">
+                                {{form.remarks(cols = "100", rows = "4")}}
+                                {% for message in form.remarks.errors %}
+                                    <br><span class="required">{{message}}</span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr class="odd">
+                            <td class="name">Format</td>
+                            <td class="value">
+                                <div id="drop_source">
+                                    Available Cols.
+                                    <input id="available_cols_filter" type="input">
+                                    <br>
+                                    <ul id="col_candidates" class="sortable">
+                                        {% for data in propertyNameList %}
+                                            <li class="colitem" draggable="true" data-cname="{{ data.property_id }}">
+                                                <div class="col_div">{{ data.property_name }}</div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div id="drop_target">Format<br>
+                                    <ul id="col_list" class="sortable">
+                                        {% if editMode !='New' and  listFormatColumnsList %}
+                                        {% for data in listFormatColumnsList %}
+                                            <li class="colitem" draggable="true" data-cname="{{ data.property_id }}">
+                                                <div class="col_div">{{ data.property_name }}</div>
+                                            </li>
+                                        {% endfor %}
+                                        {% endif %}
+                                     </ul>
+                                    <div id="drop_target_bottom"></div>
+                                </div>
+                                <div id="trash_area">
+                                    <div id="trashcan">Trash Box</div>
+                                    <div>
+                                        <input id="preview_btn_div" type="button" name="cancel_btn" value="Preview" onclick="Preview({{cmsDb['db_id']}},{{form.objectTypeId.data}});" />
+                                   </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% if format_type_flag == '0' %}
+                        <tr class="even">
+                            <td class="name">Sort Key</td>
+                            <td class="">
+                                {% for cnt in range(0, 4) %}
+                                    <b>{{cnt+1}}</b>&nbsp;
+                                    <select name="sort_key{{cnt}}" id="sort_key{{cnt}}">
+                                        <option value=''></option>
+                                        {% for data in propertyNameList %}
+                                            <option
+                                                {% if listFormatSortList and listFormatSortList|length > cnt %}
+                                                    {% if data.property_id ==listFormatSortList[cnt].property_id %}
+                                                    selected
+                                                    {% endif %}
+                                                {% endif %}
+                                                value='{{ data.property_id }}' size ="1">{{ data.property_name }}
+                                            </option>
+                                        {% endfor %}
+                                     </select>
+                                    <select name="sort_key_order{{cnt}}" id="sort_key_order{{cnt}}">
+                                        <option
+                                            {% if listFormatSortList and listFormatSortList|length > cnt %}
+                                            {% if listFormatSortList[cnt].sort_key_order =='ASC'%}
+                                            selected
+                                            {% endif %}
+                                            {% endif %}
+                                            value="ASC" size ="1">ascending
+                                        </option>
+                                        <option
+                                            {% if listFormatSortList and listFormatSortList|length > cnt %}
+                                                    {% if listFormatSortList[cnt].sort_key_order =='DESC'%}
+                                                    selected
+                                                    {% endif %}
+                                            {% endif %}
+                                            value="DESC" size ="1">descending
+                                        </option>
+                                    </select>
+                                    <br>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </center>
+            <input type="hidden" name="func" id="func" value="list_format_save" />
+            <input type="hidden" name="editMode" id="editMode" value="{{editMode}}" />
+            <input type="hidden" name="db_id" id="db_id" value="{{cmsDb['db_id']}}" />
+            <input type="hidden" name="format_type_flag" id="format_type_flag" value="{{format_type_flag}}" />
+            <input type="hidden" name="formatId" id="format_id" value="{{form.formatId.data}}" />
+            <input type="hidden" name="object_type_id" id="object_type_id" value="{{form.objectTypeId.data}}" />
+            <input type="hidden" name="propertyIdList" id="propertyIdList" value="" />
+            <input type="button" name="save_btn" value="Save" onclick="save_func()" />
+            <input type="button" name="cancel_btn" value="Cancel" onclick="cancel_func()" />
+        </form>
+    </center>
+    <div class="border"></div>
+    <script>
+
+    $(function () {
+        g_sys_admin_col_list_dnd.init($("#format_id"), 'DOC',
+		'DOC_LIST', 'pj_list_format_form', 'list_columns',
+		'pj_list_format2.cgi', 'LIST');
+    })
+
+    function changeColor(cname, color) {
+        var item = $('#col_candidates').children('.colitem[data-cname="' + cname + '"]').children('.col_div');
+        $(item).css('background-color', color);
+    }
+
+    //Preview
+    function Preview(db_id,object_type_id) {
+        var dataList = getPropertyIds()
+        popupListFormat(db_id,object_type_id,dataList);
+    }
+    function getPropertyIds() {
+        var col_list = [];
+        $('#col_list li').each(function(){
+            var dataId = $(this).attr('data-cname') ;
+            col_list.push(dataId);
+        });
+        return col_list.join(',');
+    }
+
+    //保存する
+    function save_func() {
+        $('#errMsgDiv').empty();
+        $('#propertyIdList').val(getPropertyIds());
+        $('#list_format_form').submit();
+    }
+
+    function cancel_func() {
+        var db_id = '{{db_id}}';
+        window.location.href = getDatabaseDetailUrl(db_id);
+    }
+    //]]>
+
+    </script>
+<div class="jqmWindow" id="jqmWindow"></div>
+    <div id="confirm">
+        <div class="header"><span>Confirm</span></div>
+        <div class="message"></div>
+        <div class="buttons middleBtnArea float_none width_170">
+            <div class="btn btn-default yes float_none">Yes</div>
+            <div class="btn btn-default no simplemodal-close float_none">No</div>
+        </div>
+    </div>
+    <div id="alert">
+        <div class="header"><span>Alert</span></div>
+        <div class="message"></div>
+        <div class="button"><div class="">OK</div></div>
+    </div>
+</body>
+</html>

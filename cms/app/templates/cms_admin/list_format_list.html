@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}" />
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSFixedHeaderTable3.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSTableFilter.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.highlight-3a.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+
+        html { overflow: hidden; }
+        body {
+            overflow: hidden;
+            margin: 10px !important;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+        .dataTable th {
+            background: #bbbbff;
+            text-align: left;
+        }
+        .highlight { background-color: yellow; }
+
+        /* jqModal用CSS */
+        .jqmWindow {
+            width: 800px !important;
+            min-height: 500px !important;
+            max-height: 80% !important;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="condtion">
+        <div class="border"></div>
+        <center>
+            <h2>CMS : {{cmsDb.db_name}}</h2>
+            <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+        </center>
+        <div class="border"></div>
+        &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('database_admin')}}">Database</a>&nbsp;&gt;&nbsp;<a href="{{ url_for('database', func='database_detail', db_id=cmsDb['db_id']) }}" >{{cmsDb.db_name}}&nbsp;</a>&gt;&nbsp;{{subtitle}}
+        <div class="border"></div>
+        <br>
+    </div>
+    <div>
+        <center>
+            <table id="datalist_header" class="datalist_headerC">
+                <tr>
+                    <th class="title">{{subtitle}}</th>
+                    <th class="title" style="float:right;">
+                        <a href="{{ url_for('list_format_edit', func='list_format_edit',db_id = cmsDb['db_id'],object_type_id=object_type_id, format_type_flag=format_type_flag) }}">Add</a>
+                    </th>
+                    <th style="float:right;">
+                        <span><input style="height: 22px;" type="text" id="search_txt"/></span>
+                        <input type="button" id="search_btn" value="Search">
+                    </th>
+                </tr>
+            </table>i
+
+            <div>
+                <div id="tableDiv" class="TlibTableC">
+                    <table id="datalist" class="dataTable dataListC">
+                        <tr>
+                            <th>Format ID</th>
+                            <th>Object Type ID</th>
+                            <th>Format Type</th>
+                            <th>Display Order</th>
+                            <th>Remarks</th>
+                            <th>Menu</th>
+                        </tr>
+                        {% for data in listFormatList %}
+                        <tr>
+                            <td>{{ data.format_id }}</td>
+                            <td>{{ data.object_type_id }}</td>
+                            <td>{{ data.format_type }}</td>
+                            <td>{{ data.display_order }}</td>
+                            <td>{{ data.remarks }}</td>
+                            <td>
+                                <a href="{{ url_for('list_format_edit', func='list_format_edit', db_id = cmsDb['db_id'], format_type_flag=format_type_flag, object_type_id=object_type_id,format_id=data.format_id) }}">Modify</a>
+                                <a href="#" onclick="return delete_check('{{ url_for('list_format_edit', func='list_format_delete',db_id = cmsDb['db_id'], format_type_flag=format_type_flag, object_type_id=object_type_id,format_id =data.format_id) }}' ,'{{data.format_id}}');">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </center>
+    </div>
+    <div class="border"></div>
+    <script>
+    //<![CDATA[
+        var fixed_table = new TlibHeaderFixedTable();
+        fixed_table._table_div = 'tableDiv';
+        fixed_table._table_header_div = 'TlibTableHeaderfixed_table';
+        fixed_table._table_height = 0;
+        fixed_table._header_cols = 0;
+        fixed_table._no_resize_bind = 0;
+        fixed_table._use_get_bounding_client_rect_on_ie11 = 1;
+        fixed_table._use_get_bounding_client_rect = 1;
+        fixed_table.init();
+
+        $(function() {
+            $("#search_txt").keydown(function(event) {
+                if (event.keyCode == 13) {
+                    $("#search_btn").click();
+                }
+            })
+        });
+
+        initTlibTableFilter('datalist');
+
+        function delete_check(url,format_id) {
+            if (confirm("Are you sure to delete this List Format?"))
+            {
+                delListFormat(url,format_id);
+            }else{
+                return false;
+            }
+        }
+
+        function delListFormat(url_del,format_id) {
+             $.ajax({
+                type: "POST",
+                url: "check_list_format_delete?format_id="+format_id,
+                success: function(data) {
+                    if("error" == data){
+                        alert_dlg('Error', 'Can not delete this Property/Format.');
+                    }else{
+                        window.location.href = url_del;
+                    }
+                },
+                error:function(){
+                    alert("error");
+                }
+            });
+    }
+    //]]>
+    </script>
+    <div class="jqmWindow" id="jqmWindow"></div>
+    <div id="confirm">
+        <div class="header"><span>Confirm</span></div>
+        <div class="message"></div>
+        <div class="buttons middleBtnArea float_none width_170">
+            <div class="btn btn-default yes float_none">Yes</div>
+            <div class="btn btn-default no simplemodal-close float_none">No</div>
+        </div>
+    </div>
+    <div id="alert">
+        <div class="header"><span>Alert</span></div>
+        <div class="message"></div>
+        <div class="button"><div class="">OK</div></div>
+    </div>
+</body>
+</html>
