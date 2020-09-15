@@ -6,7 +6,7 @@ from flaskr import db
 
 
 class SvcdbFileWk(db.Model):
-    __tablename__ = 'CMS_FILE_WK'
+    __tablename__ = 'SVCDB_FILE_WK'
 
     edit_id = db.Column(db.Integer, primary_key=True)
     file_id = db.Column(db.Integer, primary_key=True)
@@ -81,11 +81,11 @@ class SvcdbFileWk(db.Model):
 
     def intFileDatas(self, edit_id, parent_object_id):
         mergeSql = '''
-            INSERT INTO CMS_FILE_WK
+            INSERT INTO SVCDB_FILE_WK
             SELECT :edit_id EDIT_ID, FILE_ID, PARENT_OBJECT_ID, FILE_TYPE_ID, FILE_NAME, FILE_SIZE,
                    DIR_NAME, C_FILE_NAME, C_FILE_SIZE, IS_DELETED, CREATED_AT, CREATED_BY,
                    UPDATED_AT, UPDATED_BY, DELETED_AT, DELETED_BY
-              FROM CMS_FILE
+              FROM SVCDB_FILE
              WHERE PARENT_OBJECT_ID = :parent_object_id
                AND IS_DELETED = 0
         '''
@@ -95,7 +95,7 @@ class SvcdbFileWk(db.Model):
     def get_file_list(self, edit_id, object_id, file_type_id=None):
         selectSql = '''
             SELECT {select_columns}
-            FROM CMS_FILE_WK T
+            FROM SVCDB_FILE_WK T
             WHERE T.IS_DELETED = 0
               AND T.EDIT_ID = :edit_id
               AND T.PARENT_OBJECT_ID = :object_id
@@ -116,7 +116,7 @@ class SvcdbFileWk(db.Model):
     def get_file_list_for_json(self, edit_id, object_id, file_type_id):
         selectSql = '''
             SELECT {select_columns}
-            FROM CMS_FILE_WK T
+            FROM SVCDB_FILE_WK T
             WHERE T.IS_DELETED = 0
               AND T.EDIT_ID = :edit_id
               AND T.PARENT_OBJECT_ID = :object_id
@@ -135,7 +135,7 @@ class SvcdbFileWk(db.Model):
     def getExistsFile(self, af_obj):
         selectSql = '''
             SELECT F.*
-            FROM CMS_FILE_WK F
+            FROM SVCDB_FILE_WK F
             WHERE F.EDIT_ID = :edit_id
               AND F.PARENT_OBJECT_ID = :parent_object_id
               AND F.IS_DELETED = '0'

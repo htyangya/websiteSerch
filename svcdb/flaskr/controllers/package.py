@@ -30,7 +30,7 @@ class PkgUserAuth():
 
 class PkgSvcdbSecurity():
     # パッケージ
-    def __init__(self, package_name='pkg_cms_security'):
+    def __init__(self, package_name='pkg_svcdb_security'):
         self.package_name = package_name
 
     def isDbVisible(self, db_id, user_id):
@@ -98,7 +98,7 @@ class PkgIpAddrUtil():
 
 class PkgSvcdbLog():
     # パッケージ
-    def __init__(self, package_name='pkg_cms_log'):
+    def __init__(self, package_name='pkg_svcdb_log'):
         self.package_name = package_name
 
     def saveOperationLog(self, user_id, db_id, operation_cd, object_id='', object_type='', note=''):

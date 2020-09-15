@@ -2,7 +2,7 @@ from flaskr import db
 
 
 class SvcdbFileType(db.Model):
-    __tablename__ = 'CMS_FILE_TYPE'
+    __tablename__ = 'SVCDB_FILE_TYPE'
 
     file_type_id = db.Column(db.Integer, primary_key=True)
     file_type_name = db.Column(db.String(100))

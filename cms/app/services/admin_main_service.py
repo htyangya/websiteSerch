@@ -381,8 +381,4 @@ def keywordList(request):
         cmsDb=cmsDb,
         keywordList=keywordList,
         appVer=current_app.config['APP_VER'])
-
-
-
-
 # Database management end

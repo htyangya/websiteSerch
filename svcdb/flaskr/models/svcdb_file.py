@@ -6,7 +6,7 @@ from flaskr import db
 
 
 class SvcdbFile(db.Model):
-    __tablename__ = 'CMS_FILE'
+    __tablename__ = 'SVCDB_FILE'
 
     file_id = db.Column(db.Integer, primary_key=True)
     parent_object_id = db.Column(db.Integer, index=True)
@@ -97,7 +97,7 @@ class SvcdbFile(db.Model):
     def get_file_list(self, object_id, file_type_id=None):
         selectSql = '''
             SELECT {select_columns}
-            FROM CMS_FILE T
+            FROM SVCDB_FILE T
             WHERE T.IS_DELETED = 0
               AND T.PARENT_OBJECT_ID = :object_id
         '''
@@ -116,7 +116,7 @@ class SvcdbFile(db.Model):
     def get_file_list_for_json(self, object_id, file_type_id):
         selectSql = '''
             SELECT {select_columns}
-            FROM CMS_FILE T
+            FROM SVCDB_FILE T
             WHERE T.IS_DELETED = 0
               AND T.PARENT_OBJECT_ID = :object_id
         '''
@@ -133,7 +133,7 @@ class SvcdbFile(db.Model):
     def get_ctx_file_list(self, object_id, file_type_id=None):
         selectSql = '''
             SELECT {select_columns}
-            FROM CMS_FILE T
+            FROM SVCDB_FILE T
             WHERE T.IS_DELETED = 0
             AND T.CTX_INDEXED_FLG = 0
             AND T.PARENT_OBJECT_ID = :object_id
@@ -147,10 +147,10 @@ class SvcdbFile(db.Model):
             selectSql += """
                 AND T.FILE_TYPE_ID IN (
                     SELECT FT.FILE_TYPE_ID
-                    FROM CMS_FILE_TYPE FT
+                    FROM SVCDB_FILE_TYPE FT
                     WHERE FT.OBJECT_TYPE_ID IN (
                         SELECT O.OBJECT_TYPE_ID
-                        FROM CMS_OBJECT O
+                        FROM SVCDB_OBJECT O
                         WHERE O.IS_DELETED = 0
                         AND O.CTX_INDEXED_FLG = 0
                         AND O.OBJECT_ID = T.PARENT_OBJECT_ID
@@ -168,7 +168,7 @@ class SvcdbFile(db.Model):
     def getExistsFile(self, af_obj):
         selectSql = '''
             SELECT F.*
-            FROM CMS_FILE F
+            FROM SVCDB_FILE F
             WHERE F.PARENT_OBJECT_ID = :parent_object_id
               AND F.IS_DELETED = '0'
               AND F.FILE_NAME = :file_name

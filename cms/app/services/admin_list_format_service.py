@@ -22,8 +22,6 @@ from app.models.cms_object_type import CmsObjectType
 def list_format_list(request):
     db_id = request.args.get("db_id")
     format_type_flag = request.args.get("format_type_flag")
-    object_type_id = ''
-    listFormatList = {}
     cmsDb = CmsDb()
     cmsDb = CmsDb.getCmsDbProperty(db_id)
 
@@ -36,17 +34,24 @@ def list_format_list(request):
         title = 'CMS：Property Format List'
         subtitle = 'Property Format List'
     cmsObjectType = CmsObjectType()
-    objectType = cmsObjectType.getObjectType(db_id)
-    if objectType is not None:
-        object_type_id = objectType.object_type_id
-        cmsListFormat = CmsListFormat()
-        listFormatList = cmsListFormat.getCmsListFormatList(object_type_id, format_type)
+    objectTypeList = cmsObjectType.getObjectTypeList(db_id)
+
+    cmsListFormat = CmsListFormat()
+    objectTypeDic = {}
+    listFormatDic = {}
+    for objectType in objectTypeList:
+        objectTypeDic[objectType.object_type_id] = objectType.object_type_name
+        listFormatList = []
+        if format_type is not None and len(format_type) > 0:
+            listFormatList = cmsListFormat.getCmsListFormatList(objectType.object_type_id, format_type)
+        listFormatDic[objectType.object_type_id] = listFormatList
+
     return render_template(
         page_id,
         title=title,
         subtitle=subtitle,
-        listFormatList=listFormatList,
-        object_type_id=object_type_id,
+        objectTypeDic=objectTypeDic,
+        listFormatDic=listFormatDic,
         cmsDb=cmsDb,
         format_type_flag=format_type_flag,
         current_user=current_user,
@@ -245,10 +250,10 @@ def list_format_jqmodal(request):
     propertyList = []
     if len(dataList) > 0:
         col_list = dataList.split(',')
-        cmsObjectProperty = CmsObjectProperty()
-        for ctx_obj in cmsObjectProperty.getObjectPropertyNames(object_type_id):
-            property_id = str(ctx_obj.property_id)
-            for col_id in col_list:
+        for col_id in col_list:
+            cmsObjectProperty = CmsObjectProperty()
+            for ctx_obj in cmsObjectProperty.getObjectPropertyNames(object_type_id):
+                property_id = str(ctx_obj.property_id)
                 if col_id == property_id:
                     propertyList.append(ctx_obj.property_name)
     return render_template(

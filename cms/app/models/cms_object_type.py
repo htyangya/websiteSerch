@@ -1,7 +1,7 @@
-from sqlalchemy import desc
 from werkzeug.exceptions import abort
 
 from app import db
+from sqlalchemy.sql import text
 
 
 class CmsObjectType(db.Model):
@@ -28,9 +28,21 @@ class CmsObjectType(db.Model):
 
     @staticmethod
     def getObjectTypeList(db_id):
-        return db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id).all()
-
+        selectSql = '''
+            SELECT 
+                COT.OBJECT_TYPE_ID, 
+                COT.OBJECT_TYPE_NAME, 
+                COT.DB_ID, 
+                COT.DISPLAY_ORDER, 
+                COT.REMARKS,
+                COT.CTX_FLG
+            FROM CMS_OBJECT_TYPE COT
+            WHERE COT.DB_ID = :db_id
+            ORDER BY COT.DISPLAY_ORDER
+        '''
+        t = text(selectSql)
+        rst = db.session.execute(t, {'db_id': db_id})
+        return rst
     @staticmethod
     def getObjectType(db_id):
-        # return db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id).order_by(CmsObjectType.object_type_id).first()
         return db.session.query(CmsObjectType).filter(CmsObjectType.db_id == db_id).first()

@@ -36,7 +36,7 @@ class CmsListFormat(db.Model):
             FROM CMS_LIST_FORMAT CLF
             WHERE CLF.OBJECT_TYPE_ID = :object_type_id
                   AND CLF.FORMAT_TYPE = :format_type
-             ORDER BY CLF.FORMAT_ID, CLF.DISPLAY_ORDER
+            ORDER BY CLF.DISPLAY_ORDER
         '''
         t = text(selectSql)
         return db.session.execute(t, {'object_type_id': object_type_id, 'format_type': format_type})

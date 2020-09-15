@@ -762,7 +762,7 @@ function doDownloadWithBlockUI(url, wait_msg, img_src, max_wait_sec) {
 
 /////////////////////////////////////////////////////////////////////
 
-// CMSプロジェクト用
+// SVCDBプロジェクト用
 function _get_location_path() {
     var location = window.location;
     var pathname = location.pathname;

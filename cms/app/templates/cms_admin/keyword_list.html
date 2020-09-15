@@ -52,7 +52,7 @@
             <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
         </center>
         <div class="border"></div>
-        &gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('database_admin')}}">Database</a>&nbsp;&gt;&nbsp;<a href="{{ url_for('database', func='database_detail', db_id=cmsDb['db_id']) }}" >{{cmsDb['db_name']}}</a>&gt;&nbsp;Keyword List
+        &gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('database_admin')}}">Database</a>&nbsp;&gt;&nbsp;<a href="{{ url_for('database', func='database_detail', db_id=cmsDb['db_id']) }}" >{{cmsDb['db_name']}}</a>&nbsp;&gt;&nbsp;Keyword
         <div class="border"></div>
         <br>
     </div>

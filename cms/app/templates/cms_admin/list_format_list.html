@@ -27,7 +27,7 @@
 
         html { overflow: hidden; }
         body {
-            overflow: hidden;
+            overflow: auto;
             margin: 10px !important;
         }
         table {
@@ -62,71 +62,43 @@
     </div>
     <div>
         <center>
+            {% for key, value in objectTypeDic.items() %}
+            {% set objectType_id=key %}
+            {% set objectType_name=value %}
             <table id="datalist_header" class="datalist_headerC">
                 <tr>
-                    <th class="title">{{subtitle}}</th>
+                    <th class="title">{{ objectType_name }}</th>
                     <th class="title" style="float:right;">
-                        <a href="{{ url_for('list_format_edit', func='list_format_edit',db_id = cmsDb['db_id'],object_type_id=object_type_id, format_type_flag=format_type_flag) }}">Add</a>
-                    </th>
-                    <th style="float:right;">
-                        <span><input style="height: 22px;" type="text" id="search_txt"/></span>
-                        <input type="button" id="search_btn" value="Search">
+                        <a href="{{ url_for('list_format_edit', func='list_format_edit',db_id = cmsDb['db_id'],object_type_id=objectType_id, format_type_flag=format_type_flag) }}">Add</a>
                     </th>
                 </tr>
-            </table>i
+            </table>
 
             <div>
                 <div id="tableDiv" class="TlibTableC">
                     <table id="datalist" class="dataTable dataListC">
                         <tr>
-                            <th>Format ID</th>
-                            <th>Object Type ID</th>
-                            <th>Format Type</th>
-                            <th>Display Order</th>
-                            <th>Remarks</th>
-                            <th>Menu</th>
+                            <th style="width: 85%">Remarks</th>
+                            <th >Menu</th>
                         </tr>
-                        {% for data in listFormatList %}
+                        {% for data in listFormatDic.get(objectType_id) %}
                         <tr>
-                            <td>{{ data.format_id }}</td>
-                            <td>{{ data.object_type_id }}</td>
-                            <td>{{ data.format_type }}</td>
-                            <td>{{ data.display_order }}</td>
-                            <td>{{ data.remarks }}</td>
+                            <td style="width: 85%">{{ data.remarks }}</td>
                             <td>
-                                <a href="{{ url_for('list_format_edit', func='list_format_edit', db_id = cmsDb['db_id'], format_type_flag=format_type_flag, object_type_id=object_type_id,format_id=data.format_id) }}">Modify</a>
-                                <a href="#" onclick="return delete_check('{{ url_for('list_format_edit', func='list_format_delete',db_id = cmsDb['db_id'], format_type_flag=format_type_flag, object_type_id=object_type_id,format_id =data.format_id) }}' ,'{{data.format_id}}');">Delete</a>
+                                <a href="{{ url_for('list_format_edit', func='list_format_edit', db_id = cmsDb['db_id'], format_type_flag=format_type_flag, object_type_id=data.object_type_id,format_id=data.format_id) }}">Modify</a>
+                                <a href="#" onclick="return delete_check('{{ url_for('list_format_edit', func='list_format_delete',db_id = cmsDb['db_id'], format_type_flag=format_type_flag, object_type_id=data.object_type_id,format_id =data.format_id) }}' ,'{{data.format_id}}');">Delete</a>
                             </td>
                         </tr>
                         {% endfor %}
                     </table>
                 </div>
             </div>
+            {% endfor %}
         </center>
     </div>
     <div class="border"></div>
     <script>
     //<![CDATA[
-        var fixed_table = new TlibHeaderFixedTable();
-        fixed_table._table_div = 'tableDiv';
-        fixed_table._table_header_div = 'TlibTableHeaderfixed_table';
-        fixed_table._table_height = 0;
-        fixed_table._header_cols = 0;
-        fixed_table._no_resize_bind = 0;
-        fixed_table._use_get_bounding_client_rect_on_ie11 = 1;
-        fixed_table._use_get_bounding_client_rect = 1;
-        fixed_table.init();
-
-        $(function() {
-            $("#search_txt").keydown(function(event) {
-                if (event.keyCode == 13) {
-                    $("#search_btn").click();
-                }
-            })
-        });
-
-        initTlibTableFilter('datalist');
-
         function delete_check(url,format_id) {
             if (confirm("Are you sure to delete this List Format?"))
             {

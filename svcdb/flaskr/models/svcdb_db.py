@@ -6,7 +6,7 @@ from flaskr import db
 
 
 class SvcdbDb(db.Model):
-    __tablename__ = 'CMS_DB'
+    __tablename__ = 'SVCDB_DB'
     db_id = db.Column(db.Integer, primary_key=True)
     db_name = db.Column(db.String(100))
     session_cookie_name = db.Column(db.String(100))
@@ -42,7 +42,7 @@ class SvcdbDb(db.Model):
         selectSql = '''
             SELECT T.DB_ID, T.DB_NAME, T.SESSION_COOKIE_NAME, T.DISPLAY_ORDER, 
                 T.LOGIN_MESSAGE, T.INFORMATION_MESSAGE, T.REMARKS
-            FROM CMS_DB T
+            FROM SVCDB_DB T
             WHERE T.IS_DELETED = 0 AND T.DB_ID = :db_id
         '''
         t = text(selectSql)
@@ -72,7 +72,7 @@ class SvcdbDb(db.Model):
        SELECT T.DB_ID, T.DB_NAME, T.SESSION_COOKIE_NAME, T.DISPLAY_ORDER, 
             T.LOGIN_MESSAGE, T.INFORMATION_MESSAGE, T.REMARKS, T.IS_DELETED, T.CREATED_AT, 
             T.CREATED_BY, T.UPDATED_AT, T.UPDATED_BY, T.DELETED_AT, T.DELETED_BY
-        FROM CMS_DB T
+        FROM SVCDB_DB T
         WHERE T.IS_DELETED = 0 AND T.DB_ID = :db_id
         '''
         t = text(selectSql)
@@ -85,7 +85,7 @@ class SvcdbDb(db.Model):
        SELECT T.DB_ID, T.DB_NAME, T.SESSION_COOKIE_NAME, T.DISPLAY_ORDER, 
             T.LOGIN_MESSAGE, T.INFORMATION_MESSAGE, T.REMARKS, T.IS_DELETED, T.CREATED_AT, 
             T.CREATED_BY, T.UPDATED_AT, T.UPDATED_BY
-        FROM CMS_DB T
+        FROM SVCDB_DB T
         WHERE T.IS_DELETED = 0
         ORDER BY T.DISPLAY_ORDER, T.DB_NAME
         '''

@@ -51,7 +51,7 @@
         {% for schedule in menu_param['outage_schedule_list'] %}
             <tr id="{{ schedule.turbine_id }}" data_type="{{ schedule.data_type }}">
                 {% if schedule.data_url != None %}
-                <td><a href="{{ schedule.data_url or '' }}" target="_blank">{{ schedule.plant_cd|tooltip(44) }}::{{ schedule.data_url }}</a></td>
+                <td><a href="{{ schedule.data_url or '' }}" target="_blank">{{ schedule.plant_cd|tooltip(44) }}</a></td>
                 {% else %}
                 <td>{{ schedule.plant_cd|tooltip(44) }}</td>
                 {% endif %}

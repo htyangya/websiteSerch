@@ -1,7 +1,7 @@
 import datetime
 import json
 
-from flask import render_template, url_for, jsonify, current_app
+from flask import render_template, jsonify
 from flask_login import current_user
 
 from flaskr import db
@@ -47,7 +47,7 @@ class RowObj:
                 cell.color = COLORMAPPING.get(color_number, "gray")
                 cell.teiken_ids.append(teiken_id)
 
-    def __init__(self, plant_cd, plant_name, country_nm, turbine_id, data_type, min_year, max_year, data_url,
+    def __init__(self, plant_cd, plant_name, country_nm, turbine_id, data_type, min_year, max_year, data_url=None,
                  outage_start=None, outage_end=None, color_number=None, teiken_id=None, delete_flg=0, **dict):
         self.plant_cd = plant_cd
         self.plant_name = plant_name
@@ -235,19 +235,20 @@ def open_outage_schedule_add(request):
     menu_param = {}
     if request.method == 'POST':
         form = OutageEditForm()
-        outage_model = OutageSchedule(turbine_id=form.turbine_id.data or None,
-                                      description=form.description.data or None,
-                                      outage_start=form.outage_start.data or None,
-                                      outage_end=form.outage_end.data or None,
-                                      outage_type_g=form.outage_type_g.data or None,
-                                      outage_type_t=form.outage_type_t.data or None,
-                                      execution=form.execution.data or None,
-                                      outage_duration=form.outage_duration.data or None,
-                                      pr_date_m=form.pr_date_m.data or None,
-                                      pr_date_e=form.pr_date_e.data or None,
-                                      representive_id=form.representive_id.data or None,
-                                      representive_name=form.representive_name or None
-                                      )
+        outage_model = OutageSchedule(
+            turbine_id=form.turbine_id.data or None,
+            description=form.description.data or None,
+            outage_start=form.outage_start.data or None,
+            outage_end=form.outage_end.data or None,
+            outage_type_g=form.outage_type_g.data or None,
+            outage_type_t=form.outage_type_t.data or None,
+            execution=form.execution.data or None,
+            outage_duration=form.outage_duration.data or None,
+            pr_date_m=form.pr_date_m.data or None,
+            pr_date_e=form.pr_date_e.data or None,
+            representive_id=form.representive_id.data or None,
+            representive_name=form.representive_name or None
+        )
         db.session.add(outage_model)
         db.session.commit()
         return jsonify({})

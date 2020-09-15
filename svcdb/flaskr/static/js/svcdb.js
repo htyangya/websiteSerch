@@ -171,7 +171,7 @@ function dlgCloseMain(winName) {
     var formName;
     if (winName.indexOf("CREATE") >= 0) {
         formName = "resultForm";
-    } else if (winName.indexOf("CMSSYS_EDIT") >= 0) {
+    } else if (winName.indexOf("SVCDBSYS_EDIT") >= 0) {
         $("#detailform-refreshBtn").click();
     } else if (winName.indexOf("WORKFLOW") >= 0) {
         if (typeof refresh === "function") {
@@ -691,7 +691,7 @@ function openCommonWindow(url, openType, winNm) {
     // 処理モード「0:参照、1:編集」
     var editMode = "0";
     if (typeof (winNm) == "undefined" || winNm == "") {
-        winNm = "CMSSYS_WINDOW";
+        winNm = "SVCDBSYS_WINDOW";
     }
     if (openType === "POP_UP") {
         openDlg(url, winNm);

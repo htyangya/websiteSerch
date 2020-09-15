@@ -23,8 +23,8 @@
     <script src="/static/jquery/jquery.scrollTo-min.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery/ui/1.12.1/jquery-ui.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/js/dms_dialog_common.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/js/dms_col_list_dnd.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms_dialog_common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms_col_list_dnd.js?q={{appVer}}" type="text/javascript"></script>
     <style type="text/css">
         [draggable] {
             user-select: none;
@@ -280,7 +280,7 @@
             <input type="hidden" name="object_type_id" id="object_type_id" value="{{form.objectTypeId.data}}" />
             <input type="hidden" name="propertyIdList" id="propertyIdList" value="" />
             <input type="button" name="save_btn" value="Save" onclick="save_func()" />
-            <input type="button" name="cancel_btn" value="Cancel" onclick="cancel_func()" />
+            <input type="button" name="cancel_btn" value="Cancel" onclick="return cancel_func('{{ url_for('list_format_list', db_id=cmsDb['db_id'], format_type_flag=format_type_flag) }}');"/>
         </form>
     </center>
     <div class="border"></div>
@@ -290,14 +290,14 @@
         g_sys_admin_col_list_dnd.init($("#format_id"), 'DOC',
 		'DOC_LIST', 'pj_list_format_form', 'list_columns',
 		'pj_list_format2.cgi', 'LIST');
-    })
+    });
 
     function changeColor(cname, color) {
         var item = $('#col_candidates').children('.colitem[data-cname="' + cname + '"]').children('.col_div');
         $(item).css('background-color', color);
     }
 
-    //Preview
+    // Preview
     function Preview(db_id,object_type_id) {
         var dataList = getPropertyIds()
         popupListFormat(db_id,object_type_id,dataList);
@@ -311,16 +311,15 @@
         return col_list.join(',');
     }
 
-    //保存する
+    // 保存する
     function save_func() {
         $('#errMsgDiv').empty();
         $('#propertyIdList').val(getPropertyIds());
         $('#list_format_form').submit();
     }
 
-    function cancel_func() {
-        var db_id = '{{db_id}}';
-        window.location.href = getDatabaseDetailUrl(db_id);
+    function cancel_func(url) {
+        window.location.href = url;
     }
     //]]>
 
