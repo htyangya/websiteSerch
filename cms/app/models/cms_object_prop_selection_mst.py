@@ -1,15 +1,28 @@
+from datetime import datetime
+
+from flask_login import current_user
+from sqlalchemy import Sequence
+
 from app import db
 
 
 class CmsObjectPropSelectionMst(db.Model):
     __tablename__ = 'CMS_OBJECT_PROP_SELECTION_MST'
-
-    selection_mst_id = db.Column(db.Integer, primary_key=True)
+    id_seq = Sequence('OBJECT_ID_SEQUENCE')
+    selection_mst_id = db.Column(db.Integer, id_seq,
+                                 server_default=id_seq.next_value(), primary_key=True)
     db_id = db.Column(db.Integer)
     selection_mst_name = db.Column(db.String(200))
     parent_selection_mst_id = db.Column(db.Integer)
     remarks = db.Column(db.String(1000))
     display_order = db.Column(db.Integer)
+    is_deleted = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    created_by = db.Column(db.String(), default=lambda: current_user.get_id())
+    updated_at = db.Column(db.DateTime, default=datetime.now)
+    updated_by = db.Column(db.String(), default=lambda: current_user.get_id())
+    deleted_at = db.Column(db.DateTime)
+    deleted_by = db.Column(db.String)
 
     def getObjectPropSelectionMst(self, selection_mst_id):
         return db.session.query(CmsObjectPropSelectionMst) \

@@ -1,0 +1,44 @@
+{% extends "cms_admin/selection_mmg_base.html" %}
+{% block head %}
+    <style>
+        #datalist th{
+            border: 1px #000 solid;
+        }
+    </style>
+{% endblock %}
+ {% block breadCrumb_content %}
+      &gt; Selection Master
+ {% endblock %}
+
+{% block container %}
+    <div>
+        <center>
+            <table id="datalist_header" class="datalist_headerC">
+                <tr>
+                    <th class="title">Selection Master List</th>
+                    <th class="title" style="float:right;">
+                        <a href="{{ url_for( 'selectionMng.add', db_id=db_id) }}">Create</a>
+                    </th>
+                </tr>
+            </table>
+            <div id="tableDiv" class="TlibTableC">
+                    <table id="datalist" class="dataTable dataListC">
+                        <tr>
+                            <th >Name</th>
+                            <th>Remarks</th>
+                            <th>Display Order</th>
+                        </tr>
+                        {% for selection_mst in selection_msts %}
+                            <tr>
+                                <td ><a href="{{ url_for( 'selectionMng.detail',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}">{{ selection_mst.selection_mst_name or "" }}</a></td>
+                                <td >{{ selection_mst.remarks or "" }} </td>
+                                <td >{{ selection_mst.display_order or "" }}</td>
+                            </tr>
+                        {% endfor %}
+
+
+                    </table>
+                </div>
+        </center>
+    </div>
+{% endblock %}

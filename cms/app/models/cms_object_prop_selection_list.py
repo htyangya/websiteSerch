@@ -1,3 +1,5 @@
+from datetime import datetime
+from flask_login import current_user
 from app import db
 
 
@@ -9,10 +11,18 @@ class CmsObjectPropSelectionList(db.Model):
     parent_selection_id = db.Column(db.Integer)
     description = db.Column(db.String(1000))
     display_order = db.Column(db.Integer)
+    is_deleted = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    created_by = db.Column(db.String(), default=lambda: current_user.get_id())
+    updated_at = db.Column(db.DateTime, default=datetime.now)
+    updated_by = db.Column(db.String(), default=lambda: current_user.get_id())
+    deleted_at = db.Column(db.DateTime)
+    deleted_by = db.Column(db.String)
 
     def getObjectPropSelectionList(self, selection_mst_id):
         return db.session.query(CmsObjectPropSelectionList) \
-            .filter(CmsObjectPropSelectionList.selection_mst_id == selection_mst_id) \
+            .filter(CmsObjectPropSelectionList.selection_mst_id == selection_mst_id,
+                    CmsObjectPropSelectionList.is_deleted == 0) \
             .order_by(CmsObjectPropSelectionList.display_order).all()
 
     def getSelectionMstDic(self, proList):

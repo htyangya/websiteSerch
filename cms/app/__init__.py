@@ -14,7 +14,7 @@ login_manager.login_view = 'login'
 from app.controllers import route
 from app.controllers import admin_route
 from app.controllers import db_admin_route
-
+from app.controllers import selection_mng
 
 def create_app():
     app = Flask(__name__)
@@ -100,6 +100,8 @@ def create_app():
                      methods=['GET', 'POST'])
     app.add_url_rule('/cmsadmin/list_format_edit', 'list_format_edit', admin_route.list_format_edit,methods=['GET', 'POST'])
     app.add_url_rule('/cmsadmin/list_format_jqmodal', 'list_format_jqmodal', admin_route.list_format_jqmodal,methods=['GET', 'POST'])
+    # selection_mng
+    app.register_blueprint(selection_mng.selectionMng)
 
     app.add_url_rule('/no_privs', 'no_privs', route.no_privs, methods=['GET'])
     app.register_error_handler(404, route.page_not_found)

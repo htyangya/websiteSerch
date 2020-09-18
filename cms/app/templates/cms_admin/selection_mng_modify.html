@@ -1,0 +1,58 @@
+{% extends "cms_admin/selection_mmg_base.html" %}
+{% block head %}
+    <style>
+    </style>
+{% endblock %}
+ {% if not selection_mst %}
+    {% set parent_url = url_for('selectionMng.index', db_id=db_id) %}
+    {% set parent_title = 'Selection Master' %}
+    {% set title_text = 'Create' %}
+ {% else %}
+    {% set parent_url = url_for('selectionMng.detail', mst_id=selection_mst.selection_mst_id, db_id=db_id) %}
+    {% set parent_title = 'Selection Master Detail' %}
+     {% set title_text = 'Modify' %}
+{% endif %}
+ {% block breadCrumb_content %}
+       &gt;<a href="{{ parent_url }}">{{ parent_title }}</a>&nbsp;
+     &gt;{{ title_text }}
+ {% endblock %}
+
+{% block container %}
+    <div id="ope_msg">Selection Master Create</div>
+    <br/>
+    <center>
+        <form action=""  method="post">
+
+            <center>
+                <table id="property">
+                    <tbody>
+                        <tr>
+                            <th colspan="2">Selection Master Property</th>
+                        </tr>
+                        <tr class="even">
+                            <td class="name"><label for="selection_mst_name">selection_mst_name</label>(*)</td>
+                            <td class="value">
+                                <input id="selection_mst_name" name="selection_mst_name" type="text" required value="{{ selection_mst and selection_mst.selection_mst_name }}">
+                            </td>
+                        </tr>
+                        <tr class="odd">
+                            <td class="name"><label for="display_order">display_order</label>(*)</td>
+                            <td class="value">
+                                <input id="display_order" name="display_order" type="number" required value="{{ selection_mst and selection_mst.display_order }}">
+                            </td>
+                        </tr>
+                        <tr class="even">
+                            <td class="name"><label for="remarks">remarks</label></td>
+                            <td class="value">
+                                <textarea cols="100" id="remarks" name="remarks" rows="6">{{ selection_mst and selection_mst.remarks or "" }}</textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </center>
+            <input type="hidden" name="db_id" id="db_id" value="{{ db_id }}">
+            <input class="btn" id="submit" name="submit" type="submit" value="Save">
+            <input class="btn" id="submit" name="submit" type="button" value="Cancel" onclick="window.location.href='{{parent_url}}'">
+        </form>
+    </center>
+{% endblock %}
