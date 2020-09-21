@@ -3,14 +3,14 @@ from sqlalchemy.sql import text
 from app import db
 
 
-class CmsObjectProperty():
+class CmsObjectProperty(db.Model):
     __tablename__ = 'CMS_OBJECT_PROPERTY'
     property_id = db.Column(db.Numeric(10), primary_key=True)
     object_type_id = db.Column(db.Numeric(10))
     property_name = db.Column(db.String(100))
     db_column_name = db.Column(db.String(30))
     property_type = db.Column(db.String(20))
-    property_name_req = db.Column(db.String(10))
+    # property_name_req = db.Column(db.String(10))
     data_size = db.Column(db.Numeric(4))
     i_len = db.Column(db.Numeric(4))
     f_len = db.Column(db.Numeric(4))

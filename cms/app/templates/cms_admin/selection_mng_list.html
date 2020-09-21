@@ -32,7 +32,11 @@
                             <tr>
                                 <td ><a href="{{ url_for( 'selectionMng.detail',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}">{{ selection_mst.selection_mst_name or "" }}</a></td>
                                 <td >{{ selection_mst.remarks or "" }} </td>
-                                <td >{{ selection_mst.display_order or "" }}</td>
+                                <td >
+                                    {% if selection_mst.display_order is not none %}
+                                        {{ selection_mst.display_order }}
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
 

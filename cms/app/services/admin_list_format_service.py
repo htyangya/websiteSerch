@@ -67,7 +67,7 @@ def list_format_edit(func, db_id, format_type_flag, object_type_id, format_id, r
     editMode = 'Edit'
     page_id = 'cms_admin/list_format_edit.html'
     err_msgs = []
-    isSaveError = False
+    isSaveError = Falsef
     listFormatColumnsList = None
     listFormatSortList = None
     cmsListFormat = CmsListFormat()

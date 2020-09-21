@@ -1,11 +1,15 @@
 from datetime import datetime
 from flask_login import current_user
+from sqlalchemy import Sequence
+
 from app import db
 
 
 class CmsObjectPropSelectionList(db.Model):
     __tablename__ = 'CMS_OBJECT_PROP_SELECTION_LIST'
-    selection_id = db.Column(db.Integer, primary_key=True)
+    id_seq = Sequence('OBJECT_ID_SEQUENCE')
+    selection_id = db.Column(db.Integer, id_seq,
+                             server_default=id_seq.next_value(), primary_key=True)
     selection_mst_id = db.Column(db.Integer)
     selection_name = db.Column(db.String(400))
     parent_selection_id = db.Column(db.Integer)

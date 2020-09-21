@@ -107,3 +107,8 @@ class Const(object):
     # BATCH FILE UPLOAD
     EXCEL_FILE_NOT_FOUND_MSG = "Please drop or select an excel file."
     NOT_XLSX_FILE_MSG = "Xlsx(excel) file is required."
+
+    SELECTION_MST_DELETE_MSG = "Are you sure delete this selection master?"
+    SELECTION_DATA_DELETE_MSG = "Are you sure delete this selection data?"
+    SELECTION_MST_CAN_NOT_DELETE_MSG = "Can not delete this selection master."
+    SELECTION_DATA_CAN_NOT_DELETE_MSG = "Can not delete this selection data."

@@ -1,0 +1,67 @@
+{% extends "cms_admin/selection_mmg_base.html" %}
+{% block head %}
+    <style>
+    </style>
+{% endblock %}
+    {% set parent_url = url_for('selectionMng.detail',mst_id=mst, db_id=db_id) %}
+    {% set parent_title = 'Detail' %}
+{% if not selection_list %}
+    {% set title_text = 'Selection List Create' %}
+{% else %}
+    {% set title_text = 'Selection List Modify' %}
+{% endif %}
+{% block breadCrumb_content %}
+    &gt;<a href="{{ url_for('selectionMng.index', db_id=db_id) }}">Selection Master</a>&nbsp;
+    &gt;<a href="{{ parent_url }}">{{ parent_title }}</a>&nbsp;
+    &gt;{{ title_text }}
+{% endblock %}
+
+{% block container %}
+    <div id="ope_msg">Selection Master Create</div>
+    <br/>
+    <center>
+        {% if not selection_list %}
+            <form action="{{ url_for( 'selectionMng.list_add',mst_id=mst, db_id=db_id) }}" method="post">
+
+        {% else %}
+            <form action="" method="post">
+        {% endif %}
+
+
+        <center>
+            <table id="property">
+                <tbody>
+                <tr>
+                    <th colspan="2">Selection Master Property</th>
+                </tr>
+                <tr class="even">
+                    <td class="name"><label for="selection_list_name">Name</label>(*)</td>
+                    <td class="value">
+                        <input id="selection_list_name" name="selection_list_name" type="text" required
+                               value="{{ selection_list and selection_list.selection_name }}">
+                    </td>
+                </tr>
+                <tr class="odd">
+                    <td class="name"><label for="display_order">Display_order</label></td>
+                    <td class="value">
+                        <input id="display_order" name="display_order" type="number"
+                               value="{{ selection_list and selection_list.display_order }}">
+                    </td>
+                </tr>
+                <tr class="even">
+                    <td class="name"><label for="Description">Description</label></td>
+                    <td class="value">
+                            <textarea cols="100" id="Description" name="Description"
+                                      rows="6">{{ selection_list and selection_list.description or "" }}</textarea>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </center>
+        <input type="hidden" name="db_id" id="db_id" value="{{ db_id }}">
+        <input class="btn" id="submit" name="submit" type="submit" value="Save">
+        <input class="btn" id="submit" name="submit" type="button" value="Cancel"
+               onclick="window.location.href='{{ parent_url }}'">
+        </form>
+    </center>
+{% endblock %}

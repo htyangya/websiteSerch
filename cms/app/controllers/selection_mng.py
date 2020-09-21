@@ -1,18 +1,18 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template, jsonify, request, abort, g, url_for
+from flask import Blueprint, render_template, request, abort, g, url_for
 from flask_login import current_user
+from sqlalchemy import distinct, func
 from werkzeug.utils import redirect
 
 from app import db
-from app.controllers import route
 from app.lib.cms_lib.user_auth import UserAuth
 from app.lib.conf.config import Config
 from app.lib.conf.const import Const
 from app.models.cms_db import CmsDb
 from app.models.cms_object_prop_selection_list import CmsObjectPropSelectionList
 from app.models.cms_object_prop_selection_mst import CmsObjectPropSelectionMst
-from app.services import selection_mng_service
+from app.models.cms_object_property import CmsObjectProperty
 
 selectionMng = Blueprint("selectionMng", __name__, url_prefix="/cmsadmin/selectionMng")
 
@@ -98,15 +98,104 @@ def update(mst_id):
 
 
 @UserAuth.login_required
+@selectionMng.route("/<int:mst_id>/delete", methods=['GET'])
+def delete(mst_id):
+    selection_mst = CmsObjectPropSelectionMst.query.filter(CmsObjectPropSelectionMst.selection_mst_id == mst_id,
+                                                           CmsObjectPropSelectionMst.is_deleted == 0).first()
+    selection_mst.is_deleted = 1
+    selection_mst.deleted_at = datetime.now()
+    selection_mst.deleted_by = current_user.get_id()
+    db.session.add(selection_mst)
+    db.session.commit()
+    return redirect(url_for('selectionMng.index', db_id=request.args.get("db_id")))
+
+
+@UserAuth.login_required
 @selectionMng.route("/<int:mst_id>/detail")
 def detail(mst_id):
     selection_mst = CmsObjectPropSelectionMst.query.filter(CmsObjectPropSelectionMst.selection_mst_id == mst_id,
                                                            CmsObjectPropSelectionMst.is_deleted == 0).first()
     selection_list = CmsObjectPropSelectionList.query.filter(CmsObjectPropSelectionList.selection_mst_id == mst_id,
-                                                             CmsObjectPropSelectionList.is_deleted == 0).all()
+                                                             CmsObjectPropSelectionList.is_deleted == 0).order_by(
+        CmsObjectPropSelectionList.display_order).all()
+    be_used_selection_mst_ids = map(lambda x: int(x.selection_mst_id), CmsObjectProperty.query.with_entities(
+        CmsObjectProperty.selection_mst_id).distinct().filter(
+        CmsObjectProperty.selection_mst_id.isnot(None)).all())
+    be_used_selection_list_ids = get_used_selection_list_ids()
+    selection_mst.can_delete = selection_mst.selection_mst_id not in be_used_selection_mst_ids
+    for selection in selection_list:
+        selection.can_delete = selection.selection_id not in be_used_selection_list_ids
     return render_template(
         "cms_admin/selection_mng_detail.html",
         title="CMS：Selection Master Detail",
         selection_mst=selection_mst,
         selection_list=selection_list
     )
+
+
+@UserAuth.login_required
+@selectionMng.route("/<int:mst_id>/list_add", methods=['GET', 'POST'])
+def list_add(mst_id):
+    if request.method == "POST":
+        selection_list = CmsObjectPropSelectionList(
+            selection_mst_id=mst_id,
+            selection_name=request.form.get("selection_list_name"),
+            display_order=request.form.get("display_order"),
+            description=request.form.get("Description"),
+        )
+        db.session.add(selection_list)
+        db.session.commit()
+        return redirect(url_for('selectionMng.detail', db_id=request.form.get("db_id"),
+                                mst_id=mst_id))
+    return render_template(
+        "cms_admin/selection_list_modify.html",
+        title="CMS：Selection List Create",
+        mst=mst_id
+    )
+
+
+@UserAuth.login_required
+@selectionMng.route("/<int:mst_id>/list_update/<int:list_id>", methods=['GET', 'POST'])
+def list_update(mst_id, list_id):
+    selection_list = CmsObjectPropSelectionList.query.get_or_404(list_id)
+    if selection_list is None:
+        abort(404)
+    if request.method == "POST":
+        selection_list.selection_name = request.form.get("selection_list_name") or ''
+        selection_list.display_order = request.form.get("display_order")
+        selection_list.description = request.form.get("Description")
+        selection_list.updated_at = datetime.now()
+        selection_list.updated_by = current_user.get_id()
+        db.session.add(selection_list)
+        db.session.commit()
+        return redirect(url_for('selectionMng.detail', db_id=request.form.get("db_id"),
+                                mst_id=mst_id))
+    return render_template(
+        "cms_admin/selection_list_modify.html",
+        title="CMS：Selection List Modify",
+        selection_list=selection_list,
+        mst=mst_id
+    )
+
+
+@UserAuth.login_required
+@selectionMng.route("/<int:mst_id>/list_delete/<int:list_id>", methods=['GET'])
+def list_delete(mst_id, list_id):
+    selection_list = CmsObjectPropSelectionList.query.get_or_404(list_id)
+    if selection_list is None:
+        abort(404)
+    selection_list.is_deleted = 1
+    selection_list.deleted_at = datetime.now()
+    selection_list.deleted_by = current_user.get_id()
+    db.session.add(selection_list)
+    db.session.commit()
+    return redirect(url_for('selectionMng.detail', db_id=request.args.get("db_id"), mst_id=mst_id))
+
+
+def get_used_selection_list_ids():
+    str_template = "SELECT  {0}  FROM CMS_OBJECT WHERE IS_DELETED = 0 AND {0} IS NOT NULL \n"
+    db_column_obj = CmsObjectProperty.query.filter(CmsObjectProperty.property_type == "SELECT",
+                                                   CmsObjectProperty.db_column_name.isnot(None)).with_entities(
+        CmsObjectProperty.db_column_name).all()
+    sql_str = " UNION \n".join(map(lambda obj: str_template.format(obj[0]), db_column_obj))
+    return list(map(lambda obj: obj[0], db.session.execute(sql_str)))
