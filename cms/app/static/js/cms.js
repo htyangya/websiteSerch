@@ -405,8 +405,9 @@ function getDatabaseDetailUrl(db_id) {
     return _get_location_path() + "/cmsadmin/database?func=database_detail&db_id=" + db_id;
 }
 
-function getIpAddressListUrl() {
-    return _get_location_path() + "/cmsadmin/ip_addr_list?ip_addr_list_id=" + ip_addr_list_id;
+function popupDeleteDatabase(db_id) {
+    var url = deleteDatabaseJqUrl + "?db_id=" + db_id;
+    load_jqmodal_dlg(url, on_load_jqmodal_dlg);
 }
 
 function popupExcelOutput() {
@@ -784,17 +785,13 @@ function popupPrivsDept(db_id, func, corp_cd, div_cd, dept_cd, emp_type_cd, work
     load_jqmodal_dlg(url, on_load_jqmodal_dlg);
 }
 
-function getKeywordListUrl(db_id) {
-    return _get_location_path() + "/cmsadmin/keyword_list?db_id=" + db_id;
+function getOpenFormatPreview(url, db_id, object_type_id, data_list, format_type) {
+    return url + "?db_id=" + db_id + "&object_type_id=" + object_type_id
+        + "&data_list=" + data_list + "&format_type=" + format_type;
 }
 
-function getOpenListFormat(db_id,object_type_id,data_list) {
-    return _get_location_path() + "/list_format_jqmodal?db_id=" + db_id + "&object_type_id=" + object_type_id
-        + "&data_list=" + data_list
-}
-
-function popupListFormat(db_id,object_type_id,data_list) {
-    var url = getOpenListFormat(db_id,object_type_id,data_list);
+function popupFormatPreview(url, db_id, object_type_id, data_list, format_type) {
+    var url = getOpenFormatPreview(url, db_id, object_type_id, data_list, format_type);
     load_jqmodal_dlg(url, on_load_jqmodal_dlg);
 }
 

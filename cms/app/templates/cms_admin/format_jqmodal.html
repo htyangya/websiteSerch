@@ -1,6 +1,6 @@
     <div class="jqDnRHandle">{{ jqmTitle }}</div>
     <div class="jqmBody" id="jqmBody" style="overflow: hidden;">
-        <p>Preview</p>
+        <p>Preview: {{ format_type }}</p>
         <center>
              <table id="datalist" class="datalistC">
                 <tbody>
@@ -9,7 +9,6 @@
                         {% for item in propertyList %}
                             <th>{{ item }}</th>
                         {% endfor %}
-
                         </tr>
                     </tr>
                 </tbody>
@@ -21,7 +20,6 @@
                 <button style="float: right" class="btn btn-default" onclick="close_jqmodal_dlg();" type="button">OK</button>
             </div>
         </center>
-
     </div>
     <script>
 

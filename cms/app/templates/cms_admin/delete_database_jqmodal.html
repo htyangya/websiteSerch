@@ -1,0 +1,71 @@
+<style type="text/css">
+    .deleteDatabaseDisabledBtn {
+        width: 80px;
+        height: 25px;
+        border: 0;
+        border-width: 1px;
+        background: #ccc;
+        color: white;
+    }
+    .deleteDatabaseDisabledBtn:hover {
+        color: white;
+        background: #ccc;
+    }
+    .deleteDatabaseBtn {
+        width: 80px;
+        height: 25px;
+        border: 0;
+        border-width: 1px;
+        background: #4BB0E0;
+        color: white;
+    }
+    .deleteDatabaseBtn:hover {
+        color: #039;
+        cursor: pointer;
+        background: #4295BD;
+    }
+    .deleteDatabaseInput {
+        width: 200px;
+        border:0 solid #4BB0E0;
+        border-width:1px;
+    }
+</style>
+<div class="jqDnRHandle">{{ jqmTitle }}</div>
+<div class="jqmBody" id="jqmBody" style="overflow: hidden;">
+    <div>
+        <div class="required" style="padding-top: 10px; text-align: center;">Are you sure to delete?</div>
+        <div style="padding-top: 10px; text-align: center;">Please input database name.</div>
+        <div style="padding-top: 10px; text-align: center;">
+            <input type="input" class="deleteDatabaseInput" id="database_name" name="database_name" />
+        </div>
+
+        <div class="btn-group" style="padding-top: 20px; text-align: center;">
+            <button id="ok_btn" class="btn deleteDatabaseDisabledBtn" onclick="deleteDb();" type="button" disabled="disabled">OK</button>
+            <button id="cancel_btn" class="btn deleteDatabaseBtn" onclick="close_jqmodal_dlg();" type="button">Cancel</button>
+        </div>
+    </div>
+</div>
+<script>
+//<![CDATA[
+    var db_id = "{{ cmsDb.db_id }}";
+    var db_name = "{{ cmsDb.db_name }}";
+    function databaseNameCompare() {
+        $("#ok_btn").attr("disabled", true);
+        $("#ok_btn").removeClass("deleteDatabaseBtn");
+        $("#ok_btn").addClass("deleteDatabaseDisabledBtn");
+        var database_name = $("#database_name").val();
+        if (database_name == db_name) {
+            $("#ok_btn").attr("disabled", false);
+            $("#ok_btn").removeClass("deleteDatabaseDisabledBtn");
+            $("#ok_btn").addClass("deleteDatabaseBtn");
+        }
+    }
+    $(function() {
+        $("#database_name").keyup(function(event) {
+            //if (event.keyCode == 13) {
+                databaseNameCompare();
+            //}
+        })
+    });
+//]]>
+</script>

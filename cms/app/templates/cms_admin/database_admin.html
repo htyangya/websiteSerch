@@ -37,10 +37,9 @@
         <h2>CMS</h2>
         <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
     </center>
-
-    <div class="border"></div>
-    &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;Database
-    <div class="border"></div>
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
     <!-- new print_dataset_list_ex -->
     <center>
         <table id="datalist_header" class="datalist_headerC">
@@ -57,12 +56,12 @@
                     <th>Database Name</th>
                     <th>Remarks</th>
                 </tr>
-                    {% for db_info in dbList %}
-                    <tr id="{{db_info.db_id}}">
-                        <td><a href="{{ url_for('database', func='database_detail', db_id=db_info.db_id) }}">{{db_info.db_name}}</a></td>
-                        <td>{{db_info.remarks or ''}}</td>
-                    </tr>
-                    {% endfor %}
+                {% for db_info in dbList %}
+                <tr id="{{db_info.db_id}}">
+                    <td><a href="{{ url_for('database', func='database_detail', db_id=db_info.db_id) }}">{{db_info.db_name}}</a></td>
+                    <td class="disp_content">{{db_info.remarks or ''}}</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </center>

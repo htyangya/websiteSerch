@@ -1,12 +1,13 @@
 import urllib
 
+# session 必須
 from flask import session, request, make_response
 from werkzeug.utils import redirect
 
 from app import db
 from app.controllers.common import CreateSeq
 from app.lib.cms_lib.str_util import StrUtil
-from app.models.cms_db import CmsDb
+from app.models.cms_db_admin.cms_db import CmsDb
 from app.models.cms_session_table import CmsSessionTable
 
 current_db = None

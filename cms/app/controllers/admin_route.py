@@ -5,9 +5,8 @@ from werkzeug.utils import redirect
 
 from app.forms.login_form import LoginForm
 from app.lib.cms_lib.user_auth import UserAuth
-from app.services import admin_ip_addr_service as ip_addr_service
-from app.services import admin_list_format_service as list_format_service
-from app.services import admin_main_service as adm_service
+from app.lib.conf.const import Const
+from app.services.cms_admin import admin_main_service as adm_service
 from app.services.login_service import doAdminLogin
 
 
@@ -35,6 +34,10 @@ def database():
     return adm_service.service_database(func, request)
 
 
+def delete_database_jqmodal():
+    return adm_service.delete_database_jqmodal(request)
+
+
 def keyword():
     if request.method == 'POST':
         func = request.form["func"]
@@ -45,13 +48,13 @@ def keyword():
 
 @UserAuth.adm_login_required
 def ip_addr_admin():
-    return ip_addr_service.ip_addr_master_list()
+    return adm_service.ip_addr_master_list()
 
 
 @UserAuth.adm_login_required
 def ip_addr_list():
     ip_addr_list_id = request.args.get("ip_addr_list_id")
-    return ip_addr_service.ip_addr_list(ip_addr_list_id)
+    return adm_service.ip_addr_list(ip_addr_list_id)
 
 
 @UserAuth.adm_login_required
@@ -62,7 +65,7 @@ def ip_addr():
     else:
         func = request.args.get("func")
         ip_addr_list_id = request.args.get("ip_addr_list_id")
-    return ip_addr_service.service_ip_addr(func, ip_addr_list_id, request)
+    return adm_service.service_ip_addr(func, ip_addr_list_id, request)
 
 
 @UserAuth.adm_login_required
@@ -72,12 +75,12 @@ def keyword_list():
 
 @UserAuth.adm_login_required
 def list_format_list():
-    return list_format_service.list_format_list(request)
+    return adm_service.list_format_list(request)
 
 
 @UserAuth.adm_login_required
-def check_list_format_delete():
-    return list_format_service.check_list_format_delete(request)
+def property_format_list():
+    return adm_service.property_format_list(request)
 
 
 @UserAuth.adm_login_required
@@ -85,20 +88,73 @@ def list_format_edit():
     if request.method == 'POST':
         func = request.form["func"]
         db_id = request.form["db_id"]
-        format_type_flag = request.form["format_type_flag"]
         object_type_id = request.form["object_type_id"]
         format_id = request.form["formatId"]
     else:
         func = request.args.get("func")
         db_id = request.args.get("db_id")
-        format_type_flag = request.args.get("format_type_flag")
         object_type_id = request.args.get("object_type_id")
         format_id = request.args.get("format_id")
-    return list_format_service.list_format_edit(func, db_id, format_type_flag, object_type_id, format_id, request)
+    return adm_service.format_edit(func, db_id, Const.LIST, object_type_id, format_id, request)
 
 
-def list_format_jqmodal():
-    return list_format_service.list_format_jqmodal(request)
+@UserAuth.adm_login_required
+def property_format_edit():
+    if request.method == 'POST':
+        func = request.form["func"]
+        db_id = request.form["db_id"]
+        object_type_id = request.form["object_type_id"]
+        format_id = request.form["formatId"]
+    else:
+        func = request.args.get("func")
+        db_id = request.args.get("db_id")
+        object_type_id = request.args.get("object_type_id")
+        format_id = request.args.get("format_id")
+    return adm_service.format_edit(func, db_id, Const.PROPERTY, object_type_id, format_id, request)
+
+
+@UserAuth.adm_login_required
+def list_format_delete():
+    if request.method == 'POST':
+        func = request.form["func"]
+        db_id = request.form["db_id"]
+        format_id = request.form["format_id"]
+    else:
+        func = request.args.get("func")
+        db_id = request.args.get("db_id")
+        format_id = request.args.get("format_id")
+    return adm_service.format_delete(func, db_id, Const.LIST, format_id)
+
+
+@UserAuth.adm_login_required
+def property_format_delete():
+    if request.method == 'POST':
+        func = request.form["func"]
+        db_id = request.form["db_id"]
+        format_id = request.form["format_id"]
+    else:
+        func = request.args.get("func")
+        db_id = request.args.get("db_id")
+        format_id = request.args.get("format_id")
+    return adm_service.format_delete(func, db_id, Const.PROPERTY, format_id)
+
+
+def format_jqmodal():
+    return adm_service.format_jqmodal(request)
+
+
+@UserAuth.adm_login_required
+def style_setting_list():
+    return adm_service.style_setting_list(request)
+
+
+@UserAuth.adm_login_required
+def style_setting_edit():
+    if request.method == 'POST':
+        func = request.form["func"]
+    else:
+        func = request.args.get("func")
+    return adm_service.style_setting_edit(func, request)
 
 
 # ログイン

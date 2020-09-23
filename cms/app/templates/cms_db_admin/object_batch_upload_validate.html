@@ -74,10 +74,9 @@
         <h2>CMS : {{ menu_param["db_name"] }}</h2>
         <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{ current_user.get_user_name() }}
     </center>
-    <div class="border"></div>
-    &nbsp;&gt;&nbsp;<a href="{{ url_for('db_adm_index',db_id=db_id) }}">Main Menu</a>&nbsp;&gt; Batch Insert
-    ({{ menu_param['object_type_name'] }})
-    <div class="border"></div>
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
 </div>
 <center>
     {% if valid.errors | length > 0 %}

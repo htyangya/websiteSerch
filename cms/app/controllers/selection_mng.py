@@ -2,17 +2,17 @@ from datetime import datetime
 
 from flask import Blueprint, render_template, request, abort, g, url_for
 from flask_login import current_user
-from sqlalchemy import distinct, func
 from werkzeug.utils import redirect
 
 from app import db
+from app.lib.cms_lib.html_util import HtmlUtil
 from app.lib.cms_lib.user_auth import UserAuth
 from app.lib.conf.config import Config
 from app.lib.conf.const import Const
-from app.models.cms_db import CmsDb
-from app.models.cms_object_prop_selection_list import CmsObjectPropSelectionList
-from app.models.cms_object_prop_selection_mst import CmsObjectPropSelectionMst
-from app.models.cms_object_property import CmsObjectProperty
+from app.models.cms_db_admin.cms_db import CmsDb
+from app.models.cms_db_admin.cms_object_prop_selection_list import CmsObjectPropSelectionList
+from app.models.cms_db_admin.cms_object_prop_selection_mst import CmsObjectPropSelectionMst
+from app.models.cms_db_admin.cms_object_property import CmsObjectProperty
 
 selectionMng = Blueprint("selectionMng", __name__, url_prefix="/cmsadmin/selectionMng")
 
@@ -25,16 +25,22 @@ def args_check():
         abort(404)
     g.db_name = db_obj.db_name
     g.db_id = db_id
+    g.navi_arr_ref = [
+        'Main Menu', url_for('adm_index'),
+        'Database', url_for('database_admin'),
+        g.db_name, url_for('database', db_id=db_id, func='database_detail'),
+    ]
 
 
 @selectionMng.context_processor
 def context_processor():
     return {
-        "db_id": request.args.get("db_id"),
+        "db_id": g.db_id,
         "db_name": g.db_name if "db_name" in g else "",
         "current_user": current_user,
         "appVer": Config.APP_VER,
         "const": Const,
+        "navi_bar_html": HtmlUtil.print_navi_bar(g.navi_arr_ref),
     }
 
 
@@ -47,6 +53,7 @@ def index():
         CmsObjectPropSelectionMst.db_id == request.args.get("db_id"),
         CmsObjectPropSelectionMst.is_deleted == 0
     ).order_by(CmsObjectPropSelectionMst.display_order).all()
+    g.navi_arr_ref.append("Selection Master")
     return render_template(
         "cms_admin/selection_mng_list.html",
         title="CMS：Selection Master",
@@ -68,9 +75,15 @@ def add():
         db.session.add(selection_mst)
         db.session.commit()
         return redirect(url_for('selectionMng.index', db_id=request.form.get("db_id")))
+    parent_url = url_for('selectionMng.index', db_id=g.db_id)
+    g.navi_arr_ref.extend([
+        "Selection Master", parent_url,
+        "Create"
+    ])
     return render_template(
         "cms_admin/selection_mng_modify.html",
         title="CMS：Selection Master Add",
+        parent_url=parent_url
     )
 
 
@@ -79,6 +92,8 @@ def add():
 def update(mst_id):
     selection_mst = CmsObjectPropSelectionMst.query.filter(CmsObjectPropSelectionMst.selection_mst_id == mst_id,
                                                            CmsObjectPropSelectionMst.is_deleted == 0).first()
+    if selection_mst is None:
+        abort(404)
     if request.method == "POST":
         selection_mst.selection_mst_name = request.form.get("selection_mst_name")
         selection_mst.display_order = request.form.get("display_order")
@@ -89,11 +104,17 @@ def update(mst_id):
         db.session.commit()
         return redirect(url_for('selectionMng.detail', db_id=request.form.get("db_id"),
                                 mst_id=mst_id))
-
+    parent_url = url_for('selectionMng.detail', mst_id=selection_mst.selection_mst_id, db_id=g.db_id)
+    g.navi_arr_ref.extend([
+        "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
+        "Detail", parent_url,
+        "Modify"
+    ])
     return render_template(
         "cms_admin/selection_mng_modify.html",
         title="CMS：Selection Master Modify",
-        selection_mst=selection_mst
+        selection_mst=selection_mst,
+        parent_url=parent_url
     )
 
 
@@ -102,6 +123,8 @@ def update(mst_id):
 def delete(mst_id):
     selection_mst = CmsObjectPropSelectionMst.query.filter(CmsObjectPropSelectionMst.selection_mst_id == mst_id,
                                                            CmsObjectPropSelectionMst.is_deleted == 0).first()
+    if selection_mst is None:
+        abort(404)
     selection_mst.is_deleted = 1
     selection_mst.deleted_at = datetime.now()
     selection_mst.deleted_by = current_user.get_id()
@@ -115,6 +138,8 @@ def delete(mst_id):
 def detail(mst_id):
     selection_mst = CmsObjectPropSelectionMst.query.filter(CmsObjectPropSelectionMst.selection_mst_id == mst_id,
                                                            CmsObjectPropSelectionMst.is_deleted == 0).first()
+    if selection_mst is None:
+        abort(404)
     selection_list = CmsObjectPropSelectionList.query.filter(CmsObjectPropSelectionList.selection_mst_id == mst_id,
                                                              CmsObjectPropSelectionList.is_deleted == 0).order_by(
         CmsObjectPropSelectionList.display_order).all()
@@ -125,6 +150,10 @@ def detail(mst_id):
     selection_mst.can_delete = selection_mst.selection_mst_id not in be_used_selection_mst_ids
     for selection in selection_list:
         selection.can_delete = selection.selection_id not in be_used_selection_list_ids
+    g.navi_arr_ref.extend([
+        "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
+        "Detail"
+    ])
     return render_template(
         "cms_admin/selection_mng_detail.html",
         title="CMS：Selection Master Detail",
@@ -147,10 +176,16 @@ def list_add(mst_id):
         db.session.commit()
         return redirect(url_for('selectionMng.detail', db_id=request.form.get("db_id"),
                                 mst_id=mst_id))
+    parent_url = url_for('selectionMng.detail', mst_id=mst_id, db_id=g.db_id)
+    g.navi_arr_ref.extend([
+        "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
+        "Detail", parent_url,
+        "Selection List Create"
+    ])
     return render_template(
         "cms_admin/selection_list_modify.html",
         title="CMS：Selection List Create",
-        mst=mst_id
+        parent_url=parent_url
     )
 
 
@@ -170,11 +205,17 @@ def list_update(mst_id, list_id):
         db.session.commit()
         return redirect(url_for('selectionMng.detail', db_id=request.form.get("db_id"),
                                 mst_id=mst_id))
+    parent_url = url_for('selectionMng.detail', mst_id=mst_id, db_id=g.db_id)
+    g.navi_arr_ref.extend([
+        "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
+        "Detail", parent_url,
+        "Selection List Modify"
+    ])
     return render_template(
         "cms_admin/selection_list_modify.html",
         title="CMS：Selection List Modify",
         selection_list=selection_list,
-        mst=mst_id
+        parent_url=parent_url
     )
 
 

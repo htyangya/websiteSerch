@@ -10,12 +10,12 @@ from app import db
 from app.lib.cms_lib.file_util import FileUtil
 from app.lib.cms_lib.str_util import StrUtil
 from app.lib.conf.const import Const
-from app.models.cms_ctx_data import CmsCtxData
-from app.models.cms_db import CmsDb
-from app.models.cms_file import CmsFile
-from app.models.cms_file_type import CmsFileType
-from app.models.cms_object import CmsObject
-from app.services.file_service import ctx_allowed_file
+from app.models.cms_admin.cms_ctx_data import CmsCtxData
+from app.models.cms_db_admin.cms_db import CmsDb
+from app.models.cms.cms_file import CmsFile
+from app.models.cms.cms_file_type import CmsFileType
+from app.models.cms.cms_object import CmsObject
+from app.services.cms_admin.file_service import ctx_allowed_file
 
 
 class CtxUtil:

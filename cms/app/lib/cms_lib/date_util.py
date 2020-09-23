@@ -1,6 +1,8 @@
-import datetime
 import re
 import sys
+from datetime import date, datetime
+
+from flask import current_app
 
 from app.lib.cms_lib.arr_util import ArrUtil
 from app.lib.cms_lib.str_util import StrUtil
@@ -85,5 +87,13 @@ class DateUtil:
 
     @staticmethod
     def current_date_str():
-        dt_now = datetime.datetime.now()
+        dt_now = datetime.now()
         return dt_now.strftime('%Y%m%d%H%M%S')
+
+    @staticmethod
+    # json date, datetimeの変換関数
+    def json_serial(obj):
+        # 日付型の場合には、文字列に変換します
+        if isinstance(obj, (datetime, date)):
+            return obj.strftime(StrUtil.get_safe_config(current_app, 'STRFTIME_TIME_FORMAT'))
+        raise TypeError("Type %s not serializable" % type(obj))

@@ -159,9 +159,9 @@
                     <td align="right">
                         <span>
                             {% if is_db_admin_user %}
-                            <a href="{{url_for('redirect_db_admin')}}?db_id={{ db_id }}" target="_blank">システム管理</a> |
+                            <a href="{{url_for('redirect_db_admin')}}?db_id={{ db_id }}" target="_blank">システム管理</a>
                             {% endif %}
-
+                            {% if is_db_admin_user and is_db_editable %} | {% endif %}
                             {% if is_db_editable and is_edit_mode %}
                             <a href="{{url_for('swh_edit_mode')}}?db_id={{ db_id }}" style="font-size:10pt;">編集中</a>
                             {% elif is_db_editable %}

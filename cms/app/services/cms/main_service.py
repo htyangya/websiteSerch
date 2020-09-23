@@ -7,22 +7,22 @@ from werkzeug.utils import redirect
 import app.lib.cms_lib.session
 from app import db
 from app.controllers.package import PkgCmsSecurity, PkgCmsLog
-from app.forms.property_form import PropertyForm
 from app.lib.cms_lib.ctx_util import CtxUtil
+from app.lib.cms_lib.date_util import DateUtil
 from app.lib.cms_lib.session import session
 from app.lib.cms_lib.str_util import StrUtil
 from app.lib.conf.const import Const
-from app.models.cms_ctx_data import CmsCtxData
-from app.models.cms_folder import CmsFolder
-from app.models.cms_keyword_master import CmsKeywordMaster
-from app.models.cms_keyword_setting import CmsKeywordSetting
-from app.models.cms_object import CmsObject
-from app.models.cms_object_keyword import CmsObjectKeyword
-from app.models.cms_object_property import CmsObjectProperty
-from app.models.cms_object_prop_selection_list import CmsObjectPropSelectionList
-from app.models.cms_tree_view_setting import CmsTreeViewSetting
-from app.models.cms_search_setting import CmsSearchSetting
-from app.models.cms_style_master import CmsStyleMaster
+from app.models.cms_admin.cms_ctx_data import CmsCtxData
+from app.models.cms.cms_folder import CmsFolder
+from app.models.cms_admin.cms_keyword_master import CmsKeywordMaster
+from app.models.cms_admin.cms_keyword_setting import CmsKeywordSetting
+from app.models.cms.cms_object import CmsObject
+from app.models.cms.cms_object_keyword import CmsObjectKeyword
+from app.models.cms_db_admin.cms_object_property import CmsObjectProperty
+from app.models.cms_db_admin.cms_object_prop_selection_list import CmsObjectPropSelectionList
+from app.models.cms.cms_tree_view_setting import CmsTreeViewSetting
+from app.models.cms_db_admin.cms_search_setting import CmsSearchSetting
+from app.models.cms_admin.cms_style_master import CmsStyleMaster
 
 
 def main_init(db_id, request):
@@ -184,7 +184,7 @@ def get_file_list_json(db_id, view_type, id, sort_type, sort_column, sort_column
     res = {**res, **{"sort_column": sort_column}}
     res = {**res, **{"sort_type": sort_type}}
 
-    return Response(json.dumps(res))
+    return Response(json.dumps(res, default=DateUtil.json_serial))
 
 
 def getKeywordList(db_id, request):

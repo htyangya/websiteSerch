@@ -3,31 +3,12 @@
     <style>
     </style>
 {% endblock %}
-    {% set parent_url = url_for('selectionMng.detail',mst_id=mst, db_id=db_id) %}
-    {% set parent_title = 'Detail' %}
-{% if not selection_list %}
-    {% set title_text = 'Selection List Create' %}
-{% else %}
-    {% set title_text = 'Selection List Modify' %}
-{% endif %}
-{% block breadCrumb_content %}
-    &gt;<a href="{{ url_for('selectionMng.index', db_id=db_id) }}">Selection Master</a>&nbsp;
-    &gt;<a href="{{ parent_url }}">{{ parent_title }}</a>&nbsp;
-    &gt;{{ title_text }}
-{% endblock %}
 
 {% block container %}
     <div id="ope_msg">Selection Master Create</div>
     <br/>
     <center>
-        {% if not selection_list %}
-            <form action="{{ url_for( 'selectionMng.list_add',mst_id=mst, db_id=db_id) }}" method="post">
-
-        {% else %}
-            <form action="" method="post">
-        {% endif %}
-
-
+        <form action="" method="post">
         <center>
             <table id="property">
                 <tbody>

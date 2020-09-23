@@ -10,7 +10,8 @@ from app.forms.login_form import LoginForm
 from app.lib.cms_lib.session import get_db_id
 from app.lib.cms_lib.str_util import StrUtil
 from app.lib.cms_lib.user_auth import UserAuth
-from app.services import main_service, file_service, property_service
+from app.services.cms_admin import file_service
+from app.services.cms import main_service, property_service
 from app.services.login_service import doLogin
 
 

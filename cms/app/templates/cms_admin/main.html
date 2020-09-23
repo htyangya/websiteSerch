@@ -37,9 +37,9 @@
         <h2>CMS</h2>
         <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
     </center>
-    <div class="border"></div>
-    &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>
-    <div class="border"></div>
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
     <center>
         <table class="menu_list">
             <tbody>
@@ -48,7 +48,7 @@
                 </tr>
                 <tr class="even">
                     <td>
-                        <a href="{{url_for('database_admin')}}" target="_self">Database</a>
+                        <a href="{{ url_for('database_admin') }}" target="_self">Database</a>
                     </td>
                 </tr>
             </tbody>
@@ -63,7 +63,7 @@
                 </tr>
                 <tr class="even">
                     <td>
-                        <a href="{{url_for('ip_addr_admin')}}" target="_self">IP address list master</a>
+                        <a href="{{ url_for('ip_addr_admin') }}" target="_self">IP address list master</a>
                     </td>
                 </tr>
             </tbody>

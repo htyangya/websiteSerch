@@ -9,7 +9,7 @@ from sqlalchemy.sql import text
 from app import db
 from app.lib.cms_lib.str_util import StrUtil
 from app.lib.conf.const import Const
-from app.models.cms_object_property import CmsObjectProperty
+from app.models.cms_db_admin.cms_object_property import CmsObjectProperty
 
 
 class CmsObject(db.Model):

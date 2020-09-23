@@ -6,7 +6,7 @@ from werkzeug.utils import redirect
 from app.forms.login_form import LoginForm
 from app.lib.cms_lib.session import get_db_id
 from app.lib.cms_lib.user_auth import UserAuth
-from app.services import db_admin_main_service as adm_service
+from app.services.cms_db_admin import db_admin_main_service as adm_service
 from app.services.login_service import doDbAdminLogin, redirectDbAdmin
 
 

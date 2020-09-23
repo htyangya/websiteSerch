@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}">
-    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}" />
 
     <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
@@ -19,18 +19,18 @@
     <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
 
     <style type="text/css">
         body {
             margin: 10px !important;
-            overflow: hidden;
         }
         table {
             font-size: 9pt !important;
         }
-        .disp_content {
-            white-space: pre;
-            word-wrap: break-word;
+        .jqmWindow {
+            width: 300px !important;
+            height: 150px !important;
         }
     </style>
     <title>{{ title }}</title>
@@ -38,13 +38,12 @@
 <body>
     <div class="border"></div>
     <center>
-        <h2>TOSHIBA CMS</h2>
+        <h2>CMS</h2>
         <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
     </center>
-
-    <div class="border"></div>
-    &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('database_admin')}}">Database</a>&nbsp;&gt;&nbsp;{{cmsDb.db_name}}
-    <div class="border"></div>
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
     <center>
         <table id="property_header">
             <tbody>
@@ -52,7 +51,7 @@
                     <td class="function">
                         Database Function:
                         <span class="object_menu"><a href="{{ url_for('database', func='database_edit', db_id = cmsDb['db_id'])}}" target="_self">Modify</a></span>
-                        <span class="object_menu"><a href="javascript:void(0);" onclick="deleteDb()">Delete</a></span>
+                        <span class="object_menu"><a href="javascript:void(0);" onclick="deleteDatabase('{{ cmsDb['db_id'] }}');">Delete</a></span>
                     </td>
                 </tr>
             </tbody>
@@ -70,7 +69,7 @@
                 {% for key, value in cmsDb.items() %}
                 <tr>
                     <td>{{ key }}</td>
-                    <td class="disp_content">{{ value }}</td>
+                    <td class="disp_content">{{ value or ''}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -90,39 +89,45 @@
                     <th>Data Management</th>
                 </tr>
                 <tr class="even">
-                    <td> <a href="{{url_for('list_format_list',db_id = cmsDb['db_id'],format_type_flag='0')}}" target="_self">List Format</a></td>
+                    <td><a href="{{ url_for('list_format', db_id = cmsDb['db_id']) }}" target="_self">List Format</a></td>
                 </tr>
                 <tr class="even">
-                    <td><a href="{{url_for('list_format_list',db_id = cmsDb['db_id'],format_type_flag='1')}}" target="_self">Property Format</a></td>
+                    <td><a href="{{ url_for('property_format', db_id = cmsDb['db_id']) }}" target="_self">Property Format</a></td>
                 </tr>
                 <tr class="even">
-                    <td> <a href="{{url_for('keyword_list',db_id = cmsDb['db_id'])}}" target="_self">Keyword</a></td>
+                    <td><a href="{{ url_for('keyword_list', db_id = cmsDb['db_id']) }}" target="_self">Keyword</a></td>
                 </tr>
                 <tr class="even">
-                    <td> <a href="{{url_for('selectionMng.index',db_id = cmsDb['db_id'])}}" target="_self">Selection Master</a></td>
+                    <td> <a href="{{ url_for('selectionMng.index',db_id = cmsDb['db_id']) }}" target="_self">Selection Master</a></td>
+                </tr>
+                <tr class="even">
+                    <td> <a href="{{url_for('style_setting',db_id = cmsDb['db_id'])}}" target="_self">Style Setting</a></td>
                 </tr>
             </tbody>
         </table>
     </center>
 
-    <form id="databaseDeleteForm" action="{{url_for('database')}}" method="post">
+    <form id="databaseDeleteForm" action="{{ url_for('database') }}" method="post">
         <input type="hidden" name="func" value="database_delete" />
-        <input type="hidden" name="db_id" value="{{cmsDb['db_id']}}" />
+        <input type="hidden" name="db_id" value="{{ cmsDb['db_id'] }}" />
     </form>
     <script>
         //<![CDATA[
+        var deleteDatabaseJqUrl = '{{ url_for('delete_database_jqmodal') }}';
         $(function() {
             $("#property tr:not(:has(th)):odd").addClass("odd");
             $("#property tr:not(:has(th)):even").addClass("even");
         });
 
+        function deleteDatabase(db_id) {
+            popupDeleteDatabase(db_id);
+        }
+
         function deleteDb() {
-            if (window.confirm('Are you sure to delete?')) {
-                $("#databaseDeleteForm").submit();
-            }
-            return false;
+            $("#databaseDeleteForm").submit();
         }
         //]]>
     </script>
+    <div class="jqmWindow" id="jqmWindow"></div>
 </body>
 </html>

@@ -10,24 +10,24 @@ from flask_login import current_user
 import app.lib.cms_lib.session
 from app import db
 from app.controllers.package import PkgCmsSecurity, PkgCmsLog
-from app.forms.property_form import PropertyForm
+from app.forms.cms.property_form import PropertyForm
 from app.lib.cms_lib.db_util import DbUtil
 from app.lib.cms_lib.file_util import FileUtil
 from app.lib.cms_lib.str_util import StrUtil
 from app.lib.conf.const import Const
 from app.models.cms_common import CmsCommon
-from app.models.cms_ctx_data import CmsCtxData
-from app.models.cms_file import CmsFile
-from app.models.cms_file_type import CmsFileType
-from app.models.cms_file_wk import CmsFileWk
-from app.models.cms_list_format import CmsListFormat
-from app.models.cms_object import CmsObject
-from app.models.cms_object_keyword import CmsObjectKeyword
-from app.models.cms_object_prop_selection_list import CmsObjectPropSelectionList
-from app.models.cms_object_property import CmsObjectProperty
-from app.models.cms_object_type import CmsObjectType
-from app.models.cms_tree_view_setting import CmsTreeViewSetting
-from app.models.cms_folder import CmsFolder
+from app.models.cms_admin.cms_ctx_data import CmsCtxData
+from app.models.cms.cms_file import CmsFile
+from app.models.cms.cms_file_type import CmsFileType
+from app.models.cms.cms_file_wk import CmsFileWk
+from app.models.cms_admin.cms_list_format import CmsListFormat
+from app.models.cms.cms_object import CmsObject
+from app.models.cms.cms_object_keyword import CmsObjectKeyword
+from app.models.cms_db_admin.cms_object_prop_selection_list import CmsObjectPropSelectionList
+from app.models.cms_db_admin.cms_object_property import CmsObjectProperty
+from app.models.cms_db_admin.cms_object_type import CmsObjectType
+from app.models.cms.cms_tree_view_setting import CmsTreeViewSetting
+from app.models.cms.cms_folder import CmsFolder
 
 
 def property(func, request):
@@ -270,7 +270,7 @@ def property_save(db_id, func, request):
             now = datetime.now()
             uploadDirPath = current_app.config['UPLOAD_DIR_PATH']
             uploadDirPath = os.path.join(uploadDirPath, now.strftime("%Y%m"))
-            uploadDirPath = os.path.join(uploadDirPath, now.strftime("%Y%m%d"))
+            uploadDirPath = os.path.join(uploadDirPath, now.strftime(StrUtil.get_safe_config(current_app, 'STRFTIME_DATE_FORMAT')))
             uploadDirPath = os.path.join(uploadDirPath, db_id)
             uploadDirPath = os.path.join(uploadDirPath, form.object_id.data)
             if not os.path.exists(uploadDirPath):

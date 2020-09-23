@@ -74,7 +74,8 @@ def create_app():
     app.add_url_rule('/cmsdbadmin/privs_dept_detail', 'privs_dept_detail', db_admin_route.privs_dept_detail,
                      methods=['GET'])
     app.add_url_rule('/cmsdbadmin/template_dl', 'template_dl', db_admin_route.template_dl, methods=['POST'])
-    app.add_url_rule('/cmsdbadmin/check_object_batch_upload', 'check_object_batch_upload', db_admin_route.check_object_batch_upload,
+    app.add_url_rule('/cmsdbadmin/check_object_batch_upload', 'check_object_batch_upload',
+                     db_admin_route.check_object_batch_upload,
                      methods=['GET', 'POST'])
     app.add_url_rule('/cmsdbadmin/object_batch_upload', 'object_batch_upload', db_admin_route.object_batch_upload,
                      methods=['GET', 'POST'])
@@ -87,6 +88,8 @@ def create_app():
     # DB管理
     app.add_url_rule('/cmsadmin/database_admin', 'database_admin', admin_route.database_admin, methods=['GET'])
     app.add_url_rule('/cmsadmin/database', 'database', admin_route.database, methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/delete_database_jqmodal', 'delete_database_jqmodal', admin_route.delete_database_jqmodal,
+                     methods=['GET', 'POST'])
     app.add_url_rule('/cmsadmin/keyword', 'adm_keyword', admin_route.keyword, methods=['GET', 'POST'])
     # IPアドレス管理
     app.add_url_rule('/cmsadmin/ip_addr_admin', 'ip_addr_admin', admin_route.ip_addr_admin, methods=['GET'])
@@ -95,11 +98,26 @@ def create_app():
 
     # keyword_list
     app.add_url_rule('/cmsadmin/keyword_list', 'keyword_list', admin_route.keyword_list, methods=['GET'])
-    app.add_url_rule('/cmsadmin/list_format_list', 'list_format_list', admin_route.list_format_list, methods=['GET', 'POST'])
-    app.add_url_rule('/cmsadmin/check_list_format_delete', 'check_list_format_delete', admin_route.check_list_format_delete,
+    # list_format
+    app.add_url_rule('/cmsadmin/list_format', 'list_format', admin_route.list_format_list, methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/list_format_edit', 'list_format_edit', admin_route.list_format_edit,
                      methods=['GET', 'POST'])
-    app.add_url_rule('/cmsadmin/list_format_edit', 'list_format_edit', admin_route.list_format_edit,methods=['GET', 'POST'])
-    app.add_url_rule('/cmsadmin/list_format_jqmodal', 'list_format_jqmodal', admin_route.list_format_jqmodal,methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/list_format_delete', 'list_format_delete', admin_route.list_format_delete,
+                     methods=['GET', 'POST'])
+    # property_format
+    app.add_url_rule('/cmsadmin/property_format', 'property_format', admin_route.property_format_list,
+                     methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/property_format_edit', 'property_format_edit', admin_route.property_format_edit,
+                     methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/property_format_delete', 'property_format_delete', admin_route.property_format_delete,
+                     methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/format_jqmodal', 'format_jqmodal', admin_route.format_jqmodal, methods=['GET', 'POST'])
+
+    # Style Setting
+    app.add_url_rule('/cmsadmin/style_setting', 'style_setting', admin_route.style_setting_list,
+                     methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/style_setting_edit', 'style_setting_edit', admin_route.style_setting_edit,
+                     methods=['GET', 'POST'])	 
     # selection_mng
     app.register_blueprint(selection_mng.selectionMng)
 

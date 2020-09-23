@@ -3,19 +3,6 @@
     <style>
     </style>
 {% endblock %}
- {% if not selection_mst %}
-    {% set parent_url = url_for('selectionMng.index', db_id=db_id) %}
-    {% set parent_title = 'Selection Master' %}
-    {% set title_text = 'Create' %}
- {% else %}
-    {% set parent_url = url_for('selectionMng.detail', mst_id=selection_mst.selection_mst_id, db_id=db_id) %}
-    {% set parent_title = 'Selection Master Detail' %}
-     {% set title_text = 'Modify' %}
-{% endif %}
- {% block breadCrumb_content %}
-       &gt;<a href="{{ parent_url }}">{{ parent_title }}</a>&nbsp;
-     &gt;{{ title_text }}
- {% endblock %}
 
 {% block container %}
     <div id="ope_msg">Selection Master Create</div>

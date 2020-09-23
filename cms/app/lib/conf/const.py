@@ -7,6 +7,11 @@ class Const(object):
     # VIEW_TYPE
     FOLDER = "FOLDER"
     KEYWORD = "KEYWORD"
+    # FORMAT_TYPE
+    LIST = "LIST"
+    PROPERTY = "PROPERTY"
+    # Style Tyle COLOR
+    STYLE_TYPE_COLOR = "COLOR"
 
     URL_FORMAT = '{}?{}'
     NO_FILE_FOUND_MSG = 'File not found: {}'
@@ -66,9 +71,6 @@ class Const(object):
     # SQL用
     START = '_start'
     END = '_end'
-
-    # STYLE_TYPE
-    STYLE_TYPE_COLOR = 'COLOR'
 
     # ファイル
     FILE_SUFFIX_CSV = ".csv"

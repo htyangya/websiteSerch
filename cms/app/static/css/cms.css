@@ -13,9 +13,9 @@ div#ui-datepicker-div {
 }
 
 label {
-    display:inline-block;
-    margin-left:5px;
-    font-weight:normal;
+    display: inline-block;
+    margin-left: 5px;
+    font-weight: normal;
     margin-bottom: 0px;
 }
 
@@ -38,8 +38,8 @@ div.left-header-btn {
 
 /* リスク一覧画面の検索結果に登場するボタンの右側 */
 div.right-header-btn {
-    float:right;
-    margin-right:20px;
+    float: right;
+    margin-right: 20px;
 }
 
 /* リスク一覧画面の検索結果に登場するボタン */
@@ -396,6 +396,11 @@ th.title {
 
 #datalist td.num {
     text-align: right;
+}
+
+#datalist td.disp_content,.disp_content {
+    white-space: pre;
+    word-wrap: break-word;
 }
 
 input.read_only {

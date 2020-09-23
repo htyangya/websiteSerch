@@ -10,10 +10,10 @@ from app.controllers.package import PkgCmsLog
 from app.lib.cms_lib.file_util import FileUtil
 from app.lib.cms_lib.str_util import StrUtil
 from app.lib.conf.const import Const
-from app.models.cms_file import CmsFile
-from app.models.cms_file_type import CmsFileType
-from app.models.cms_file_wk import CmsFileWk
-from app.models.cms_object import CmsObject
+from app.models.cms.cms_file import CmsFile
+from app.models.cms.cms_file_type import CmsFileType
+from app.models.cms.cms_file_wk import CmsFileWk
+from app.models.cms.cms_object import CmsObject
 
 
 def open_files_jqmodal(db_id, object_id, file_id, file_type_id):

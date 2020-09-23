@@ -20,8 +20,12 @@ class Config:
     APP_VER = datetime.now().strftime('%Y%m%d_%H%M')
     # 日時フォーマット
     DATE_TIME_FORMAT = 'yyyy/MM/dd HH24:mi:ss'
+    # strftime日時フォーマット
+    STRFTIME_TIME_FORMAT = '%Y/%m/%d %H:%M:%S'
     # 日付フォーマット
     DATE_FORMAT = 'yyyy/MM/dd'
+    # strftime日付フォーマット
+    STRFTIME_DATE_FORMAT = '%Y/%m/%d'
     # アップロードするファイルのサイズ
     MAX_UPLOAD_FILE_SIZE_MB = 100
     # ローカルテスト用（リリース対象外）

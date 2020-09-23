@@ -51,9 +51,9 @@
             <h2>CMS : {{cmsDb.db_name}}</h2>
             <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
         </center>
-        <div class="border"></div>
-        &gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('database_admin')}}">Database</a>&nbsp;&gt;&nbsp;<a href="{{ url_for('database', func='database_detail', db_id=cmsDb['db_id']) }}" >{{cmsDb['db_name']}}</a>&nbsp;&gt;&nbsp;Keyword
-        <div class="border"></div>
+        {% autoescape False %}
+            {{ navi_bar_html }}
+        {% endautoescape %}
         <br>
     </div>
     <div>
@@ -61,8 +61,7 @@
             <table id="datalist_header" class="datalist_headerC">
                 <tr>
                     <th class="title">Keyword List</th>
-
-                    <th style="float:right;">
+                    <th style="float: right;">
                         <span><input style="height: 22px;" type="text" id="search_txt"/></span>
                         <input type="button" id="search_btn" value="Search">
                     </th>
@@ -93,7 +92,6 @@
                             <td><a href="{{url_for('adm_keyword', func='keyword_edit', db_id=cmsDb.db_id, keyword_mst_id=data.keyword_mst_id)}}">変更</a></td>
                         </tr>
                         {% endfor %}
-
                     </table>
                 </div>
             </div>
@@ -118,7 +116,6 @@
                 }
             })
         });
-
         initTlibTableFilter('datalist');
 
     </script>

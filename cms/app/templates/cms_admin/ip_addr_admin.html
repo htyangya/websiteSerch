@@ -37,10 +37,9 @@
         <h2>CMS</h2>
         <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
     </center>
-
-    <div class="border"></div>
-    &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;IP address List
-    <div class="border"></div>
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
     <!-- new print_dataset_list_ex -->
     <center>
         <table id="datalist_header" class="datalist_headerC">

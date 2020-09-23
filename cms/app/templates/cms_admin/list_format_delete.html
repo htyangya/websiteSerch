@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}" />
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+
+        html { overflow: hidden; }
+        body {
+            overflow: auto;
+            margin: 10px !important;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+        .dataTable th {
+            background: #bbbbff;
+            text-align: left;
+        }
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="border"></div>
+    <center>
+        <h2>CMS</h2>
+        <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+    </center>
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
+    <div id="ope_msg">{{ subTitle }}</div>
+    <br>
+    <center>
+        <form id="list_format_form" action="{{ url_for('list_format_delete')}}" name="list_format_form" method="post">
+            <table id="datalist" class="datalistC">
+                <tbody>
+                    <tr>
+                        <th>Remarks</th>
+                    </tr>
+                    <tr>
+                        <td class="disp_content">{{ listFormat.remarks or '' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="errMsgDiv">
+                {% if err_msgs|length == 0 %}
+                    <div class="required">Delete List Format.</div>
+                {% endif %}
+                {% for err_msg in err_msgs %}
+                    <div class="required">{{ err_msg }}</div>
+                {% endfor %}
+            </div>
+            <br>
+            <input type="hidden" name="func" id="func" value="list_format_delete" />
+            <input type="hidden" name="db_id" id="db_id" value="{{ cmsDb['db_id'] }}" />
+            <input type="hidden" name="format_id" id="format_id" value="{{ format_id }}" />
+            {% if err_msgs|length == 0 %}
+                <input type="button" name="delete_btn" value="Submit" onclick="delete_func();" />
+            {% endif %}
+            <input type="button" name="cancel_btn" value="Cancel" onclick="cancel_func();"/>
+        </form>
+    </center>
+    <div class="border"></div>
+    <script>
+        function delete_func() {
+            $('#errMsgDiv').empty();
+            $('#list_format_form').submit();
+        }
+
+        function cancel_func() {
+            window.location.href = "{{ url_for('list_format', db_id=cmsDb['db_id']) }}";
+        }
+    </script>
+</body>
+</html>

@@ -23,7 +23,6 @@
     <style type="text/css">
         body {
             margin: 10px !important;
-            overflow: hidden;
         }
         table {
             font-size: 9pt !important;
@@ -34,13 +33,12 @@
 <body>
     <div class="border"></div>
     <center>
-        <h2>TOSHIBA CMS</h2>
+        <h2>CMS</h2>
         <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
     </center>
-
-    <div class="border"></div>
-    &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('database_admin')}}" target="_self">Database</a>{% if editMode != 'New'%}&nbsp;&gt;&nbsp;{{form.dbName.data}}{% endif %}
-    <div class="border"></div>
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
     <div id="ope_msg">{{subTitle}}</div>
     <br>
     <center>
@@ -117,23 +115,23 @@
                 </table>
             </center>
             <input type="hidden" name="func" id="func" value="database_save" />
-            <input type="hidden" name="editMode" id="editMode" value="{{editMode}}" />
-            <input type="hidden" name="dbId" id="dbId" value="{{form.dbId.data}}" />
+            <input type="hidden" name="editMode" id="editMode" value="{{ editMode }}" />
+            <input type="hidden" name="dbId" id="dbId" value="{{ form.dbId.data }}" />
+            <input type="hidden" name="dbName" id="dbName" value="{{ form.dbName.data }}" />
             {{form.submit}}
-            <input type="button" name="cancel_btn" value="Cancel" onclick="cancel_func()" />
+            <input type="button" name="cancel_btn" value="Cancel" onclick="cancel_func();" />
         </form>
     </center>
     <div class="border"></div>
     <script>
         //<![CDATA[
-        var editMode = '{{editMode}}';
-        var db_id = '{{form.dbId.data}}';
+        var editMode = '{{ editMode }}';
 
         function cancel_func() {
             if (editMode == 'New') {
-                window.location.href = getDatabaseListUrl();
+                window.location.href = "{{ url_for('database_admin') }}";
             } else {
-                window.location.href = getDatabaseDetailUrl(db_id);
+                window.location.href = "{{ url_for('database', func='database_detail', db_id=form.dbId.data) }}";
             }
         }
         //]]>

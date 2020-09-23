@@ -6,22 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}" />
     <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}" />
-    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}" />
-    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}" />
     <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}" />
 
     <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
     <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/tjslib/TlibJSFixedHeaderTable3.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/tjslib/TlibJSTableFilter.js?q={{appVer}}" type="text/javascript"></script>
-    <script src="/static/jquery/jquery.highlight-3a.js?q={{appVer}}" type="text/javascript"></script>
 
     <style type="text/css">
 
@@ -37,108 +29,60 @@
             background: #bbbbff;
             text-align: left;
         }
-        .highlight { background-color: yellow; }
-
-        /* jqModal用CSS */
-        .jqmWindow {
-            width: 800px !important;
-            min-height: 500px !important;
-            max-height: 80% !important;
-        }
     </style>
     <title>{{ title }}</title>
 </head>
 <body>
-    <div class="condtion">
-        <div class="border"></div>
-        <center>
-            <h2>CMS : {{cmsDb.db_name}}</h2>
-            <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
-        </center>
-        <div class="border"></div>
-        &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('database_admin')}}">Database</a>&nbsp;&gt;&nbsp;<a href="{{ url_for('database', func='database_detail', db_id=cmsDb['db_id']) }}" >{{cmsDb.db_name}}&nbsp;</a>&gt;&nbsp;{{subtitle}}
-        <div class="border"></div>
-        <br>
-    </div>
-    <div>
-        <center>
-            {% for key, value in objectTypeDic.items() %}
-            {% set objectType_id=key %}
-            {% set objectType_name=value %}
+    <div class="border"></div>
+    <center>
+        <h2>CMS</h2>
+        <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+    </center>
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
+    <center>
+        {% for key, value in objectTypeDic.items() %}
+        {% set objectType_id=key %}
+        {% set objectType_name=value %}
             <table id="datalist_header" class="datalist_headerC">
-                <tr>
+                <tbody>
+                    <tr>
                     <th class="title">{{ objectType_name }}</th>
-                    <th class="title" style="float:right;">
-                        <a href="{{ url_for('list_format_edit', func='list_format_edit',db_id = cmsDb['db_id'],object_type_id=objectType_id, format_type_flag=format_type_flag) }}">Add</a>
-                    </th>
-                </tr>
+                    <td class="function"><span class="object_menu">
+                        <a href="{{ url_for('list_format_edit', func='edit',db_id = cmsDb['db_id'],object_type_id=objectType_id) }}">Add</a>
+                    </span></td>
+                    </tr>
+                </tbody>
             </table>
 
-            <div>
-                <div id="tableDiv" class="TlibTableC">
-                    <table id="datalist" class="dataTable dataListC">
+            <table id="datalist" class="datalistC">
+                <tbody>
                         <tr>
-                            <th style="width: 85%">Remarks</th>
-                            <th >Menu</th>
+                            <th style="width: 85%;">Remarks</th>
+                            <th>Menu</th>
                         </tr>
                         {% for data in listFormatDic.get(objectType_id) %}
                         <tr>
-                            <td style="width: 85%">{{ data.remarks }}</td>
+                            <td class="disp_content">{{ data.remarks or '' }}</td>
                             <td>
-                                <a href="{{ url_for('list_format_edit', func='list_format_edit', db_id = cmsDb['db_id'], format_type_flag=format_type_flag, object_type_id=data.object_type_id,format_id=data.format_id) }}">Modify</a>
-                                <a href="#" onclick="return delete_check('{{ url_for('list_format_edit', func='list_format_delete',db_id = cmsDb['db_id'], format_type_flag=format_type_flag, object_type_id=data.object_type_id,format_id =data.format_id) }}' ,'{{data.format_id}}');">Delete</a>
+                                <a href="{{ url_for('list_format_edit', func='edit', db_id = cmsDb['db_id'], object_type_id=data.object_type_id,format_id=data.format_id) }}">Modify</a>
+                                <a href="{{ url_for('list_format_delete', db_id = cmsDb['db_id'], format_id=data.format_id) }}">Delete</a>
                             </td>
                         </tr>
                         {% endfor %}
-                    </table>
-                </div>
-            </div>
-            {% endfor %}
-        </center>
-    </div>
+                </tbody>
+            </table>
+        {% endfor %}
+    </center>
     <div class="border"></div>
     <script>
     //<![CDATA[
-        function delete_check(url,format_id) {
-            if (confirm("Are you sure to delete this List Format?"))
-            {
-                delListFormat(url,format_id);
-            }else{
-                return false;
-            }
-        }
-
-        function delListFormat(url_del,format_id) {
-             $.ajax({
-                type: "POST",
-                url: "check_list_format_delete?format_id="+format_id,
-                success: function(data) {
-                    if("error" == data){
-                        alert_dlg('Error', 'Can not delete this Property/Format.');
-                    }else{
-                        window.location.href = url_del;
-                    }
-                },
-                error:function(){
-                    alert("error");
-                }
-            });
-    }
+        $(function() {
+            $("tr:not(:has(th)):odd").addClass("odd");
+            $("tr:not(:has(th)):even").addClass("even");
+        });
     //]]>
     </script>
-    <div class="jqmWindow" id="jqmWindow"></div>
-    <div id="confirm">
-        <div class="header"><span>Confirm</span></div>
-        <div class="message"></div>
-        <div class="buttons middleBtnArea float_none width_170">
-            <div class="btn btn-default yes float_none">Yes</div>
-            <div class="btn btn-default no simplemodal-close float_none">No</div>
-        </div>
-    </div>
-    <div id="alert">
-        <div class="header"><span>Alert</span></div>
-        <div class="message"></div>
-        <div class="button"><div class="">OK</div></div>
-    </div>
 </body>
 </html>

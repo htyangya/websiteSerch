@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/TlibDragAndDropUpload.css?q={{appVer}}">
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+        body {
+            margin: 10px !important;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="border"></div>
+    <center>
+        <h2>CMS</h2>
+        <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+    </center>
+    {% autoescape False %}
+    {{ navi_bar_html }}
+    {% endautoescape %}
+    <div id="ope_msg">{{ thTitle }}</div>
+    <br>
+    <center>
+        <form id="style_setting_form" action="{{ url_for('style_setting_edit') }}" name="style_setting_form" method="post">
+            {{ form.hidden_tag() }}
+            {% if msg %}
+            <span class="required">{{ msg }}</span>
+            {% endif %}
+            {% for err_msg in err_msgs %}
+                <div class="required">{{ err_msg }}</div>
+            {% endfor %}
+            <center>
+                <table id="property">
+                    <tbody>
+                        <tr>
+                            <th colspan="2">Style Setting</th>
+                        </tr>
+                        <tr class="even">
+                            <td class="name">Style Name</td>
+                            <td class="value">
+                                {{ form.styleName.data }}
+                            </td>
+                        </tr>
+                        <tr class="odd">
+                            <td class="name">Style Type</td>
+                            <td class="value">
+                                {{ form.styleType.data }}
+                            </td>
+                        </tr>
+                        <tr class="even">
+                            <td class="name">Value</td>
+                            <td class="value">
+                                {% if form.styleType.data == const.STYLE_TYPE_COLOR %}
+                                {{ form.value(size = "100", style="float: left;") }}
+                                    {% if is_type_color == False %}
+                                    <div id="color_style" style="background-color:{{ form.value.data }}; margin-top: 2px; margin-left: 10px; height: 20px; width: 50px; float: left;"></div>
+                                    {% else %}
+                                    <div id="select_style" style="margin-top: 5px; margin-left: 60px;"></div>
+                                    {% endif %}
+                                {% else %}
+                                {{ form.value(size = "100") }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr class="odd">
+                            <td class="name">Default Value</td>
+                            <td>
+                                {% if form.styleType.data == const.STYLE_TYPE_COLOR %}
+                                <div style="margin-top: 5px; width: 70px; float: left;">{{ form.defaultValue.data }}</div>
+                                <div id="content" style="background-color:{{ form.defaultValue.data }}; height: 20px; width: 50px; float: left;"></div>
+                                {% else %}
+                                {{ form.defaultValue.data }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr class="even">
+                            <td class="name">Remarks</td>
+                            <td class="disp_content">{{ form.remarks.data }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </center>
+            <input type="hidden" name="func" id="func" value="save" />
+            <input type="hidden" name="dbId" id="dbId" value="{{ form.dbId.data }}" />
+            <input type="hidden" name="dbName" id="dbName" value="{{ form.dbName.data }}" />
+            <input type="hidden" name="value" id="value" value="{{ form.value.data }}" />
+            <input type="hidden" name="styleName" id="styleName" value="{{ form.styleName.data }}" />
+            <input type="hidden" name="styleType" id="styleType" value="{{ form.styleType.data }}" />
+            <input type="hidden" name="defaultValue" id="defaultValue" value="{{ form.defaultValue.data }}" />
+            <input type="hidden" name="remarks" id="remarks" value="{{ form.remarks.data }}" />
+            <input type="button" name="save_btn" value="Save" onclick="save_func();" />
+            <input type="button" name="cancel_btn" value="Cancel" onclick="cancel_func();" />
+        </form>
+    </center>
+    <div class="border"></div>
+    <script>
+        //<![CDATA[
+        $(function () {
+            {% if form.styleType.data == const.STYLE_TYPE_COLOR %}
+            var colorValue = '{{ form.value.data }}';
+            if('{{ is_type_color }}' == 'True') {
+                $('#value').attr('type', 'color');
+                $('#select_style').html(colorValue);
+                hex = '{{ form.value.data }}';
+                if (/^\#[0-9A-F]{3}$/i.test(hex)) {
+                    let sixHex = '#';
+                    hex.replace(/[0-9A-F]/ig, function(kw) {
+                        sixHex += kw + kw;
+                    });
+                    hex = sixHex;
+                }
+                $('#value').val(hex);
+            } else {
+                $('#value').attr('size', '10');
+            }
+            $('#value').change(function() {
+                colorValue = $('#value').val();
+                {% if is_type_color == False %}
+                if (checkHex(colorValue)) {
+                    $('#color_style').css('background-color', $('#value').val());
+                } else {
+                    $('#color_style').css('background-color', '');
+                }
+                {% else %}
+                $('#select_style').html(colorValue);
+                {% endif %}
+            });
+            {% endif %}
+        });
+
+        function checkHex(value) {
+            return /^#([A-Fa-f0-9]{3}$)|^#([A-Fa-f0-9]{6}$)/.test(value);
+        }
+
+        function save_func() {
+            $('#errMsgDiv').empty();
+            $('#style_setting_form').submit();
+        }
+
+        function cancel_func() {
+            window.location.href = "{{ url_for('style_setting', db_id=form.dbId.data) }}";
+        }
+        //]]>
+    </script>
+</body>
+</html>

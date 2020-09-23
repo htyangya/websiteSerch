@@ -43,10 +43,9 @@
         <h2>CMS</h2>
         <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
     </center>
-
-    <div class="border"></div>
-    &nbsp;&gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;&gt;&nbsp;<a href="{{url_for('ip_addr_admin')}}">IP address List</a>&nbsp;&gt;&nbsp;{{ipAddrMaster.ip_addr_list_name}}
-    <div class="border"></div>
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
     <!-- new print_dataset_list_ex -->
     <center>
         <table id="datalist_header" class="datalist_headerC">
@@ -70,7 +69,7 @@
                 </thead>
                 <tbody>
                     {% for ip_info in ipAddrList %}
-                    <tr id="{{ip_info.ip_address}}">
+                    <tr id="{{ ip_info.ip_address }}">
                         <td>{{ip_info.ip_address}}</td>
                         <td>{{ip_info.subnet_mask}}</td>
                         <td>{{ip_info.ip_addr_range}}</td>

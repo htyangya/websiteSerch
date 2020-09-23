@@ -1,6 +1,5 @@
 import csv
 import os
-from flask import current_app
 
 from app.lib.cms_lib.date_util import DateUtil
 from app.lib.cms_lib.str_util import StrUtil

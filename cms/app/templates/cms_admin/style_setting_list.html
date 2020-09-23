@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jquery.simplemodal.confirm.css?q={{appVer}}" />
+    <link rel="stylesheet" type="text/css" href="/static/jquery-ui-1.10.3.custom/css/redmond/jquery-ui-1.10.3.custom.min.css?q={{appVer}}" />
+
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js?q={{appVer}}"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqDnR.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.simplemodal.confirm.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jqModal-1.9.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSFixedHeaderTable3.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSTableFilter.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery/jquery.highlight-3a.js?q={{appVer}}" type="text/javascript"></script>
+
+    <style type="text/css">
+        html { overflow: hidden; }
+        body {
+            overflow: hidden;
+            margin: 10px !important;
+        }
+        table {
+            font-size: 9pt !important;
+        }
+        .dataTable th {
+            background: #bbbbff;
+            text-align: left;
+        }
+        .highlight { background-color: yellow; }
+        .jqmWindow {
+            width: 420px !important;
+            height: 400px !important;
+        }
+        span.color01 {
+            display:block;
+            width:20px;
+            height:20px;
+            padding: 0 10px;
+            float:right;
+            text-align:center;
+            border:1px solid #ffffff;
+         }
+
+    </style>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="border"></div>
+    <center>
+        <h2>CMS</h2>
+        <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
+    </center>
+    {% autoescape False %}
+    {{ navi_bar_html }}
+    {% endautoescape %}
+
+    <center>
+        <table id="datalist_header" class="datalist_headerC">
+            <tbody>
+                <tr>
+                    <th class="title">Style Setting List</th>
+                    <th style="float: right;">
+                        <span><input style="height: 22px;" type="text" id="search_txt"/></span>
+                        <input type="button" id="search_btn" value="Search">
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <div id="tableDiv" class="TlibTableC">
+                <table id="datalist" class="dataTable dataListC">
+                    <tr>
+                        <th>Style Name</th>
+                        <th>Style Type</th>
+                        <th>Value</th>
+                        <th>Default Value</th>
+                        <th>Remarks</th>
+                        <th>Menu</th>
+                    </tr>
+                    {% for data in styleSettingList %}
+                    <tr>
+                        <td>{{ data.style_name }}</td>
+                        <td>{{ data.style_type }}</td>
+                        <td>
+                            {% if data.style_type == const.STYLE_TYPE_COLOR %}
+                            <div style="margin-top: 5px; float: left;">{{ data.value }}</div>
+                            <div style="background-color: {{ data.value }}; height: 20px; width: 50px; float: right;"></div>
+                            {% else %}
+                            {{ data.value }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if data.style_type == const.STYLE_TYPE_COLOR %}
+                            <div style="margin-top: 5px; float: left;">{{ data.default_value }}</div>
+                            <div style="background-color: {{ data.default_value }}; height: 20px; width: 50px; float: right;"></div>
+                            {% else %}
+                            {{ data.default_value }}
+                            {% endif %}
+                        </td>
+                        <td class="disp_content">{{ data.remarks }}</td>
+                        <td><a href="{{url_for('style_setting_edit', func='edit', db_id=cmsDb.db_id, style_name=data.style_name)}}">Modify</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </center>
+
+    <div class="border"></div>
+    <script>
+        var fixed_table = new TlibHeaderFixedTable();
+        fixed_table._table_div = 'tableDiv';
+        fixed_table._table_header_div = 'TlibTableHeaderfixed_table';
+        fixed_table._table_height = 0;
+        fixed_table._header_cols = 0;
+        fixed_table._no_resize_bind = 0;
+        fixed_table._use_get_bounding_client_rect_on_ie11 = 1;
+        fixed_table._use_get_bounding_client_rect = 1;
+        fixed_table.init();
+
+        $(function() {
+            $("#search_txt").keydown(function(event) {
+                if (event.keyCode == 13) {
+                    $("#search_btn").click();
+                }
+            })
+        });
+        initTlibTableFilter('datalist');
+
+    </script>
+</body>
+</html>

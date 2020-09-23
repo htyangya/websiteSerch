@@ -36,15 +36,10 @@
         <h2>CMS</h2>
         <h3><font color="green">System administration tools</font></h3> TOSHIBA : {{current_user.get_user_name()}}
     </center>
-    {% block breadCrumb %}
-        <div class="border"></div>
-        &gt;&nbsp;<a href="{{url_for('adm_index')}}">Main Menu</a>&nbsp;
-        &gt;&nbsp;<a href="{{url_for('database_admin')}}">Database</a>&nbsp;
-        &gt;<a href="{{url_for('database', db_id = db_id, func='database_detail')}}">{{ db_name }}</a>&nbsp;
-        {% block breadCrumb_content %}{% endblock %}
-        <div class="border"></div>
-        <br/>
-    {% endblock %}
+    {% autoescape False %}
+        {{ navi_bar_html }}
+    {% endautoescape %}
+    <br>
     <!-- new print_dataset_list_ex -->
     {% block container %}{% endblock %}
 

@@ -5,29 +5,30 @@ import sys
 from datetime import datetime
 
 import openpyxl
-from flask import render_template, current_app, make_response, send_file, Response, flash, session, jsonify
+from flask import render_template, current_app, make_response, send_file, Response, flash, session, jsonify, url_for
 from flask_login import current_user
 from openpyxl.styles import PatternFill
 
 import app.lib.cms_lib.session
 from app import db
 from app.controllers.package import PkgCmsLog
-from app.forms.batch_upload_form import BatchUploadForm
-from app.forms.privs_dept_form import PrivsDeptForm
-from app.forms.privs_user_form import PrivsUserForm
+from app.forms.cms_db_admin.batch_upload_form import BatchUploadForm
+from app.forms.cms_db_admin.privs_dept_form import PrivsDeptForm
+from app.forms.cms_db_admin.privs_user_form import PrivsUserForm
 from app.lib.cms_lib.date_util import DateUtil
 from app.lib.cms_lib.db_util import DbUtil
+from app.lib.cms_lib.html_util import HtmlUtil
 from app.lib.cms_lib.str_util import StrUtil
 from app.lib.cms_lib.upload_excel_validate_util import UploadExcelValidateUtil
 from app.lib.conf.const import Const
 from app.models import User
-from app.models.cms_db_code_master import CmsDbCodeMaster
-from app.models.cms_db_dept_master import CmsDbDeptMaster
-from app.models.cms_db_privs_dept import CmsDbPrivsDept
-from app.models.cms_db_privs_user import CmsDbPrivsUser
-from app.models.cms_object_property import CmsObjectProperty
-from app.models.cms_object_type import CmsObjectType
-from app.models.cms_operation_log import CmsOperationLog
+from app.models.cms_db_admin.cms_db_code_master import CmsDbCodeMaster
+from app.models.cms_db_admin.cms_db_dept_master import CmsDbDeptMaster
+from app.models.cms_db_admin.cms_db_privs_dept import CmsDbPrivsDept
+from app.models.cms_db_admin.cms_db_privs_user import CmsDbPrivsUser
+from app.models.cms_db_admin.cms_object_property import CmsObjectProperty
+from app.models.cms_db_admin.cms_object_type import CmsObjectType
+from app.models.cms_db_admin.cms_operation_log import CmsOperationLog
 from app.util.output.daily_log_csv_output import DailyLogCsvOutput
 
 
@@ -35,17 +36,23 @@ def admin_main_init(db_id, request):
     db_name = ""
     information_message = ""
 
+    # ナビゲーションリンク
+    navi_arr_ref = []
+    navi_arr_ref.append('Main Menu')
+    navi_arr_ref.append(url_for('db_adm_index', db_id=db_id))
+
     if app.lib.cms_lib.session.current_db:
         db_name = app.lib.cms_lib.session.current_db.db_name
         information_message = app.lib.cms_lib.session.current_db.information_message
-        StrUtil.print_debug('main_db_admin_init. db_name:{0} information_message:{1}'.format(
-            db_name, information_message))
+        StrUtil.print_debug(
+            'main_db_admin_init. db_name:{0} information_message:{1}'.format(db_name, information_message))
     cmsObjectType = CmsObjectType()
     objTypeList = cmsObjectType.getObjectTypeList(db_id)
 
     return render_template(
         'cms_db_admin/main.html',
         title='ログインメイン',
+        navi_bar_html=HtmlUtil.print_navi_bar(navi_arr_ref),
         db_id=db_id,
         db_name=db_name,
         current_user=current_user,
@@ -66,9 +73,16 @@ def daily_log_init(db_id):
     form["log_date2"] = datetime.now().strftime('%Y-%m-%d')
     form["db_name"] = db_name
 
+    # ナビゲーションリンク
+    navi_arr_ref = []
+    navi_arr_ref.append('Main Menu')
+    navi_arr_ref.append(url_for('db_adm_index', db_id=db_id))
+    navi_arr_ref.append('Operation Log')
+
     return render_template(
         'cms_db_admin/daily_log.html',
         title='CMS(' + db_name + ') : Daily Log Management',
+        navi_bar_html=HtmlUtil.print_navi_bar(navi_arr_ref),
         current_user=current_user,
         form=form,
         static='init',
@@ -79,9 +93,16 @@ def daily_log_init(db_id):
 def daily_log_list(form):
     dailyLogList = CmsOperationLog().getCmsDailyLogList(form)
 
+    # ナビゲーションリンク
+    navi_arr_ref = []
+    navi_arr_ref.append('Main Menu')
+    navi_arr_ref.append(url_for('db_adm_index', db_id=form['db_id']))
+    navi_arr_ref.append('Operation Log')
+
     return render_template(
         'cms_db_admin/daily_log.html',
         title='CMS(' + form['db_name'] + ') : Daily Log Management',
+        navi_bar_html=HtmlUtil.print_navi_bar(navi_arr_ref),
         dailyLogList=dailyLogList,
         current_user=current_user,
         form=form,
@@ -123,9 +144,16 @@ def privs_user_list(db_id):
     cmsDbPrivsUser = CmsDbPrivsUser()
     privsUserList = cmsDbPrivsUser.getPrivsUserList(form)
 
+    # ナビゲーションリンク
+    navi_arr_ref = []
+    navi_arr_ref.append('Main Menu')
+    navi_arr_ref.append(url_for('db_adm_index', db_id=db_id))
+    navi_arr_ref.append('Privilege (User)')
+
     return render_template(
         'cms_db_admin/privs_user_list.html',
         title='CMS(' + db_name + ') : Privilege User List',
+        navi_bar_html=HtmlUtil.print_navi_bar(navi_arr_ref),
         current_user=current_user,
         privsUserList=privsUserList,
         form=form,
@@ -328,10 +356,17 @@ def privs_dept_list(db_id):
     cmsDbPrivsDept = CmsDbPrivsDept()
     privsDeptList = cmsDbPrivsDept.getPrivsDeptList(form)
 
+    # ナビゲーションリンク
+    navi_arr_ref = []
+    navi_arr_ref.append('Main Menu')
+    navi_arr_ref.append(url_for('db_adm_index', db_id=db_id))
+    navi_arr_ref.append('Privilege (Department)')
+
     return render_template(
         'cms_db_admin/privs_dept_list.html',
         db_id=db_id,
         title='CMS(' + db_name + ') : Privilege Department List',
+        navi_bar_html=HtmlUtil.print_navi_bar(navi_arr_ref),
         current_user=current_user,
         privsDeptList=privsDeptList,
         form=form,
@@ -598,11 +633,18 @@ def privs_dept_detail(db_id, request):
     cmsDbDeptMaster = CmsDbDeptMaster()
     deptList = cmsDbDeptMaster.getDeptMasterList(form)
 
+    # ナビゲーションリンク
+    navi_arr_ref = []
+    navi_arr_ref.append('Main Menu')
+    navi_arr_ref.append(url_for('db_adm_index', db_id=db_id))
+    navi_arr_ref.append('Privilege (Department)')
+
     return render_template(
         'cms_db_admin/privs_dept_detail_list.html',
         db_id=db_id,
         db_name=db_name,
         title='CMS(' + db_name + ') : Privilege Department Detail List',
+        navi_bar_html=HtmlUtil.print_navi_bar(navi_arr_ref),
         current_user=current_user,
         deptList=deptList,
         appVer=current_app.config['APP_VER'])
@@ -620,10 +662,17 @@ def batch_upload_get(db_id, request):
         "object_type_id": object_type_id,
         "object_type_name": object_type_name}
 
+    # ナビゲーションリンク
+    navi_arr_ref = []
+    navi_arr_ref.append('Main Menu')
+    navi_arr_ref.append(url_for('db_adm_index', db_id=menu_param['db_id']))
+    navi_arr_ref.append('Batch Insert ({})'.format(menu_param['object_type_name']))
+
     return render_template(
         'cms_db_admin/object_batch_upload.html',
         db_id=db_id,
         title='CMS(' + db_name + ') : Batch Insert',
+        navi_bar_html=HtmlUtil.print_navi_bar(navi_arr_ref),
         current_user=current_user,
         menu_param=menu_param,
         const=Const,
@@ -663,10 +712,18 @@ def batch_upload_post(db_id, request):
         "has_error": has_error,
         "template_id": form.template_id.data
     }
+
+    # ナビゲーションリンク
+    navi_arr_ref = []
+    navi_arr_ref.append('Main Menu')
+    navi_arr_ref.append(url_for('db_adm_index', db_id=db_id))
+    navi_arr_ref.append('Batch Insert ({})'.format(menu_param['object_type_name']))
+
     return render_template(
         'cms_db_admin/object_batch_upload_validate.html',
         db_id=db_id,
         title='CMS(' + db_name + ') : Batch Insert',
+        navi_bar_html=HtmlUtil.print_navi_bar(navi_arr_ref),
         current_user=current_user,
         form=form,
         valid=valid,
@@ -695,10 +752,18 @@ def upload_data(db_id, request):
         "object_type_name": object_type_obj.object_type_name,
         "msg": msg
     }
+
+    # ナビゲーションリンク
+    navi_arr_ref = []
+    navi_arr_ref.append('Main Menu')
+    navi_arr_ref.append(url_for('db_adm_index', db_id=db_id))
+    navi_arr_ref.append('Batch Insert ({})'.format(menu_param['object_type_name']))
+
     return render_template(
         'cms_db_admin/object_batch_upload_success.html',
         db_id=db_id,
         title='CMS(' + db_name + ') : Batch Insert',
+        navi_bar_html=HtmlUtil.print_navi_bar(navi_arr_ref),
         current_user=current_user,
         menu_param=menu_param,
         const=Const,
