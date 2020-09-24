@@ -180,7 +180,7 @@ def list_add(mst_id):
     g.navi_arr_ref.extend([
         "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
         "Detail", parent_url,
-        "Selection List Create"
+        "Selection Data Create"
     ])
     return render_template(
         "cms_admin/selection_list_modify.html",
@@ -209,7 +209,7 @@ def list_update(mst_id, list_id):
     g.navi_arr_ref.extend([
         "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
         "Detail", parent_url,
-        "Selection List Modify"
+        "Selection Data Modify"
     ])
     return render_template(
         "cms_admin/selection_list_modify.html",
