@@ -16,19 +16,22 @@ from app.models.cms.cms_file_wk import CmsFileWk
 from app.models.cms.cms_object import CmsObject
 
 
-def open_files_jqmodal(db_id, object_id, file_id, file_type_id):
+def open_files_jqmodal(db_id, object_id, file_type_id):
     if len(object_id) == 0:
         return render_template('error/404.html')
 
     cmsFile = CmsFile()
-    attacheFileList = cmsFile.get_file_list(object_id, file_type_id)
-    return render_template(
-        'files_jqmodal.html',
-        jqmTitle='添付ファイル画面',
-        db_id=db_id,
-        object_id=object_id,
-        file_id=file_id,
-        attacheFileList=attacheFileList)
+    attacheFileList = cmsFile.get_file_list(object_id, file_type_id).fetchall()
+    if len(attacheFileList) > 1 or not attacheFileList:
+        return render_template(
+            'files_jqmodal.html',
+            jqmTitle='添付ファイル画面',
+            db_id=db_id,
+            const=Const,
+            appVer=current_app.config['APP_VER'],
+            attacheFileList=attacheFileList)
+    else:
+        return download_file(db_id, attacheFileList[0].file_id, None, None)
 
 
 def ctx_allowed_file(filename):

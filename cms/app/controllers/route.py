@@ -65,7 +65,6 @@ def files_jqmodal():
     return file_service.open_files_jqmodal(
         request.args.get('db_id'),
         request.args.get('object_id'),
-        request.args.get('file_id'),
         request.args.get('file_type_id'))
 
 

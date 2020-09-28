@@ -709,8 +709,8 @@ function getOpenSearchMainUrl(db_id, search_setting_id) {
     return _get_location_path() + "/search_jqmodal?db_id=" + db_id　+ "&search_setting_id=" + search_setting_id;
 }
 
-function getOpenFileDetailUrl(db_id, objectId, fileId, fileTypeId) {
-    return _get_location_path() + "/files_jqmodal?db_id=" + db_id + "&object_id=" + objectId + "&file_id="+ fileId + "&file_type_id="+ fileTypeId;
+function getOpenFileDetailUrl(db_id, objectId, fileTypeId) {
+    return _get_location_path() + "/files_jqmodal?db_id=" + db_id + "&object_id=" + objectId + "&file_type_id="+ fileTypeId;
 }
 
 function getDownloadCheckUrl(fileId) {

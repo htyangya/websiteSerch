@@ -329,11 +329,13 @@ function post_list_data(x, s) {
                     rowEm.append($("<td></td>").append(aEm).attr("style", value.td_style));
                 // データの種類がファイルの場合
                 } else if("FILE" == value.link_type && file_id !== null && file_id != "") {
-                    var aEm = $("<a></a>").text(txtValue).attr("href", "javascript:void(0);");
+                    var aEm = $("<a></a>").text(txtValue);
                     if (file_cnt == 1) {
-                        aEm.attr("onClick", "downloadFile('" + file_id + "')");
+						aEm.attr("href", getOpenFileDetailUrl(db_id, object_id, value.link_type_id));
+                        // aEm.attr("onClick", "downloadFile('" + file_id + "')");
                     } else {
-                        aEm.attr("onClick", "fileDetail('" + object_id + "', '" + file_id + "', '" + value.link_type_id + "')");
+						aEm.attr("href", getOpenFileDetailUrl(db_id, object_id, value.link_type_id)).attr("target","_blank");
+                        // aEm.attr("onClick", "fileDetail('" + object_id + "', '" + file_id + "', '" + value.link_type_id + "')");
                     }
                     rowEm.append($("<td></td>").append(aEm).attr("style", value.td_style));
                 // データの種類がURLリンクの場合
