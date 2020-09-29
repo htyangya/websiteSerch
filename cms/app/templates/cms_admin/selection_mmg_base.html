@@ -19,12 +19,21 @@
     <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
     <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
     <style type="text/css">
+        html { overflow: hidden; }
         body {
+            overflow: auto;
             margin: 10px !important;
-            overflow: hidden;
         }
         table {
             font-size: 9pt !important;
+        }
+        .dataTable th {
+            background: #bbbbff;
+            text-align: left;
+        }
+        .object_menu a{
+            font-size: 9pt;
+            font-weight: normal;
         }
     </style>
     {% block head %}{% endblock %}

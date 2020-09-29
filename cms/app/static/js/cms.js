@@ -615,7 +615,15 @@ function msSaveOrOpenBlob(url, openType, waitMessage, fileName, contentType, sen
 
         if (xhr.readyState === 4 && xhr.status === 200) {
             if (typeof(fileName) === "undefined"  || fileName === "") {
-                fileName = getFileNameFromRsHeader(xhr.getResponseHeader("content-disposition"));
+                var cd = xhr.getResponseHeader("content-disposition")
+                if (!cd) {
+                    hideCover();
+                    setTimeout(function () {
+                        alert("File Not Found!");
+                    }, 100);
+                    return
+                }
+                fileName = getFileNameFromRsHeader(cd);
             }
             // IEの場合
             if (typeof window.navigator.msSaveOrOpenBlob === "function") {
@@ -710,7 +718,7 @@ function getOpenSearchMainUrl(db_id, search_setting_id) {
 }
 
 function getOpenFileDetailUrl(db_id, objectId, fileTypeId) {
-    return _get_location_path() + "/files_jqmodal?db_id=" + db_id + "&object_id=" + objectId + "&file_type_id="+ fileTypeId;
+    return _get_location_path() + "/file_link?db_id=" + db_id + "&object_id=" + objectId + "&file_type_id="+ fileTypeId;
 }
 
 function getDownloadCheckUrl(fileId) {

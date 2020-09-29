@@ -340,31 +340,36 @@ h3 {
     padding: 2px;
 }
 
-.odd {
-    background: #ffffff;
-}
-
-.even {
-    background: #f0f0e5;
-}
 
 th.title {
-    margin: 4px;
-    padding: 4px;
-    text-align: left;
-    text-decoration: bold;
+margin: 4px;
+padding: 4px;
+text-align: left;
+text-decoration: bold;
 }
 
-#datalist {
+#datalist,.datalist {
     width: 95%;
     border: 1px #444444 solid;
     margin-bottom: 10px;
 }
 
-#datalist tr {
+#datalist tr:nth-child(odd),
+.datalist tr:nth-child(odd),
+.odd {
+    background: #ffffff;
 }
 
-#datalist th {
+#datalist tr:nth-child(even),
+.datalist tr:nth-child(even),
+.even {
+    background: #f0f0e5;
+}
+
+
+#datalist th,
+.datalist th
+{
     text-align: left;
     padding-left: 0.2em;
     padding-right: 0.2em;
@@ -375,7 +380,7 @@ th.title {
     border-bottom: 1px solid #999999;
 }
 
-#datalist td {
+#datalist td,.datalist td {
     text-align: left;
     padding-left: 0.2em;
     padding-right: 0.2em;
@@ -385,23 +390,30 @@ th.title {
     white-space: normal;
 }
 
-#datalist td a {
+#datalist td a,.datalist td a {
     display: block;
     width: 100%;
 }
 
-#datalist td.alert {
+#datalist td.alert,.datalist td.alert {
     color: red;
 }
 
-#datalist td.num {
+#datalist td.num,.datalist td.num {
     text-align: right;
 }
 
-#datalist td.disp_content,.disp_content {
+#datalist td.disp_content,.disp_content,
+.datalist td.disp_content,.disp_content
+{
     white-space: pre;
     word-wrap: break-word;
 }
+
+.parentTableDiv{
+    width: 95%;
+}
+
 
 input.read_only {
     background: #dddddd;

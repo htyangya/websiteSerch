@@ -5,6 +5,7 @@ from flask_login import current_user
 from werkzeug.utils import redirect
 
 from app import db
+from app.lib.cms_lib.db_util import DbUtil
 from app.lib.cms_lib.html_util import HtmlUtil
 from app.lib.cms_lib.user_auth import UserAuth
 from app.lib.conf.config import Config
@@ -64,7 +65,9 @@ def index():
 @UserAuth.login_required
 @selectionMng.route("/add", methods=['GET', 'POST'])
 def add():
-    if request.method == "POST":
+    if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_MST",
+                                             "selection_mst_name",
+                                             "display_order", "remarks"):
         selection_mst = CmsObjectPropSelectionMst(
             selection_mst_id=request.form.get("selection_mst_id"),
             db_id=request.form.get("db_id"),
@@ -78,12 +81,12 @@ def add():
     parent_url = url_for('selectionMng.index', db_id=g.db_id)
     g.navi_arr_ref.extend([
         "Selection Master", parent_url,
-        "Create"
     ])
     return render_template(
         "cms_admin/selection_mng_modify.html",
         title="CMS：Selection Master Add",
-        parent_url=parent_url
+        parent_url=parent_url,
+        selection_mst=request.form,
     )
 
 
@@ -94,7 +97,9 @@ def update(mst_id):
                                                            CmsObjectPropSelectionMst.is_deleted == 0).first()
     if selection_mst is None:
         abort(404)
-    if request.method == "POST":
+    if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_MST",
+                                             "selection_mst_name",
+                                             "display_order", "remarks"):
         selection_mst.selection_mst_name = request.form.get("selection_mst_name")
         selection_mst.display_order = request.form.get("display_order")
         selection_mst.remarks = request.form.get("remarks")
@@ -104,17 +109,17 @@ def update(mst_id):
         db.session.commit()
         return redirect(url_for('selectionMng.detail', db_id=request.form.get("db_id"),
                                 mst_id=mst_id))
-    parent_url = url_for('selectionMng.detail', mst_id=selection_mst.selection_mst_id, db_id=g.db_id)
+    parent_url = url_for('selectionMng.detail', mst_id=mst_id, db_id=g.db_id)
     g.navi_arr_ref.extend([
         "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
-        "Detail", parent_url,
-        "Modify"
+        selection_mst.selection_mst_name, parent_url,
     ])
     return render_template(
         "cms_admin/selection_mng_modify.html",
         title="CMS：Selection Master Modify",
-        selection_mst=selection_mst,
-        parent_url=parent_url
+        selection_mst=selection_mst if request.method == "GET" else request.form,
+        parent_url=parent_url,
+
     )
 
 
@@ -152,7 +157,6 @@ def detail(mst_id):
         selection.can_delete = selection.selection_id not in be_used_selection_list_ids
     g.navi_arr_ref.extend([
         "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
-        "Detail"
     ])
     return render_template(
         "cms_admin/selection_mng_detail.html",
@@ -165,26 +169,29 @@ def detail(mst_id):
 @UserAuth.login_required
 @selectionMng.route("/<int:mst_id>/list_add", methods=['GET', 'POST'])
 def list_add(mst_id):
-    if request.method == "POST":
+    if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_LIST",
+                                             "selection_name",
+                                             "display_order", "description"):
         selection_list = CmsObjectPropSelectionList(
             selection_mst_id=mst_id,
             selection_name=request.form.get("selection_list_name"),
             display_order=request.form.get("display_order"),
-            description=request.form.get("Description"),
+            description=request.form.get("description"),
         )
         db.session.add(selection_list)
         db.session.commit()
         return redirect(url_for('selectionMng.detail', db_id=request.form.get("db_id"),
                                 mst_id=mst_id))
     parent_url = url_for('selectionMng.detail', mst_id=mst_id, db_id=g.db_id)
+    selection_mst = CmsObjectPropSelectionMst.query.get_or_404(mst_id)
     g.navi_arr_ref.extend([
         "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
-        "Detail", parent_url,
-        "Selection Data Create"
+        selection_mst.selection_mst_name, parent_url,
     ])
     return render_template(
         "cms_admin/selection_list_modify.html",
         title="CMS：Selection List Create",
+        selection_list=request.form,
         parent_url=parent_url
     )
 
@@ -195,8 +202,10 @@ def list_update(mst_id, list_id):
     selection_list = CmsObjectPropSelectionList.query.get_or_404(list_id)
     if selection_list is None:
         abort(404)
-    if request.method == "POST":
-        selection_list.selection_name = request.form.get("selection_list_name") or ''
+    if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_LIST",
+                                             "selection_name",
+                                             "display_order", "description"):
+        selection_list.selection_name = request.form.get("selection_name") or ''
         selection_list.display_order = request.form.get("display_order")
         selection_list.description = request.form.get("Description")
         selection_list.updated_at = datetime.now()
@@ -206,15 +215,15 @@ def list_update(mst_id, list_id):
         return redirect(url_for('selectionMng.detail', db_id=request.form.get("db_id"),
                                 mst_id=mst_id))
     parent_url = url_for('selectionMng.detail', mst_id=mst_id, db_id=g.db_id)
+    selection_mst = CmsObjectPropSelectionMst.query.get_or_404(mst_id)
     g.navi_arr_ref.extend([
         "Selection Master", url_for('selectionMng.index', db_id=g.db_id),
-        "Detail", parent_url,
-        "Selection Data Modify"
+        selection_mst.selection_mst_name, parent_url,
     ])
     return render_template(
         "cms_admin/selection_list_modify.html",
         title="CMS：Selection List Modify",
-        selection_list=selection_list,
+        selection_list=selection_list if request.method == "GET" else request.form,
         parent_url=parent_url
     )
 

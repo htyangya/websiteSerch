@@ -30,7 +30,7 @@ def create_app():
     app.add_url_rule('/view_pdf/<file_id>', 'view_pdf', route.view_pdf)
     app.add_url_rule('/folder', 'folder', route.folder, methods=['POST'])
     app.add_url_rule('/get_file_list', 'get_file_list', route.get_file_list, methods=['GET', 'POST'])
-    app.add_url_rule('/files_jqmodal', 'files_jqmodal', route.files_jqmodal, methods=['GET'])
+    app.add_url_rule('/file_link', 'files_jqmodal', route.file_link, methods=['GET'])
     app.add_url_rule('/file_pdf/<file_id>', 'file_pdf', route.file_pdf)
     app.add_url_rule('/download_file', 'download_file', route.download_file, methods=['GET'])
     app.add_url_rule('/keyword', 'keyword', route.keyword, methods=['POST'])

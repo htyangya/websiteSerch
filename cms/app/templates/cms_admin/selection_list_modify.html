@@ -1,14 +1,13 @@
 {% extends "cms_admin/selection_mmg_base.html" %}
-{% block head %}
-    <style>
-    </style>
-{% endblock %}
 
 {% block container %}
     <div id="ope_msg">{% if selection_list %} Modify Selection Data {% else %} Create Selection Data {% endif %}</div>
     <br/>
     <center>
         <form action="" method="post">
+        {% for err_msg in get_flashed_messages() %}
+            <div class="required">{{ err_msg }}</div>
+        {% endfor %}
         <center>
             <table id="property">
                 <tbody>
@@ -16,10 +15,10 @@
                     <th colspan="2">Selection Data</th>
                 </tr>
                 <tr class="even">
-                    <td class="name"><label for="selection_list_name">Name</label>(*)</td>
+                    <td class="name"><label for="selection_name">Name</label>(*)</td>
                     <td class="value">
-                        <input id="selection_list_name" name="selection_list_name" type="text" required
-                               value="{{ selection_list and selection_list.selection_name }}">
+                        <input id="selection_name" name="selection_name" type="text" required
+                               value="{{selection_list.selection_name }}">
                     </td>
                 </tr>
                 <tr class="odd">
@@ -32,7 +31,7 @@
                 <tr class="even">
                     <td class="name"><label for="Description">Description</label></td>
                     <td class="value">
-                            <textarea cols="100" id="Description" name="Description"
+                            <textarea cols="100" id="description" name="description"
                                       rows="6">{{ selection_list and selection_list.description or "" }}</textarea>
                     </td>
                 </tr>

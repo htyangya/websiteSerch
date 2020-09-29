@@ -1,15 +1,13 @@
 {% extends "cms_admin/selection_mmg_base.html" %}
-{% block head %}
-    <style>
-    </style>
-{% endblock %}
 
 {% block container %}
     <div id="ope_msg">{% if selection_mst %} Modify Selection Master {% else %} Create Selection Master {% endif %} </div>
     <br/>
     <center>
         <form action=""  method="post">
-
+            {% for err_msg in get_flashed_messages() %}
+                <div class="required">{{ err_msg }}</div>
+            {% endfor %}
             <center>
                 <table id="property">
                     <tbody>
@@ -19,7 +17,7 @@
                         <tr class="even">
                             <td class="name"><label for="selection_mst_name">Name</label>(*)</td>
                             <td class="value">
-                                <input id="selection_mst_name" name="selection_mst_name" type="text" required value="{{ selection_mst and selection_mst.selection_mst_name }}">
+                                <input id="selection_mst_name" name="selection_mst_name" type="text" required value="{{ selection_mst.selection_mst_name }}">
                             </td>
                         </tr>
                         <tr class="odd">

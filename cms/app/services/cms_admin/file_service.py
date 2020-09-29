@@ -16,7 +16,7 @@ from app.models.cms.cms_file_wk import CmsFileWk
 from app.models.cms.cms_object import CmsObject
 
 
-def open_files_jqmodal(db_id, object_id, file_type_id):
+def file_link(db_id, object_id, file_type_id):
     if len(object_id) == 0:
         return render_template('error/404.html')
 

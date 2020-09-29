@@ -1,17 +1,12 @@
 {% extends "cms_admin/selection_mmg_base.html" %}
 {% block head %}
-    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
-
     <style>
-        #datalist th {
-            border: 1px #000 solid;
-        }
-
-        #datalist td a {
-            display: inline;
-            width: 100%;
+        #datalist_header{
+            margin-bottom: -6px;
         }
     </style>
+    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+
 {% endblock %}
 
 {% block container %}
@@ -20,18 +15,22 @@
             <tr>
                 <th class="title"></th>
                 <th class="title" style="float:right;">
-                    <div style="margin-right: 20px;">
-                        <a href="{{ url_for( 'selectionMng.update',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}">Modify</a>&nbsp;
-                        <a href="" class="selection_mst" name="delete_cfm"
-                                {% if selection_mst.can_delete %}
-                           delete_url="{{ url_for( 'selectionMng.delete',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}"
-                                {% endif %}>Delete</a>
+                    <div >
+                        <span class="object_menu">
+                            <a href="{{ url_for( 'selectionMng.update',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}">Modify</a>&nbsp;
+                        </span>
+                        <span class="object_menu">
+                            <a href="" class="selection_mst" name="delete_cfm"
+                                    {% if selection_mst.can_delete %}
+                               delete_url="{{ url_for( 'selectionMng.delete',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}"
+                                    {% endif %}>Delete</a>
+                        </span>
                     </div>
                 </th>
             </tr>
         </table>
         <div id="tableDiv" class="TlibTableC">
-            <table id="datalist" class="dataTable dataListC">
+            <table id="datalist" class="datalistC">
                 <tr>
                     <th colspan="2">Selection Master Property</th>
                 </tr>
@@ -41,11 +40,15 @@
                 </tr>
                 <tr>
                     <td>Remarks</td>
-                    <td>{{ selection_mst.remarks or "" }}</td>
+                    <td class="disp_content">{{ selection_mst.remarks or "" }}</td>
                 </tr>
                 <tr>
                     <td>Display Order</td>
-                    <td>{{ selection_mst.display_order or "" }}</td>
+                    <td>
+                        {% if selection_mst.display_order is not none %}
+                            {{ selection_mst.display_order }}
+                        {% endif %}
+                    </td>
                 </tr>
 
             </table>
@@ -54,13 +57,15 @@
         <table id="datalist_header" class="datalist_headerC">
             <tr>
                 <th class="title">Selection List</th>
-                <th class="title" style="float:right;margin-right: 20px;">
-                    <a href="{{ url_for( 'selectionMng.list_add',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}">Create</a>
+                <th class="title" style="float:right;">
+                    <span class="object_menu">
+                        <a href="{{ url_for( 'selectionMng.list_add',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}">Create</a>
+                    </span>
                 </th>
             </tr>
         </table>
         <div id="tableDiv" class="TlibTableC">
-            <table id="datalist" class="dataTable dataListC">
+            <table id="datalist" class="datalistC">
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
@@ -70,14 +75,14 @@
                 {% for selection in selection_list %}
                     <tr>
                         <td>{{ selection.selection_name }}</td>
-                        <td>{{ selection.description or "" }}</td>
+                        <td class="disp_content">{{ selection.description or "" }}</td>
                         <td>
                             {% if selection.display_order is not none %}
                                 {{ selection.display_order }}
                             {% endif %}
                         </td>
                         <td width="200px">
-                            <div style="font-size:14px;font-weight: bold;margin-left:5px;">
+                            <div >
                                 <a href="{{ url_for( 'selectionMng.list_update',mst_id=selection_mst.selection_mst_id, list_id=selection.selection_id, db_id=db_id) }}">Modify</a>
                                 <a href="" name="delete_cfm" class="selection_data"
                                         {% if selection.can_delete %}

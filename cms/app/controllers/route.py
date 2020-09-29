@@ -61,8 +61,8 @@ def search():
 
 # ファイルアップロード編集画面起動する
 @UserAuth.login_required
-def files_jqmodal():
-    return file_service.open_files_jqmodal(
+def file_link():
+    return file_service.file_link(
         request.args.get('db_id'),
         request.args.get('object_id'),
         request.args.get('file_type_id'))
