@@ -48,6 +48,9 @@
     {% autoescape False %}
         {{ navi_bar_html }}
     {% endautoescape %}
+    {% if ope_msg %}
+        <div id="ope_msg">{{ ope_msg }}</div>
+    {% endif %}
     <br>
     <!-- new print_dataset_list_ex -->
     {% block container %}{% endblock %}

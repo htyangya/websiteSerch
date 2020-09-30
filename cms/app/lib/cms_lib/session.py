@@ -60,3 +60,10 @@ def set_cookie(session_cookie_name, tuid, redirectUrl):
 def get_session_id(session_cookie_name):
     # セッションIDの取得
     return request.cookies.get(session_cookie_name)
+
+
+def get_request_data(name):
+    if request.method == "GET":
+        return request.args.get(name)
+    elif request.method == "POST":
+        return request.args.get(name) or request.form.get(name)

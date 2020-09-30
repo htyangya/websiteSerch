@@ -5,13 +5,13 @@ class Const(object):
     # 処理可能な種類
     CTX_FILE_ALLOWED_EXTENSIONS = ['pdf']
     # VIEW_TYPE
-    FOLDER = "FOLDER"
-    KEYWORD = "KEYWORD"
+    FOLDER = 'FOLDER'
+    KEYWORD = 'KEYWORD'
     # FORMAT_TYPE
-    LIST = "LIST"
-    PROPERTY = "PROPERTY"
+    LIST = 'LIST'
+    PROPERTY = 'PROPERTY'
     # Style Tyle COLOR
-    STYLE_TYPE_COLOR = "COLOR"
+    STYLE_TYPE_COLOR = 'COLOR'
 
     URL_FORMAT = '{}?{}'
     NO_FILE_FOUND_MSG = 'File not found: {}'
@@ -73,8 +73,8 @@ class Const(object):
     END = '_end'
 
     # ファイル
-    FILE_SUFFIX_CSV = ".csv"
-    FILE_SUFFIX_EXCEL = ".xlsx"
+    FILE_SUFFIX_CSV = '.csv'
+    FILE_SUFFIX_EXCEL = '.xlsx'
     # メッセージ
     WAIT_MSG = 'しばらくお待ちください'
     REQUIRED_MSG = '{}を指定してください'
@@ -107,12 +107,12 @@ class Const(object):
     IP_ADDRESS_SAVE_ERROR = 'IP Address save failed.'
 
     # BATCH FILE UPLOAD
-    EXCEL_FILE_NOT_FOUND_MSG = "Please drop or select an excel file."
-    NOT_XLSX_FILE_MSG = "Xlsx(excel) file is required."
+    EXCEL_FILE_NOT_FOUND_MSG = 'Please drop or select an excel file.'
+    NOT_XLSX_FILE_MSG = 'Xlsx(excel) file is required.'
 
-    SELECTION_MST_DELETE_MSG = "Are you sure delete this selection master?"
-    SELECTION_DATA_DELETE_MSG = "Are you sure delete this selection data?"
-    SELECTION_MST_CAN_NOT_DELETE_MSG = "Can not delete this selection master."
-    SELECTION_DATA_CAN_NOT_DELETE_MSG = "Can not delete this selection data."
+    SELECTION_MST_DELETE_MSG = 'Delete Selection Master.'
+    SELECTION_DATA_DELETE_MSG = 'Delete Selection Data.'
+    SELECTION_MST_CAN_NOT_DELETE_MSG = 'Can not delete this selection master.'
+    SELECTION_DATA_CAN_NOT_DELETE_MSG = 'Can not delete this selection data.'
 
-    FILE_NOT_FOUND = "File not found"
+    FILE_NOT_FOUND = 'File not found'

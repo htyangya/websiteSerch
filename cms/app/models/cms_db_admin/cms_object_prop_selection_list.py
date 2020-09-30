@@ -3,6 +3,7 @@ from flask_login import current_user
 from sqlalchemy import Sequence
 
 from app import db
+from app.models.cms_db_admin.cms_object_property import CmsObjectProperty
 
 
 class CmsObjectPropSelectionList(db.Model):
@@ -45,3 +46,18 @@ class CmsObjectPropSelectionList(db.Model):
 
                     selection_mst_dic[selection_mst_id] = selection_list
         return selection_mst_dic
+
+    def _get_can_delete(self):
+        str_template = "{0} = %s" % self.selection_id
+        db_column_obj = CmsObjectProperty.query.filter(CmsObjectProperty.property_type == "SELECT",
+                                                       CmsObjectProperty.db_column_name.isnot(None)).with_entities(
+            CmsObjectProperty.db_column_name).all()
+        sql_str = " OR ".join(map(lambda obj: str_template.format(obj[0]), db_column_obj))
+        sql_str = "SELECT COUNT(*) FROM CMS_OBJECT WHERE " + sql_str
+        return not db.session.execute(sql_str).scalar()
+
+    @property
+    def can_delete(self):
+        if not hasattr(self, "_can_delete"):
+            self._can_delete = self._get_can_delete()
+        return self._can_delete

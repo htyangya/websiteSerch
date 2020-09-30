@@ -271,12 +271,12 @@ class DbUtil:
         return dic
 
     @staticmethod
-    def check_fields_from_form_on_post(table_name, *field_names):
+    def check_fields_from_form_on_post(table_name, field_names, input_name_dict={}):
         if request.method != "POST":
             return False
         form = request.form
         col_prop = {
-            'cname': field_names,
+            'cname': [input_name_dict.get(name) or name for name in field_names],
             'input_value': [form.get(name) for name in field_names],
             'db_field': [name.upper() for name in field_names]
         }
@@ -289,4 +289,3 @@ class DbUtil:
         DbUtil.check_input_form_data_by_db(param_prop)
         [flash(msg) for msg in param_prop['err_msgs']]
         return not param_prop['err_msgs']
-

@@ -1,8 +1,6 @@
-{% extends "cms_admin/selection_mmg_base.html" %}
+{% extends "cms_admin/selection_mng_base.html" %}
 
 {% block container %}
-    <div id="ope_msg">{% if selection_mst %} Modify Selection Master {% else %} Create Selection Master {% endif %} </div>
-    <br/>
     <center>
         <form action=""  method="post">
             {% for err_msg in get_flashed_messages() %}
@@ -21,17 +19,18 @@
                             </td>
                         </tr>
                         <tr class="odd">
-                            <td class="name"><label for="display_order">Display Order</label></td>
-                            <td class="value">
-                                <input id="display_order" name="display_order" type="number" value="{{ selection_mst and selection_mst.display_order }}">
-                            </td>
-                        </tr>
-                        <tr class="even">
                             <td class="name"><label for="remarks">Remarks</label></td>
                             <td class="value">
                                 <textarea cols="100" id="remarks" name="remarks" rows="6">{{ selection_mst and selection_mst.remarks or "" }}</textarea>
                             </td>
                         </tr>
+                        <tr class="even">
+                            <td class="name"><label for="display_order">Display Order</label></td>
+                            <td class="value">
+                                <input id="display_order" name="display_order" type="number" value="{{ selection_mst and selection_mst.display_order }}">
+                            </td>
+                        </tr>
+
                     </tbody>
                 </table>
             </center>

@@ -4,6 +4,7 @@ from flask_login import current_user
 from sqlalchemy import Sequence
 
 from app import db
+from app.models.cms_db_admin.cms_object_property import CmsObjectProperty
 
 
 class CmsObjectPropSelectionMst(db.Model):
@@ -27,3 +28,10 @@ class CmsObjectPropSelectionMst(db.Model):
     def getObjectPropSelectionMst(self, selection_mst_id):
         return db.session.query(CmsObjectPropSelectionMst) \
             .filter(CmsObjectPropSelectionMst.selection_mst_id == selection_mst_id).first()
+
+    @property
+    def can_delete(self):
+        if not hasattr(self, "_can_delete"):
+            self._can_delete = not CmsObjectProperty.query.filter(
+                CmsObjectProperty.selection_mst_id == self.selection_mst_id).count()
+        return self._can_delete

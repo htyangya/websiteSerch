@@ -342,10 +342,10 @@ h3 {
 
 
 th.title {
-margin: 4px;
-padding: 4px;
-text-align: left;
-text-decoration: bold;
+    margin: 4px;
+    padding: 4px;
+    text-align: left;
+    text-decoration: bold;
 }
 
 #datalist,.datalist {
@@ -413,7 +413,6 @@ text-decoration: bold;
 .parentTableDiv{
     width: 95%;
 }
-
 
 input.read_only {
     background: #dddddd;

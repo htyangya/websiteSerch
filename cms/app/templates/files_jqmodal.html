@@ -64,7 +64,7 @@
                                         {% for attacheFile in attacheFileList %}
                                             <tr>
                                                 <td class="NW AT AL">
-                                                    <a onclick="downloadFile('{{attacheFile.file_id}}')" href="javascript:void(0);">{{attacheFile.file_name}}</a>
+                                                    <a href="{{ url_for('download_file', db_id=db_id, file_id=attacheFile.file_id) }}">{{attacheFile.file_name}}</a>
                                                 </td><!-- 添付ファイル名 -->
                                                 <td class="NW AT AL">{{attacheFile.file_size_disp}}</td><!-- 添付ファイルサイズ -->
                                                 <td class="NW AT AL">{{attacheFile.created_at_str}}</td><!-- 最終更新日 -->

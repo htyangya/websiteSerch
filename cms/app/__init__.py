@@ -11,10 +11,10 @@ login_manager = LoginManager()
 # login_viewのrouteを設定
 login_manager.login_view = 'login'
 
-from app.controllers import route
+from app.controllers import route, selection_mng
 from app.controllers import admin_route
 from app.controllers import db_admin_route
-from app.controllers import selection_mng
+from app.lib.cms_lib import app_components
 
 def create_app():
     app = Flask(__name__)
@@ -117,10 +117,16 @@ def create_app():
     app.add_url_rule('/cmsadmin/style_setting', 'style_setting', admin_route.style_setting_list,
                      methods=['GET', 'POST'])
     app.add_url_rule('/cmsadmin/style_setting_edit', 'style_setting_edit', admin_route.style_setting_edit,
-                     methods=['GET', 'POST'])	 
-    # selection_mng
+                     methods=['GET', 'POST'])
+
+    app.add_url_rule('/cmsadmin/style_setting_edit', 'style_setting_edit', admin_route.style_setting_edit,
+                     methods=['GET', 'POST'])
+    # Selection Master
     app.register_blueprint(selection_mng.selectionMng)
+    # app.add_url_rule('/cmsadmin/selectionMng', 'selection_mng', admin_route.selection_mng)
 
     app.add_url_rule('/no_privs', 'no_privs', route.no_privs, methods=['GET'])
     app.register_error_handler(404, route.page_not_found)
+    # app.context_processor(app_components.args_get())
+    # app.before_request(app_components.args_add)
     return app

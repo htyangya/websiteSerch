@@ -1,7 +1,7 @@
 import re
 import sys
 
-from flask import render_template, current_app, url_for
+from flask import render_template, current_app, url_for, request
 from flask_login import current_user
 from werkzeug.utils import redirect
 
@@ -28,6 +28,7 @@ from app.models.cms_admin.cms_style_master import CmsStyleMaster
 from app.models.cms_admin.cms_style_setting import CmsStyleSetting
 from app.models.cms_common import CmsCommon
 from app.models.cms_db_admin.cms_db import CmsDb
+from app.models.cms_db_admin.cms_object_prop_selection_mst import CmsObjectPropSelectionMst
 from app.models.cms_db_admin.cms_object_property import CmsObjectProperty
 from app.models.cms_db_admin.cms_object_type import CmsObjectType
 
@@ -1266,4 +1267,18 @@ def getCmsIpAddress(cmsIpAddress, form):
     cmsIpAddress.subnet_mask = StrUtil.trim(form.subnetMask.data)
     cmsIpAddress.remarks = form.remarks.data
     return cmsIpAddress
+
+
 # IPアドレス management end
+
+def selection_mng():
+    selection_msts = CmsObjectPropSelectionMst.query.filter(
+        CmsObjectPropSelectionMst.db_id == request.args.get("db_id"),
+        CmsObjectPropSelectionMst.is_deleted == 0
+    ).order_by(CmsObjectPropSelectionMst.display_order).all()
+    # g.navi_arr_ref.append("Selection Master")
+    return render_template(
+        "cms_admin/selection_mng_list.html",
+        title="CMS：Selection Master",
+        selection_msts=selection_msts
+    )

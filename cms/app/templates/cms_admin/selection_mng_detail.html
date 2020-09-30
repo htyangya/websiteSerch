@@ -1,12 +1,10 @@
-{% extends "cms_admin/selection_mmg_base.html" %}
+{% extends "cms_admin/selection_mng_base.html" %}
 {% block head %}
     <style>
-        #datalist_header{
+        #datalist_header {
             margin-bottom: -6px;
         }
     </style>
-    <script src="/static/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
-
 {% endblock %}
 
 {% block container %}
@@ -15,15 +13,12 @@
             <tr>
                 <th class="title"></th>
                 <th class="title" style="float:right;">
-                    <div >
+                    <div>
                         <span class="object_menu">
                             <a href="{{ url_for( 'selectionMng.update',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}">Modify</a>&nbsp;
                         </span>
                         <span class="object_menu">
-                            <a href="" class="selection_mst" name="delete_cfm"
-                                    {% if selection_mst.can_delete %}
-                               delete_url="{{ url_for( 'selectionMng.delete',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}"
-                                    {% endif %}>Delete</a>
+                            <a href="{{ url_for( 'selectionMng.delete', mst_id=selection_mst.selection_mst_id, db_id=db_id) }}" class="selection_mst" name="delete_cfm">Delete</a>
                         </span>
                     </div>
                 </th>
@@ -82,12 +77,10 @@
                             {% endif %}
                         </td>
                         <td width="200px">
-                            <div >
+                            <div>
                                 <a href="{{ url_for( 'selectionMng.list_update',mst_id=selection_mst.selection_mst_id, list_id=selection.selection_id, db_id=db_id) }}">Modify</a>
-                                <a href="" name="delete_cfm" class="selection_data"
-                                        {% if selection.can_delete %}
-                                   delete_url="{{ url_for( 'selectionMng.list_delete',mst_id=selection_mst.selection_mst_id, list_id=selection.selection_id, db_id=db_id) }}"
-                                        {% endif %}>Delete </a>
+                                <a href="{{ url_for( 'selectionMng.list_delete',mst_id=selection_mst.selection_mst_id, list_id=selection.selection_id, db_id=db_id) }}"
+                                   name="delete_cfm" class="selection_data">Delete </a>
                             </div>
                         </td>
                     </tr>
@@ -100,38 +93,4 @@
             </div>
         </div>
     </center>
-{% endblock %}
-{% block script %}
-    <script>
-        var SELECTION_MST_DELETE_MSG = "{{ const.SELECTION_MST_DELETE_MSG }}";
-        var SELECTION_DATA_DELETE_MSG = "{{ const.SELECTION_DATA_DELETE_MSG }}";
-        var SELECTION_MST_CAN_NOT_DELETE_MSG = "{{ const.SELECTION_MST_CAN_NOT_DELETE_MSG }}";
-        var SELECTION_DATA_CAN_NOT_DELETE_MSG = "{{ const.SELECTION_DATA_CAN_NOT_DELETE_MSG }}";
-
-        function confirm_delete(text, delete_url) {
-            var buttons = {}
-            if (delete_url) {
-                buttons["Submit"] = function () {
-                    window.location.href = delete_url;
-                };
-            }
-            buttons["Cancel"] = function () {
-                $(this).dialog("close");
-            };
-            $("#dialog").dialog({modal: true, buttons: buttons}).text(text);
-        }
-
-        $("a[name='delete_cfm']").on("click", function (e) {
-            e.preventDefault();
-            var delete_url = $(this).attr("delete_url");
-            var is_mst = $(this).is(".selection_mst");
-            var text;
-            if (is_mst) {
-                text = delete_url ? SELECTION_MST_DELETE_MSG : SELECTION_MST_CAN_NOT_DELETE_MSG;
-            } else {
-                text = delete_url ? SELECTION_DATA_DELETE_MSG : SELECTION_DATA_CAN_NOT_DELETE_MSG;
-            }
-            confirm_delete(text, delete_url);
-        });
-    </script>
 {% endblock %}

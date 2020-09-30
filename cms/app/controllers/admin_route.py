@@ -167,3 +167,8 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("adm_login"))
+
+
+@UserAuth.adm_login_required
+def selection_mng():
+    return adm_service.selection_mng()
