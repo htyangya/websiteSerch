@@ -7,8 +7,8 @@ from werkzeug.utils import redirect
 from app import db
 from app.lib.cms_lib.db_util import DbUtil
 from app.lib.cms_lib.html_util import HtmlUtil
-from app.lib.cms_lib.user_auth import UserAuth
 from app.lib.cms_lib.session import get_request_data
+from app.lib.cms_lib.user_auth import UserAuth
 from app.lib.conf.config import Config
 from app.lib.conf.const import Const
 from app.models.cms_db_admin.cms_db import CmsDb
@@ -16,6 +16,7 @@ from app.models.cms_db_admin.cms_object_prop_selection_list import CmsObjectProp
 from app.models.cms_db_admin.cms_object_prop_selection_mst import CmsObjectPropSelectionMst
 
 selectionMng = Blueprint("selectionMng", __name__, url_prefix="/cmsadmin/selectionMng")
+
 
 @selectionMng.before_request
 def args_check():
@@ -65,7 +66,7 @@ def index():
 @selectionMng.route("/add", methods=['GET', 'POST'])
 def add():
     checked_db_fields = ["selection_mst_name", "display_order", "remarks"]
-    name_dict = {"selection_mst_name": "name"}
+    name_dict = {"selection_mst_name": "Name", "display_order": "Display Order", "remarks": "Remarks"}
     if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_MST", checked_db_fields, name_dict):
         selection_mst = CmsObjectPropSelectionMst(
             selection_mst_id=request.form.get("selection_mst_id"),
@@ -99,7 +100,7 @@ def update():
     if selection_mst is None:
         abort(404)
     checked_db_fields = ["selection_mst_name", "display_order", "remarks"]
-    name_dict = {"selection_mst_name": "name"}
+    name_dict = {"selection_mst_name": "Name", "display_order": "Display Order", "remarks": "Remarks"}
     if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_MST", checked_db_fields, name_dict):
         selection_mst.selection_mst_name = request.form.get("selection_mst_name")
         selection_mst.display_order = request.form.get("display_order")
@@ -125,7 +126,7 @@ def update():
 
 
 @UserAuth.login_required
-@selectionMng.route("/delete",  methods=['GET', 'POST'])
+@selectionMng.route("/delete", methods=['GET', 'POST'])
 def delete():
     mst_id = get_request_data("mst_id")
     selection_mst = CmsObjectPropSelectionMst.query.get_or_404(mst_id)
@@ -180,7 +181,7 @@ def detail():
 def list_add():
     mst_id = get_request_data("mst_id")
     checked_db_fields = ["selection_name", "display_order", "description"]
-    name_dict = {"selection_name": "name"}
+    name_dict = {"selection_name": "Name", "display_order": "Display Order", "description": "Description"}
     if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_LIST", checked_db_fields, name_dict):
         selection_list = CmsObjectPropSelectionList(
             selection_mst_id=mst_id,
@@ -214,7 +215,7 @@ def list_update():
     list_id = get_request_data("list_id")
     selection_list = CmsObjectPropSelectionList.query.get_or_404(list_id)
     checked_db_fields = ["selection_name", "display_order", "description"]
-    name_dict = {"selection_name": "name"}
+    name_dict = {"selection_name": "Name", "display_order": "Display Order", "description": "Description"}
     if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_LIST", checked_db_fields, name_dict):
         selection_list.selection_name = request.form.get("selection_name") or ''
         selection_list.display_order = request.form.get("display_order")

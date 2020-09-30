@@ -1,0 +1,38 @@
+{% extends "cms_admin/selection_mng_base.html" %}
+
+{% block container %}
+    <center>
+        <div id="tableDiv" class="TlibTableC">
+            <table id="datalist" class="datalistC">
+                <tr>
+                    <th>Name</th>
+                    <th>{{ disp_field.capitalize() }}</th>
+                    <th>Display Order</th>
+                </tr>
+                <tr>
+                    <td>{{ delete_obj.selection_name or delete_obj.selection_mst_name }}</td>
+                    <td class="disp_content">{{ delete_obj[disp_field] or "" }}</td>
+                    <td>
+                        {% if delete_obj.display_order is not none %}
+                            {{ delete_obj.display_order }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="errMsgDiv">
+            <div class="required">{{ delete_msg }}</div>
+        </div>
+        <br>
+        <form method="post">
+            <input type="hidden" name="db_id" id="db_id" value="{{ db_id }}">
+            <input type="hidden" name="list_id" id="list_id" value="{{ list_id }}">
+            <input type="hidden" name="mst_id" id="mst_id" value="{{ mst_id }}">
+            {% if delete_obj.can_delete %}
+                <input type="submit" value="Submit">
+            {% endif %}
+            <input type="button" value="Cancel" onclick="window.location.href='{{ parent_url }}'">
+        </form>
+        <div class="border"></div>
+    </center>
+{% endblock %}
