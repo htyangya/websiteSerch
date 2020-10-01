@@ -141,3 +141,8 @@ def outage_schedule_add():
 @UserAuth.login_required
 def outage_schedule_delete():
     return schedule_service.open_outage_schedule_delete(request)
+
+
+@UserAuth.login_required
+def get_plant():
+    return schedule_service.get_plant()

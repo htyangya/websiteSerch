@@ -2,6 +2,7 @@
 {% block js_content %}
     <script src="/static/js/TlibJSFixedHeaderTable3.js?q={{ appVer }}" type="text/javascript"></script>
     <script src="/static/jquery-ui-1.10.3.custom/jquery-ui.js?q={{ appVer }}" type="text/javascript"></script>
+    <script src="/static/js/input_selectize.js?q={{ appVer }}" type="text/javascript"></script>
 {% endblock %}
 {% block css_content %}
     <link rel="stylesheet" type="text/css" href="/static/css/schedule_table.css?q={{ appVer }}">
@@ -42,8 +43,8 @@
 
         .form-inline select {
             min-width: 80px;
-        }
 
+        }
         .form-inline input[type='text'] {
             width: 160px;
         }
@@ -81,6 +82,10 @@
             max-width: 500px;
             min-height: 0px;
             max-height: 400px;
+        }
+
+        .input_selectize{
+            width: 150px !important;
         }
 
     </style>
@@ -169,7 +174,8 @@
         </form>
     </div>
     <script>
-        var teiken_map = {{ menu_param["tenken_dict"]|safe }};
+        var teiken_map = {{ menu_param["tenken_dict"]|safe or {} }};
+        var plant;
         //<![CDATA[
         $(function () {
             $(document).tooltip({
@@ -216,8 +222,22 @@
             $("#resultForm-paging input:submit").on("click", function () {
                 $("#page").val(this.value);
             });
-
+            //# CountryのUnitリスト
+            $("#country").change(on_country_change).change();
         });
+
+        function on_country_change() {
+            if ($("#country").val() !== "None") {
+                var url = "{{ url_for('get_plant') }}?country_cd=" + $("#country").val();
+                if (!plant) {
+                    plant = $("#plant").input_selectize(url);
+                } else {
+                    plant.load_ajax(url);
+                }
+            }else{
+                if (plant) plant.show_input();
+            }
+        }
 
         function parse_ids_to_table(ids) {
             var outage_type_mapping = {

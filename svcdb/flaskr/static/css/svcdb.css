@@ -1,5 +1,5 @@
 /*--------------------------------------------------
-   risksys CSS
+   svcdb CSS
   ------------------------------------------------- */
 
 html,
@@ -188,11 +188,11 @@ div.workflow_area {
     padding-right: 10px;
 }
 
-input.risksys-datepicker {
+input.svcdb-datepicker {
     width: 75px;
 }
 
-input.risksys-ympicker {
+input.svcdb-ympicker {
     width: 60px;
 }
 
@@ -761,10 +761,10 @@ label{
   border-top: 1px solid #888;
 }
 
-.risksys-searchtable table{
+.svcdb-searchtable table{
     width: 100%;
 }
-.risksys-searchtable td{
+.svcdb-searchtable td{
     width: 120px;
     padding-left: 0.5em;
     font-family: 'MS Gothic', Sans-serif;

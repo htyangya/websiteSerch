@@ -1,7 +1,7 @@
 import datetime
 import json
 
-from flask import render_template, jsonify
+from flask import render_template, jsonify, request
 from flask_login import current_user
 
 from flaskr import db
@@ -291,3 +291,8 @@ def open_outage_schedule_delete(request):
     db.session.commit()
     msg = None
     return jsonify({"msg": msg})
+
+
+def get_plant():
+    plants = DbUtil.sqlExcuter(scheduleSql.selectPlantByCountrySql, country_cd=request.args.get("country_cd")).fetchall()
+    return jsonify([plant_tupple[0] for plant_tupple in plants])

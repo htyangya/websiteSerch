@@ -1,10 +1,12 @@
 from flask import session, request, redirect, render_template, url_for, flash, current_app
 from flask_login import login_user, current_user
+from markupsafe import Markup
 
 from flaskr.controllers.package import PkgUserAuth, PkgSvcdbLog
 from flaskr.lib.conf.const import Const
 from flaskr.lib.svcdb_lib.session import set_cookie
 from flaskr.lib.svcdb_lib.str_util import StrUtil
+from flaskr.models.svcdb_system_message import SvcdbSystemMessage
 from flaskr.models.user import User
 
 
@@ -55,6 +57,14 @@ def doLogin(form):
     if current_user.is_active:
         user_name = current_user.get_user_name()
 
+    # システムメッセージ
+    loginSystemMessage = ''
+    systemMessage = SvcdbSystemMessage.getSystemMessage('LOGIN')
+    if systemMessage is not None:
+        loginSystemMessage = systemMessage.memo_txt
+        if systemMessage.memo_format and systemMessage.memo_format == Const.HTML_FORMAT:
+            loginSystemMessage = Markup(loginSystemMessage.replace('\n', '<br>'))
+
     return render_template(
         'login.html',
         title=Const.SYSTEM_NAME + '-ログイン画面',
@@ -63,7 +73,7 @@ def doLogin(form):
         next_url=next_url,
         system_name=Const.SYSTEM_NAME,
         user_name=user_name,
-        loginMessage='テスト',
+        loginSystemMessage=loginSystemMessage,
     )
 
 
@@ -87,10 +97,19 @@ def doAdminLogin(form):
     if user_id:
         form.user_id.data = user_id
 
+    # システムメッセージ
+    loginSystemMessage = ''
+    systemMessage = SvcdbSystemMessage.getSystemMessage('LOGIN')
+    if systemMessage is not None:
+        loginSystemMessage = systemMessage.memo_txt
+        if systemMessage.memo_format and systemMessage.memo_format == Const.HTML_FORMAT:
+            loginSystemMessage = Markup(loginSystemMessage.replace('\n', '<br>'))
+
     return render_template(
         'svcdb_admin/login.html',
         form=form,
         next_url=next_url,
+        loginSystemMessage=loginSystemMessage,
         systemVersion="Developer Version 1.00")
 
 

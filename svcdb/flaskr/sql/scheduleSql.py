@@ -55,3 +55,10 @@ fetchRepresentiveSql = '''
     WHERE S.TEIKEN_ID = '{teiken_id}'
     ORDER BY 2
 '''
+selectPlantByCountrySql = """
+    SELECT NVL(A.PLANT_NAME_EN, A.PLANT_NAME_JP) plant FROM TURBINE_LIST_SYN A
+    LEFT JOIN TURBINE_MASTER_TABLE TM ON A.COUNTRY_CD = TM.CODE
+    WHERE TM.MASTER_KIND = 'COUNTRY'
+    AND A.COUNTRY_CD = '{country_cd}'
+    GROUP BY NVL(A.PLANT_NAME_EN, A.PLANT_NAME_JP)
+"""

@@ -21,6 +21,8 @@ class Const(object):
     DATA_TYPE_OBJECT = 'OBJECT'
     DATA_TYPE_FILE = 'FILE'
     DATE_FORMAT = 'YYYY/MM/DD'
+    HTML_FORMAT = 'HTML'
+    TEXT_FORMAT = 'TEXT'
 
     # 操作ログ
     OPERATION_CD_LOGIN = 'LOGIN'

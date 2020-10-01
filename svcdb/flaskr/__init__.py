@@ -48,6 +48,7 @@ def create_app():
                      methods=['GET', 'POST'])
     app.add_url_rule('/outage_schedule_delete', 'outage_schedule_delete', route.outage_schedule_delete,
                      methods=['POST'])
+    app.add_url_rule('/get_plant', 'get_plant', route.get_plant, methods=['GET'])
     app.add_url_rule('/no_privs', 'no_privs', route.no_privs, methods=['GET'])
     app.register_error_handler(404, route.page_not_found)
 
