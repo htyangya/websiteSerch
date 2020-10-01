@@ -160,3 +160,11 @@ class CmsFileWk(db.Model):
 
         af_obj.file_id = file.file_id
         return True
+
+    @staticmethod
+    def get_file_info(obj_id, file_type_id):
+        sql = f"""SELECT MAX(F.DIR_NAME|| '/'||F.C_FILE_NAME) FILE_NAME,COUNT(*) FILE_COUNT FROM CMS_FILE F 
+                WHERE F.IS_DELETED = 0 
+                AND F.PARENT_OBJECT_ID ={obj_id}
+                AND F.FILE_TYPE_ID = {file_type_id}"""
+        return db.session.execute(sql).first()

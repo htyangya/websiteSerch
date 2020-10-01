@@ -37,6 +37,8 @@ def create_app():
     app.add_url_rule('/ctx_search', 'ctx_search', route.ctx_search, methods=['GET', 'POST'])
     app.add_url_rule('/search_jqmodal', 'search_jqmodal', route.search_jqmodal, methods=['GET'])
     app.add_url_rule('/search', 'search', route.search, methods=['GET'])
+    app.add_url_rule('/get_file_info', 'get_file_info', route.get_file_info, methods=['GET'])
+
 
     # 編集モードの場合
     app.add_url_rule('/property', 'property', route.property, methods=['GET'])

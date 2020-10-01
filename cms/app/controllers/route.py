@@ -1,8 +1,9 @@
 # Flaskとrender_template（HTMLを表示させるための関数）をインポート
 import json
+import os
 
 from flask import render_template, current_app, Response, url_for, \
-    request
+    request, jsonify
 from flask_login import logout_user
 from werkzeug.utils import redirect
 
@@ -10,6 +11,7 @@ from app.forms.login_form import LoginForm
 from app.lib.cms_lib.session import get_db_id
 from app.lib.cms_lib.str_util import StrUtil
 from app.lib.cms_lib.user_auth import UserAuth
+from app.models.cms.cms_file_wk import CmsFileWk
 from app.services.cms_admin import file_service
 from app.services.cms import main_service, property_service
 from app.services.login_service import doLogin
@@ -198,3 +200,12 @@ def no_privs():
 # page not exist
 def page_not_found(e):
     return render_template('error/404.html'), 404
+
+
+@UserAuth.login_required
+def get_file_info():
+    info = CmsFileWk.get_file_info(request.args.get("object_id"), request.args.get("file_type_id"))
+    count = info.file_count
+    if count == 1 and not os.path.exists(info.file_name):
+        count = 0
+    return jsonify({'file_count': count})

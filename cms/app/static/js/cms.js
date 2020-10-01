@@ -721,6 +721,10 @@ function getOpenFileDetailUrl(db_id, objectId, fileTypeId) {
     return _get_location_path() + "/file_link?db_id=" + db_id + "&object_id=" + objectId + "&file_type_id="+ fileTypeId;
 }
 
+function getFileCountUrl(db_id, objectId, fileTypeId) {
+    return _get_location_path() + "/get_file_info?db_id=" + db_id + "&object_id=" + objectId + "&file_type_id="+ fileTypeId;
+}
+
 function getDownloadCheckUrl(fileId) {
     return _get_location_path() + "/download_file_check?file_id=" + fileId;
 }
@@ -750,8 +754,8 @@ function popupSearchMain(db_id, search_setting_id) {
 }
 
 // 添付ファイル編集
-function popupFileDetail(db_id, objectId, fileId, fileTypeId) {
-    var url = getOpenFileDetailUrl(db_id, objectId, fileId, fileTypeId);
+function popupFileDetail(db_id, objectId, fileTypeId) {
+    var url = getOpenFileDetailUrl(db_id, objectId, fileTypeId);
     load_jqmodal_dlg(url, on_load_jqmodal_dlg);
 }
 
@@ -1251,4 +1255,19 @@ function ColorSet3(txt,erf) {
             txt.removeClass("gray");
         }
     }
+}
+
+function handleByFileCount(db_id, objectId, fileTypeId) {
+	var url = getFileCountUrl(db_id, objectId, fileTypeId);
+	$.get(url).then(function (data) {
+		var count=data.file_count
+		if (count == 0) {
+			alert('File not found');
+		}else if (count == 1) {
+			location.href = getOpenFileDetailUrl(db_id, objectId, fileTypeId);
+		} else {
+			popupFileDetail(db_id, objectId, fileTypeId);
+		}
+	});
+	return false
 }

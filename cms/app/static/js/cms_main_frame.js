@@ -330,13 +330,8 @@ function post_list_data(x, s) {
                 // データの種類がファイルの場合
                 } else if("FILE" == value.link_type && file_id !== null && file_id != "") {
                     var aEm = $("<a></a>").text(txtValue);
-                    if (file_cnt == 1) {
-						aEm.attr("href", getOpenFileDetailUrl(db_id, object_id, value.link_type_id));
-                        // aEm.attr("onClick", "downloadFile('" + file_id + "')");
-                    } else {
-						aEm.attr("href", getOpenFileDetailUrl(db_id, object_id, value.link_type_id)).attr("target","_blank");
-                        // aEm.attr("onClick", "fileDetail('" + object_id + "', '" + file_id + "', '" + value.link_type_id + "')");
-                    }
+					aEm.attr("href", getOpenFileDetailUrl(db_id, object_id, value.link_type_id))
+						.attr("onClick", "return handleByFileCount(" + db_id + ", " + object_id + ", " + value.link_type_id + ")");
                     rowEm.append($("<td></td>").append(aEm).attr("style", value.td_style));
                 // データの種類がURLリンクの場合
                 } else if("URL" == value.link_type) {

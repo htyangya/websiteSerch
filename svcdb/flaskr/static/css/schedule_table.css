@@ -47,3 +47,13 @@ tr.fixed_table_header {
     height: 30px;
 }
 
+table td.country_title {
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+}
+table td.unit_title {
+    width: 180px;
+    min-width: 180px;
+    max-width: 180px;
+}

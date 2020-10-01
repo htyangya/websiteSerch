@@ -294,5 +294,7 @@ def open_outage_schedule_delete(request):
 
 
 def get_plant():
-    plants = DbUtil.sqlExcuter(scheduleSql.selectPlantByCountrySql, country_cd=request.args.get("country_cd")).fetchall()
+    search_table = "TURBINE_LIST_ESS" if (current_user.corp_cd == 'CNV') else "TURBINE_LIST_EX"
+    plants = DbUtil.sqlExcuter(scheduleSql.selectPlantByCountrySql, search_table=search_table,
+                               country_cd=request.args.get("country_cd")).fetchall()
     return jsonify([plant_tupple[0] for plant_tupple in plants])
