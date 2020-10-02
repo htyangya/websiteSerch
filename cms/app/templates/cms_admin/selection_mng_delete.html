@@ -26,8 +26,6 @@
         <br>
         <form method="post">
             <input type="hidden" name="db_id" id="db_id" value="{{ db_id }}">
-            <input type="hidden" name="list_id" id="list_id" value="{{ list_id }}">
-            <input type="hidden" name="mst_id" id="mst_id" value="{{ mst_id }}">
             {% if delete_obj.can_delete %}
                 <input type="submit" value="Submit">
             {% endif %}

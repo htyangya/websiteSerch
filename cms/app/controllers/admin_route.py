@@ -172,3 +172,23 @@ def logout():
 @UserAuth.adm_login_required
 def selection_mng():
     return adm_service.selection_mng()
+
+
+@UserAuth.adm_login_required
+def selection_mst_persistent():
+    return adm_service.selection_mst_persistent()
+
+
+@UserAuth.adm_login_required
+def selection_mst_detail():
+    return adm_service.selection_mst_detail()
+
+
+@UserAuth.adm_login_required
+def selection_list_persistent():
+    return adm_service.selection_list_persistent()
+
+
+@UserAuth.adm_login_required
+def selection_delete():
+    return adm_service.selection_delete()

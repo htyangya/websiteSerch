@@ -11,10 +11,11 @@ login_manager = LoginManager()
 # login_viewのrouteを設定
 login_manager.login_view = 'login'
 
-from app.controllers import route, selection_mng
+from app.controllers import route
 from app.controllers import admin_route
 from app.controllers import db_admin_route
 from app.lib.cms_lib import app_components
+
 
 def create_app():
     app = Flask(__name__)
@@ -38,7 +39,6 @@ def create_app():
     app.add_url_rule('/search_jqmodal', 'search_jqmodal', route.search_jqmodal, methods=['GET'])
     app.add_url_rule('/search', 'search', route.search, methods=['GET'])
     app.add_url_rule('/get_file_info', 'get_file_info', route.get_file_info, methods=['GET'])
-
 
     # 編集モードの場合
     app.add_url_rule('/property', 'property', route.property, methods=['GET'])
@@ -90,7 +90,8 @@ def create_app():
     # DB管理
     app.add_url_rule('/cmsadmin/database_admin', 'database_admin', admin_route.database_admin, methods=['GET'])
     app.add_url_rule('/cmsadmin/database', 'database', admin_route.database, methods=['GET', 'POST'])
-    app.add_url_rule('/cmsadmin/delete_database_jqmodal', 'delete_database_jqmodal', admin_route.delete_database_jqmodal,
+    app.add_url_rule('/cmsadmin/delete_database_jqmodal', 'delete_database_jqmodal',
+                     admin_route.delete_database_jqmodal,
                      methods=['GET', 'POST'])
     app.add_url_rule('/cmsadmin/keyword', 'adm_keyword', admin_route.keyword, methods=['GET', 'POST'])
     # IPアドレス管理
@@ -124,11 +125,23 @@ def create_app():
     app.add_url_rule('/cmsadmin/style_setting_edit', 'style_setting_edit', admin_route.style_setting_edit,
                      methods=['GET', 'POST'])
     # Selection Master
-    app.register_blueprint(selection_mng.selectionMng)
-    # app.add_url_rule('/cmsadmin/selectionMng', 'selection_mng', admin_route.selection_mng)
+    app.add_url_rule('/cmsadmin/selectionMng', 'selection_mng', admin_route.selection_mng)
+    app.add_url_rule('/cmsadmin/selectionMng/add', 'selection_mng_add', admin_route.selection_mst_persistent,
+                     methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/selectionMng/update', 'selection_mng_update', admin_route.selection_mst_persistent,
+                     methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/selectionMng/detail', 'selection_mng_detail', admin_route.selection_mst_detail),
+    app.add_url_rule('/cmsadmin/selectionMng/delete', 'selection_mng_delete', admin_route.selection_delete,
+                     methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/selectionMng/list_add', 'selection_list_add', admin_route.selection_list_persistent,
+                     methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/selectionMng/list_update', 'selection_list_update',
+                     admin_route.selection_list_persistent, methods=['GET', 'POST'])
+    app.add_url_rule('/cmsadmin/selectionMng/list_delete', 'selection_list_delete', admin_route.selection_delete,
+                     methods=['GET', 'POST'])
 
     app.add_url_rule('/no_privs', 'no_privs', route.no_privs, methods=['GET'])
     app.register_error_handler(404, route.page_not_found)
-    # app.context_processor(app_components.args_get())
-    # app.before_request(app_components.args_add)
+    app.before_request(app_components.add_arg_before_view)
+    app.context_processor(app_components.add_arg_to_template)
     return app

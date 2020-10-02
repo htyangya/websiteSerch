@@ -2,7 +2,7 @@ import os
 import re
 import sys
 
-from flask import render_template, jsonify, current_app, make_response, send_file
+from flask import render_template, jsonify, current_app, make_response, send_file, request
 from flask_login import current_user
 
 from app import db
@@ -24,7 +24,7 @@ def file_link(db_id, object_id, file_type_id):
     attacheFileList = cmsFile.get_file_list(object_id, file_type_id).fetchall()
     if len(attacheFileList) > 1 or not attacheFileList:
         return render_template(
-            'files_jqmodal.html',
+            'files_jqmodal.html' if request.args.get("target") == "self" else "files.html",
             jqmTitle='添付ファイル画面',
             db_id=db_id,
             const=Const,

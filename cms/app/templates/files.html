@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="UFT-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-dist/css/bootstrap.min.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms_common.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/css/cms.css?q={{appVer}}">
+    <link rel="stylesheet" type="text/css" href="/static/jquery/jqModal-1.9.css?q={{appVer}}">
+    <script src="/static/jquery/jquery-1.10.2.min.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms-common.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/js/cms.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/tjslib/TlibJSFixedHeaderTable3.js?q={{appVer}}" type="text/javascript"></script>
+    <script src="/static/jquery.blockUI/jquery.blockUI.js?q={{appVer}}" type="text/javascript"></script>
+    <title>{{ jqmTitle }}</title>
+    <style>
+        .jqmWindow {
+            width: 800px !important;
+            min-height: 500px !important;
+            max-height: 80% !important;
+            position: absolute;
+            background-color: #fff;
+            color: #333;
+            border: 2px solid #333;
+            padding: 0;
+        }
+        .jqDnRHandle {
+            position: absolute;
+            height: 22px;
+            left: 0;
+            right: 0;
+            padding-left: 10px;
+            color: #fff;
+            background: #333;
+        }
+    </style>
+</head>
+<body >
+    <div class="jqmOverlay" style="height: 100%; width: 100%; position: fixed; left: 0px; top: 0px; z-index: 99; opacity: 0.3;"></div>
+    <div class="jqmWindow jqmID1" id="jqmWindow" style="opacity: 1; z-index: 100; display: block; left: 370px; top: 89px;">
+        <div class="jqDnRHandle">{{ jqmTitle }}</div>
+        {% if attacheFileList %}
+            <div class="jqmBody" id="jqmBody" style="overflow: hidden;">
+                <form id="editform" name="editform" method="post" action="./del_risk_attached_files" class="main-form" enctype="multipart/form-data">
+                    <input type="hidden" id="editform-editMode" name="editform-editMode" value="1" />
+                    <div class="header-content" id="editform-headerContents">
+                        <!-- キャンセル -->
+                        <div class="btn-group">
+                            <button class="btn btn-default" onclick="window.open('about:blank', '_self').close();" type="button">閉じる</button>
+                        </div>
+                    </div>
+                    <div class="main-content" style="overflow: hidden;">
+                        <div class="pjbase-content">
+                            <div id="attach_list" class="file-content sub-container" style="min-width: 765px;">
+                                <div class="attach_list_div" id="editform-relationAttachTable">
+                                    <input name="editform-downloadSaveFlg" id="editform-downloadSaveFlg" type="hidden" />
+                                    <table id="editform-relationAttachList" class="table-bordered psprimis-list-table">
+                                        <tr>
+                                            <th class="NW" style="width:725px;">添付ファイル名</th>
+                                            <th class="NW" style="width:230px;">ファイルサイズ</th>
+                                            <th class="NW" style="width:230px;">登録日</th>
+                                        </tr>
+                                        {% for attacheFile in attacheFileList %}
+                                            <tr>
+                                                <td class="NW AT AL">
+                                                    <a href="{{ url_for('download_file', db_id=db_id, file_id=attacheFile.file_id) }}">{{attacheFile.file_name}}</a>
+                                                </td><!-- 添付ファイル名 -->
+                                                <td class="NW AT AL">{{attacheFile.file_size_disp}}</td><!-- 添付ファイルサイズ -->
+                                                <td class="NW AT AL">{{attacheFile.created_at_str}}</td><!-- 最終更新日 -->
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                            <br>
+                        </div> <!-- pjbase-content -->
+                    </div> <!-- main-content -->
+                </form>
+            </div>
+        {% else %}
+            <h3 style="margin: 40px;"> {{ const.FILE_NOT_FOUND }}</h3>
+        {% endif %}
+
+        <script>
+            //<![CDATA[
+            var db_id = "{{ db_id }}";
+            $("input").keypress(function(ev) {
+                if ((ev.which && ev.which === 13) || (ev.keyCode && ev.keyCode === 13)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+
+            // ファイルダウンロード
+            function downloadFile(fileId) {
+
+                // ファイル存在チェック
+                var url = getDownloadFileUrl(db_id, fileId);
+                msSaveOrOpenBlob(url, "GET", "しばらくお待ちください", "", "application/x-www-form-urlencoded", "");
+            }
+
+            var editMode = "1";
+            $(document).ready(function() {
+                $("#jqmWindow").css("left", ($(document).width() - $("#jqmWindow").width()) / 2);
+                {% if attacheFileList %}
+                    initFixedResultTable();
+                {% endif %}
+            });
+
+            function initFixedResultTable() {
+
+                var fixedHeaderCols = 0;
+
+                initTlibJSFixedHeaderTable(
+                    {table_div: 'editform-relationAttachTable',
+                        table_header_div: 'TlibTableHeaderfixed_table',
+                        table_height: -1,
+                        header_cols: 0,
+                        header_rows: 0,
+                        table_height: 380,
+                        no_resize_bind: 1,
+                        bg_color: '',
+                        header_cols: fixedHeaderCols,
+                        bg_color: ''
+                    });
+                initResultListClick();
+                adjustFixedHeaderTable();
+            }
+            //]]>
+        </script>
+    </div>
+</body>
+
+</html>

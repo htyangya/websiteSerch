@@ -8,7 +8,7 @@
                     <th class="title">Selection Master List</th>
                     <th class="function" style="float:right;">
                          <span class="object_menu">
-                            <a href="{{ url_for( 'selectionMng.add', db_id=db_id) }}">Create</a>
+                            <a href="{{ url_for( 'selection_mng_add', db_id=db_id) }}">Create</a>
                          </span>
                     </th>
                 </tr>
@@ -23,7 +23,7 @@
                     {% for selection_mst in selection_msts %}
                         <tr>
                             <td>
-                                <a href="{{ url_for( 'selectionMng.detail',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}">{{ selection_mst.selection_mst_name or "" }}</a>
+                                <a href="{{ url_for( 'selection_mng_detail',mst_id=selection_mst.selection_mst_id, db_id=db_id) }}">{{ selection_mst.selection_mst_name or "" }}</a>
                             </td>
                             <td class="disp_content">{{ selection_mst.remarks or "" }}</td>
                             <td>

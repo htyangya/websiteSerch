@@ -27,6 +27,7 @@ scheduleListSql = '''
         LEFT JOIN OUTAGE_SCHEDULE C on A.TURBINE_ID = C.TURBINE_ID
         WHERE 1 = 1
         {and_sql}
+        ORDER BY PLANT_NAME
     )
     {where_sql}
 '''
@@ -62,4 +63,5 @@ selectPlantByCountrySql = '''
     WHERE TM.MASTER_KIND = 'COUNTRY'
     AND A.COUNTRY_CD = '{country_cd}'
     GROUP BY NVL(A.PLANT_NAME_EN, A.PLANT_NAME_JP)
+    ORDER BY NVL(A.PLANT_NAME_EN, A.PLANT_NAME_JP)
 '''

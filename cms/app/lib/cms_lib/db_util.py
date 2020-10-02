@@ -1,7 +1,7 @@
 import re
 import sys
 
-from flask import flash, request
+from flask import flash, request, abort
 from sqlalchemy import text
 
 from app import db
@@ -289,3 +289,9 @@ class DbUtil:
         DbUtil.check_input_form_data_by_db(param_prop)
         [flash(msg) for msg in param_prop['err_msgs']]
         return not param_prop['err_msgs']
+
+    @staticmethod
+    def make_sure_not_deleted(db_obj):
+        if getattr(db_obj, "is_deleted", None) == 1:
+            flash("This Object has been deleted!")
+            abort(404)

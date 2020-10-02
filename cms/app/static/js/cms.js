@@ -755,7 +755,7 @@ function popupSearchMain(db_id, search_setting_id) {
 
 // 添付ファイル編集
 function popupFileDetail(db_id, objectId, fileTypeId) {
-    var url = getOpenFileDetailUrl(db_id, objectId, fileTypeId);
+    var url = getOpenFileDetailUrl(db_id, objectId, fileTypeId)+ "&target=self";
     load_jqmodal_dlg(url, on_load_jqmodal_dlg);
 }
 

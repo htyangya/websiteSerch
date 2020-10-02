@@ -1,7 +1,8 @@
 import re
 import sys
+from datetime import datetime
 
-from flask import render_template, current_app, url_for, request
+from flask import render_template, current_app, url_for, request, g
 from flask_login import current_user
 from werkzeug.utils import redirect
 
@@ -14,7 +15,7 @@ from app.forms.cms_admin.list_format_form import ListFormatForm
 from app.forms.cms_admin.style_setting_form import StyleSettingForm
 from app.lib.cms_lib.db_util import DbUtil
 from app.lib.cms_lib.html_util import HtmlUtil
-from app.lib.cms_lib.session import get_db_id
+from app.lib.cms_lib.session import get_db_id, get_request_data
 from app.lib.cms_lib.str_util import StrUtil
 from app.lib.conf.const import Const
 from app.models.cms_admin.cms_ip_addr_list import CmsIpAddrList
@@ -28,6 +29,7 @@ from app.models.cms_admin.cms_style_master import CmsStyleMaster
 from app.models.cms_admin.cms_style_setting import CmsStyleSetting
 from app.models.cms_common import CmsCommon
 from app.models.cms_db_admin.cms_db import CmsDb
+from app.models.cms_db_admin.cms_object_prop_selection_list import CmsObjectPropSelectionList
 from app.models.cms_db_admin.cms_object_prop_selection_mst import CmsObjectPropSelectionMst
 from app.models.cms_db_admin.cms_object_property import CmsObjectProperty
 from app.models.cms_db_admin.cms_object_type import CmsObjectType
@@ -1276,9 +1278,139 @@ def selection_mng():
         CmsObjectPropSelectionMst.db_id == request.args.get("db_id"),
         CmsObjectPropSelectionMst.is_deleted == 0
     ).order_by(CmsObjectPropSelectionMst.display_order).all()
-    # g.navi_arr_ref.append("Selection Master")
+    g.navi_arr_ref.append("Selection Master")
     return render_template(
         "cms_admin/selection_mng_list.html",
         title="CMS：Selection Master",
         selection_msts=selection_msts
+    )
+
+
+def selection_mst_persistent():
+    mst_id = get_request_data("mst_id")
+    checked_db_fields = ["selection_mst_name", "display_order", "remarks"]
+    name_dict = {"selection_mst_name": "Name", "display_order": "Display Order", "remarks": "Remarks"}
+    selection_mst = CmsObjectPropSelectionMst.query.get_or_404(mst_id) if mst_id else None
+    DbUtil.make_sure_not_deleted(selection_mst)
+    parent_url = url_for('selection_mng_detail', mst_id=mst_id, db_id=g.db_id) if mst_id else url_for('selection_mng',
+                                                                                                      db_id=g.db_id)
+    if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_MST", checked_db_fields, name_dict):
+        if mst_id:
+            selection_mst.updated_at = datetime.now()
+            selection_mst.updated_by = current_user.get_id()
+        else:
+            selection_mst = CmsObjectPropSelectionMst()
+            selection_mst.selection_mst_id = get_request_data("selection_mst_id")
+            selection_mst.db_id = get_request_data("db_id")
+        selection_mst.selection_mst_name = get_request_data("selection_mst_name")
+        selection_mst.display_order = get_request_data("display_order")
+        selection_mst.remarks = get_request_data("remarks")
+        db.session.add(selection_mst)
+        db.session.commit()
+        return redirect(parent_url)
+    param = {
+        "title": "CMS：Selection Master Modify" if mst_id else "CMS：Selection Master Add",
+        "parent_url": parent_url,
+        "ope_msg": "Modify Selection Master" if mst_id else "Create Selection Mst",
+        "selection_mst": selection_mst if mst_id and request.method == "GET" else request.form,
+    }
+    g.navi_arr_ref.extend([
+        "Selection Master", url_for('selection_mng', db_id=g.db_id)
+    ])
+    if mst_id:
+        selection_mst = selection_mst or CmsObjectPropSelectionMst.query.get_or_404(mst_id)
+        g.navi_arr_ref.extend([
+            selection_mst.selection_mst_name, param['parent_url']
+        ])
+    return render_template(
+        "cms_admin/selection_mng_modify.html",
+        **param
+    )
+
+
+def selection_mst_detail():
+    mst_id = get_request_data("mst_id")
+    list_id = get_request_data("list_id")
+    selection_mst = CmsObjectPropSelectionMst.query.get_or_404(mst_id)
+    DbUtil.make_sure_not_deleted(selection_mst)
+    selection_list = CmsObjectPropSelectionList.query.filter(CmsObjectPropSelectionList.selection_mst_id == mst_id,
+                                                             CmsObjectPropSelectionList.is_deleted == 0).order_by(
+        CmsObjectPropSelectionList.display_order).all()
+    g.navi_arr_ref.extend([
+        "Selection Master", url_for('selection_mng', db_id=g.db_id),
+    ])
+    return render_template(
+        "cms_admin/selection_mng_detail.html",
+        title="CMS：Selection Master Detail",
+        selection_mst=selection_mst,
+        selection_list=selection_list
+    )
+
+
+def selection_list_persistent():
+    mst_id = get_request_data("mst_id")
+    list_id = get_request_data("list_id")
+    checked_db_fields = ["selection_name", "display_order", "description"]
+    name_dict = {"selection_name": "Name", "display_order": "Display Order", "description": "Description"}
+    selection_list = CmsObjectPropSelectionList.query.get_or_404(list_id) if list_id else None
+    DbUtil.make_sure_not_deleted(selection_list)
+    parent_url = url_for('selection_mng_detail', mst_id=mst_id, db_id=g.db_id)
+    if DbUtil.check_fields_from_form_on_post("CMS_OBJECT_PROP_SELECTION_LIST", checked_db_fields, name_dict):
+        if list_id:
+            selection_list.updated_at = datetime.now()
+            selection_list.updated_by = current_user.get_id()
+        else:
+            selection_list = CmsObjectPropSelectionList()
+            selection_list.selection_mst_id = mst_id
+        selection_list.selection_name = get_request_data("selection_name") or ''
+        selection_list.display_order = get_request_data("display_order")
+        selection_list.description = get_request_data("description")
+        db.session.add(selection_list)
+        db.session.commit()
+        return redirect(parent_url)
+    selection_mst = CmsObjectPropSelectionMst.query.get_or_404(mst_id)
+    g.navi_arr_ref.extend([
+        "Selection Master", url_for('selection_mng', db_id=g.db_id),
+        selection_mst.selection_mst_name, parent_url,
+    ])
+    return render_template(
+        "cms_admin/selection_list_modify.html",
+        title="CMS：Selection Data Create" if list_id else "CMS：Selection Data Modify",
+        selection_list=selection_list if list_id and request.method == "GET" else request.form,
+        parent_url=parent_url,
+        ope_msg="selection_mng_detail" if list_id else "Modify Selection Data"
+    )
+
+
+def selection_delete():
+    mst_id = get_request_data("mst_id")
+    list_id = get_request_data("list_id")
+    selection_mst = CmsObjectPropSelectionMst.query.get_or_404(mst_id)
+    selection_list = CmsObjectPropSelectionList.query.get_or_404(list_id) if list_id else None
+    delete_obj = selection_list if list_id else selection_mst
+    DbUtil.make_sure_not_deleted(delete_obj)
+    parent_url = url_for('selection_mng_detail', mst_id=mst_id, db_id=g.db_id)
+    if request.method == "POST" and delete_obj.can_delete:
+        delete_obj.is_deleted = 1
+        delete_obj.deleted_at = datetime.now()
+        delete_obj.deleted_by = current_user.get_id()
+        db.session.add(delete_obj)
+        db.session.commit()
+        return redirect(parent_url if list_id else url_for('selection_mng', db_id=g.db_id))
+    g.navi_arr_ref.extend([
+        "Selection Master", url_for('selection_mng', db_id=g.db_id),
+        selection_mst.selection_mst_name, parent_url
+    ])
+    if list_id:
+        delete_msg = Const.SELECTION_DATA_DELETE_MSG if selection_list.can_delete else Const.SELECTION_DATA_CAN_NOT_DELETE_MSG
+    else:
+        delete_msg = Const.SELECTION_MST_DELETE_MSG if selection_mst.can_delete else Const.SELECTION_MST_CAN_NOT_DELETE_MSG
+    return render_template(
+        "cms_admin/selection_mng_delete.html",
+        title="CMS：Delete Selection Data" if list_id else "CMS：Delete Selection Master",
+        ope_msg="Delete Selection Data" if list_id else "Delete Selection Master",
+        disp_field="description" if list_id else "remarks",
+        delete_obj=delete_obj,
+        delete_msg=delete_msg,
+        parent_url=parent_url
     )
