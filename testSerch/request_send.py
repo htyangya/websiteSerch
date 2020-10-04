@@ -1,16 +1,18 @@
 import math
+import os
 import re
-import sys
 import threading
 from concurrent.futures.thread import ThreadPoolExecutor
 from io import BytesIO
+
 import pandas as pd
 import pytesseract
 import requests as rq
 from PIL import Image
 from pyquery import PyQuery as pq
-from requests import ConnectTimeout
+from requests import ConnectTimeout, Timeout, ReadTimeout, ConnectionError
 from urlobject import URLObject
+
 import config
 
 
@@ -44,20 +46,17 @@ class Search:
         self.df = None
 
     def start(self):
-        self.prepare_data()
-        task_args = self.df.index.to_list()[:50]
-        self.count = len(task_args)
+        task_args = self.df.index.to_list()
         executor = ThreadPoolExecutor(max_workers=min(config.get_global_setting("thread_count"), self.count))
         result = executor.map(self.search_one, task_args)
-        print("任务已开始")
-        print(list(result))
+        self.write_result(list(result))
 
     def prepare_data(self):
         try:
             response = rq.get(self.url, timeout=self.timeout)
-            html = response.content.decode(self.charset)
+            html = self.parse_response(response)
             doc = pq(html)
-            inputs = doc("#frmIndex input")
+            inputs = doc("{} input".format(config.get_strategy_setting(self.strategy_name, "form_select")))
             hidden_data = {i.attr("name"): i.val().encode(self.charset) for i in inputs.items() if
                            i.attr("type").lower() in ["hidden", "submit"]}
             required_inputs = [i.attr("name") for i in inputs.items() if
@@ -70,16 +69,21 @@ class Search:
             self.img_url = self.url.relative(
                 doc(config.get_strategy_setting(self.strategy_name, "vcode_image")).attr("src"))
             self.vcode = self._get_vcode()
-        except ConnectTimeout:
+        except (ConnectTimeout, Timeout, ReadTimeout, ConnectionError):
             raise Exception("该查询网址链接有问题，{0}秒钟内未有效连接，请确认网络情况".format(self.timeout))
+
+    def parse_response(self, response):
+        return response.content.decode(self.charset, errors="ignore")
 
     def read_excel(self, file):
         df = pd.read_excel(file, dtype=str, engine="openpyxl")
         df.columns = df.columns.to_series().str.strip()
         df = df.loc[~df.isna().all(1)].fillna("")
-        if len(df) == 0:
+        length = len(df)
+        if length == 0:
             raise Exception("该excel文件中没有数据！")
         inputs_dict = self.inputs_dict
+        self.count = length
         for html_name, excel_name in inputs_dict.items():
             if excel_name != "验证码" and excel_name not in df.columns:
                 raise Exception("该excel文件不适合此策略器，excel列中缺乏必要的列：{0}".format(excel_name))
@@ -88,22 +92,22 @@ class Search:
     def search_one(self, index):
         repeat_count = 0
         data = self.make_data(index)
-        print(index)
         while True:
             try:
                 if self._cancel:
+                    self.task_done()
                     return self.get_search_data(index) + ["任务已手动取消"] * len(self.results_select)
                 response = rq.post(self.url, data=data, **self.send_args)
                 if response.status_code == 200:
-                    html = response.content.decode(self.charset)
+                    html = self.parse_response(response)
                     doc = pq(html)
                     self.task_done()
-                    self.show_process("完成度", self.finish_count, self.count)
                     return self.get_search_data(index) + [doc(select).text() for select in self.results_select]
-            except ConnectTimeout:
+            except (ConnectTimeout, Timeout, ReadTimeout, ConnectionError):
                 # 重新查询,直到超出最大重复次数
                 repeat_count += 1
-                if repeat_count > self.max_repeat_count:
+                if repeat_count >= self.max_repeat_count:
+                    self.task_done()
                     return self.get_search_data(index) + ["网络不好，超出最大重复次数，任务已自动取消"] * len(self.results_select)
 
     def _check_data(self, required_inputs: list):
@@ -118,21 +122,16 @@ class Search:
             vcode = pytesseract.image_to_string(Image.open(BytesIO(response.content)))
             vcode = re.sub("\D+", "", vcode)
             if self._test_vcode(vcode):
-                # Image.open(BytesIO(response.content)).show()
-                # print(vcode)
                 return vcode
 
     def _test_vcode(self, vcode):
-        print(vcode)
         if len(vcode) != self.vcode_len:
             return False
         data = self.make_data(0, vcode)
         response = rq.post(self.url, data=data, **self.send_args)
-        html = response.content.decode(self.charset)
-        print(self.vcode_error in html)
+        html = self.parse_response(response)
         if self.vcode_error in html:
             return False
-        # print(pq(html)("#frmIndex > script").text())
         return True
 
     def make_data(self, index, vcode=""):
@@ -156,7 +155,12 @@ class Search:
 
     def write_result(self, result):
         df = pd.DataFrame(result, columns=self.search_colname + self.results_colname)
-        df.to_excel("result.xlsx", index=False)
+        file_name = "result.xlsx"
+        i = 0
+        while os.path.exists(file_name):
+            i += 1
+            file_name = "result{}.xlsx".format(i)
+        df.to_excel(file_name, index=False)
 
     def cancel(self):
         self._cancel = True
@@ -164,6 +168,9 @@ class Search:
     def task_done(self):
         with self.cond:
             self.finish_count += 1
+
+    def is_finish(self):
+        return self.finish_count >= self.count
 
     @property
     def send_args(self):
@@ -174,10 +181,9 @@ class Search:
         }
 
     @staticmethod
-    def show_process(desc_text, curr, total):
-        proc = math.ceil(curr / total * 100)
-        show_line = '\r' + desc_text + ':' + '>' * proc \
-                    + ' ' * (100 - proc) + '[%s%%]' % proc \
-                    + '[%s/%s]' % (curr, total)
-        sys.stdout.write(show_line)
-        sys.stdout.flush()
+    def get_process_text(desc_text, curr, total):
+        proc = math.ceil(curr * 100 / total)
+        char_count = math.ceil(curr * 40 / total)
+        show_line = desc_text + ':' + '>' * char_count + '#' * (40 - char_count) + '[%s%%]' % proc + '[%s/%s]' % (
+            curr, total)
+        return show_line

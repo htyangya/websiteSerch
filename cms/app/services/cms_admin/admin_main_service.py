@@ -1311,7 +1311,7 @@ def selection_mst_persistent():
     param = {
         "title": "CMS：Selection Master Modify" if mst_id else "CMS：Selection Master Add",
         "parent_url": parent_url,
-        "ope_msg": "Modify Selection Master" if mst_id else "Create Selection Mst",
+        "ope_msg": "Modify Selection Master" if mst_id else "Create Selection Master",
         "selection_mst": selection_mst if mst_id and request.method == "GET" else request.form,
     }
     g.navi_arr_ref.extend([
@@ -1378,7 +1378,7 @@ def selection_list_persistent():
         title="CMS：Selection Data Create" if list_id else "CMS：Selection Data Modify",
         selection_list=selection_list if list_id and request.method == "GET" else request.form,
         parent_url=parent_url,
-        ope_msg="selection_mng_detail" if list_id else "Modify Selection Data"
+        ope_msg="Modify Selection Data" if list_id else "Create Selection Data"
     )
 
 

@@ -1,29 +1,40 @@
 {
   /* 项目配置文件 */
   "global_settings": {
-    "timeout": 10,
-    "thread_count": 25,
-    "max_repeat_count": 5,
+    "timeout": 10, /* 发起一个请求的全局超时时间 */
+    "thread_count": 25, /* 同时查询的线程数量，数值越大查询越快，电脑配置好可以调高一些 */
+    "max_repeat_count": 5,/* 超时后重新查询的次数，超过次数后不再查询 */
+    /* 伪装浏览器类型 */
     "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
   },
 
- /* 网站配置,每个网站一个 */
+ /* 网站配置,每个网站一个，名称为不带http的域名 */
   "websites": {
     "pta.guizhou.gov.cn": {
+      /* 网站字符集 */
       "charset": "gbk",
+      /* 网站验证码的位数 */
       "vcode_len": 4,
       /* 网页中必填输入框的name值和它对应的excel列名，验证码输入框写验证码即可 */
       "inputs": {"TxtName":"姓名","TxtHaoMa": "准考证号","txtJym":"验证码"}
     }
   },
-  /* 策略器,每个网址选择合适的策略器 */
+  /* 策略器,每个网址选择合适的策略器，名称随便起即可 */
   "strategies": {
     "贵州人事考试信息网策略1": {
-      "form": "#frmIndex",
+      /* 输入表单的css选择器 */
+      "form_select": "#frmIndex",
+      /* 显示验证码图片的img选择器 */
       "vcode_image": "#Image1",
+      /* 验证码不正确时，返回页面的特有字符 */
       "vcode_error": "校验码不正确！",
+      /* 网页中必填输入框，和下面的inputs互斥，global表示使用网站通用的输入框集合 */
       "global_inputs_name": "pta.guizhou.gov.cn",
+      /* 网页中必填输入框，和上面的inputs互斥，格式请与通用的inputs相同 */
       "inputs": {},
+      /* 要取得有用信息的列表，列表第一项是要保存到excel的列名，第二项是对应位置的css选择器*/
+      /* 可以在浏览器中右键审查元素，然后在对应位置右键Copy--Copy Selector获得*/
+      /* 需要注意的是，复制得到的选择器请删除 tbody有关的内容，tbody是浏览器自动渲染的，原始html未必有该标签*/
       "results": [
         ["报考部门","#TblGwycj > tr:nth-child(16) > td:nth-child(2)"],
         ["报考职位","#TblGwycj > tr:nth-child(18) > td:nth-child(2)"],

@@ -8,7 +8,7 @@ from app.models.cms_db_admin.cms_db import CmsDb
 
 
 def add_arg_before_view():
-    if "selectionMng" in request.path:
+    if "selection_mng" in request.path:
         g.db_id = get_request_data("db_id")
         g.db_name = CmsDb.query.filter(CmsDb.db_id == g.db_id, CmsDb.is_deleted == 0).first_or_404().db_name
         g.navi_arr_ref = [

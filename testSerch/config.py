@@ -1,16 +1,11 @@
 import json
 import re
-import requests as rq
-from pyquery import PyQuery as pq
 from urlobject import URLObject
-from PIL import Image
-from requests import ConnectTimeout
-from io import BytesIO
 
 reg = re.compile("/\*.*?\*/")
-config_str = reg.sub("", open("config.json", encoding="utf-8").read())
-config = json.loads(config_str)
-
+with open("config.json", encoding="utf-8") as f:
+    config_str = reg.sub("", f.read())
+    config = json.loads(config_str)
 
 def get_global_setting(name):
     return config["global_settings"].get(name)
@@ -34,3 +29,7 @@ def get_strategy_inputs(strategy_name):
     if "global_inputs_name" in settings:
         return get_websites_setting(settings.get("global_inputs_name"), "inputs")
     return get_strategy_setting(strategy_name, "inputs")
+
+
+def get_strategy_names():
+    return list(config["strategies"].keys())

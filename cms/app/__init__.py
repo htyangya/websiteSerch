@@ -125,19 +125,19 @@ def create_app():
     app.add_url_rule('/cmsadmin/style_setting_edit', 'style_setting_edit', admin_route.style_setting_edit,
                      methods=['GET', 'POST'])
     # Selection Master
-    app.add_url_rule('/cmsadmin/selectionMng', 'selection_mng', admin_route.selection_mng)
-    app.add_url_rule('/cmsadmin/selectionMng/add', 'selection_mng_add', admin_route.selection_mst_persistent,
+    app.add_url_rule('/cmsadmin/selection_mng', 'selection_mng', admin_route.selection_mng)
+    app.add_url_rule('/cmsadmin/selection_mng/add', 'selection_mng_add', admin_route.selection_mst_persistent,
                      methods=['GET', 'POST'])
-    app.add_url_rule('/cmsadmin/selectionMng/update', 'selection_mng_update', admin_route.selection_mst_persistent,
+    app.add_url_rule('/cmsadmin/selection_mng/update', 'selection_mng_update', admin_route.selection_mst_persistent,
                      methods=['GET', 'POST'])
-    app.add_url_rule('/cmsadmin/selectionMng/detail', 'selection_mng_detail', admin_route.selection_mst_detail),
-    app.add_url_rule('/cmsadmin/selectionMng/delete', 'selection_mng_delete', admin_route.selection_delete,
+    app.add_url_rule('/cmsadmin/selection_mng/detail', 'selection_mng_detail', admin_route.selection_mst_detail),
+    app.add_url_rule('/cmsadmin/selection_mng/delete', 'selection_mng_delete', admin_route.selection_delete,
                      methods=['GET', 'POST'])
-    app.add_url_rule('/cmsadmin/selectionMng/list_add', 'selection_list_add', admin_route.selection_list_persistent,
+    app.add_url_rule('/cmsadmin/selection_mng/list_add', 'selection_list_add', admin_route.selection_list_persistent,
                      methods=['GET', 'POST'])
-    app.add_url_rule('/cmsadmin/selectionMng/list_update', 'selection_list_update',
+    app.add_url_rule('/cmsadmin/selection_mng/list_update', 'selection_list_update',
                      admin_route.selection_list_persistent, methods=['GET', 'POST'])
-    app.add_url_rule('/cmsadmin/selectionMng/list_delete', 'selection_list_delete', admin_route.selection_delete,
+    app.add_url_rule('/cmsadmin/selection_mng/list_delete', 'selection_list_delete', admin_route.selection_delete,
                      methods=['GET', 'POST'])
 
     app.add_url_rule('/no_privs', 'no_privs', route.no_privs, methods=['GET'])
