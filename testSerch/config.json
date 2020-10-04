@@ -1,5 +1,38 @@
 {
-  /* dfdf */
-  "abc": "%BA%E9%CE%AC",
-  "list": [1,2,3,4,5,"%B2%E9%A1%A1%D1%AF"]
+  /* 项目配置文件 */
+  "global_settings": {
+    "timeout": 10,
+    "thread_count": 25,
+    "max_repeat_count": 5,
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+  },
+
+ /* 网站配置,每个网站一个 */
+  "websites": {
+    "pta.guizhou.gov.cn": {
+      "charset": "gbk",
+      "vcode_len": 4,
+      /* 网页中必填输入框的name值和它对应的excel列名，验证码输入框写验证码即可 */
+      "inputs": {"TxtName":"姓名","TxtHaoMa": "准考证号","txtJym":"验证码"}
+    }
+  },
+  /* 策略器,每个网址选择合适的策略器 */
+  "strategies": {
+    "贵州人事考试信息网策略1": {
+      "form": "#frmIndex",
+      "vcode_image": "#Image1",
+      "vcode_error": "校验码不正确！",
+      "global_inputs_name": "pta.guizhou.gov.cn",
+      "inputs": {},
+      "results": [
+        ["报考部门","#TblGwycj > tr:nth-child(16) > td:nth-child(2)"],
+        ["报考职位","#TblGwycj > tr:nth-child(18) > td:nth-child(2)"],
+        ["行测成绩","#TblGwycj > tr:nth-child(5) > td:nth-child(2)"],
+        ["申论成绩","#TblGwycj > tr:nth-child(7) > td:nth-child(2)"],
+        ["笔试成绩","#TblGwycj > tr:nth-child(9) > td:nth-child(2)"],
+        ["加分","#TblGwycj > tr:nth-child(10) > td:nth-child(2)"],
+        ["笔试加加分","#TblGwycj > tr:nth-child(11) > td:nth-child(2)"]
+      ]
+    }
+  }
 }
