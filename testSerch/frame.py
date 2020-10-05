@@ -66,7 +66,6 @@ class PyWinDesign:
             self.start()
         else:
             self.log("取消中，请稍后...")
-            self.bar_log("")
             self.button["state"] = tk.DISABLED
             self.search.cancel()
 
@@ -117,6 +116,7 @@ class PyWinDesign:
                 self.bar_log("")
             time.sleep(0.2)
             if self.search.is_finish():
+                self.bar_log("")
                 self.button_title.set("开始查询")
                 self.button['state'] = tk.NORMAL
                 self.file["state"] = tk.NORMAL

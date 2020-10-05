@@ -44,6 +44,30 @@
         ["加分","#TblGwycj > tr:nth-child(10) > td:nth-child(2)"],
         ["笔试加加分","#TblGwycj > tr:nth-child(11) > td:nth-child(2)"]
       ]
+    },
+    "策略2(占位，和策略2一模一样，供后期修改)": {
+      /* 输入表单的css选择器 */
+      "form_select": "#frmIndex",
+      /* 显示验证码图片的img选择器 */
+      "vcode_image": "#Image1",
+      /* 验证码不正确时，返回页面的特有字符 */
+      "vcode_error": "校验码不正确！",
+      /* 网页中必填输入框，和下面的inputs互斥，global表示使用网站通用的输入框集合 */
+      "global_inputs_name": "pta.guizhou.gov.cn",
+      /* 网页中必填输入框，和上面的inputs互斥，格式请与通用的inputs相同 */
+      "inputs": {},
+      /* 要取得有用信息的列表，列表第一项是要保存到excel的列名，第二项是对应位置的css选择器*/
+      /* 可以在浏览器中右键审查元素，然后在对应位置右键Copy--Copy Selector获得*/
+      /* 需要注意的是，复制得到的选择器请删除 tbody有关的内容，tbody是浏览器自动渲染的，原始html未必有该标签*/
+      "results": [
+        ["报考部门","#TblGwycj > tr:nth-child(16) > td:nth-child(2)"],
+        ["报考职位","#TblGwycj > tr:nth-child(18) > td:nth-child(2)"],
+        ["行测成绩","#TblGwycj > tr:nth-child(5) > td:nth-child(2)"],
+        ["申论成绩","#TblGwycj > tr:nth-child(7) > td:nth-child(2)"],
+        ["笔试成绩","#TblGwycj > tr:nth-child(9) > td:nth-child(2)"],
+        ["加分","#TblGwycj > tr:nth-child(10) > td:nth-child(2)"],
+        ["笔试加加分","#TblGwycj > tr:nth-child(11) > td:nth-child(2)"]
+      ]
     }
   }
 }

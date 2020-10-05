@@ -49,6 +49,7 @@ class Search:
         task_args = self.df.index.to_list()
         executor = ThreadPoolExecutor(max_workers=min(config.get_global_setting("thread_count"), self.count))
         result = executor.map(self.search_one, task_args)
+        executor.shutdown()
         self.write_result(list(result))
 
     def prepare_data(self):
